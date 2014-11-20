@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Sams&ouml;k Halland</title>
+
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/ember.js/1.9.0-beta.1/ember.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/ember-data.js/1.0.0-beta.11/ember-data.min.js"></script>
+    </head>
+    <body>
+
+    <script type="text/x-handlebars">
+        <div>
+            <h1>Welcome to Ember!</h1>
+            {{input class="newUser" type="text" value=searchQuery placeholder="Sök"}}
+            <button {{action 'doSearch' searchQuery}}>Send</button>
+        </div>
+        <div>
+            {{outlet}}
+        </div>
+    </script>
+
+    <script type="text/x-handlebars" id="search">
+        <h1>Search</h1>
+
+        {{#if remainingSearchers}}
+            <p>Söker igenom:</p>
+            {{#each item in remainingSearchers}}
+                <li>{{item.provider.name}}</li>
+            {{/each}}
+        {{/if}}
+        {{#if failedSearchers}}
+            <p>Misslyckades med att söka i:</p>
+            {{#each item in failedSearchers}}
+                <li>{{item.provider.name}}</li>
+            {{/each}}
+        {{/if}}
+        {{#if doneSearchers}}
+            <p>Färdigsökt i:</p>
+            {{#each item in doneSearchers}}
+                <li><a {{bindAttr href="item.url"}} target="_blank">{{item.provider.name}} ({{item.numberOfHits}} träffar hämtade av totalt {{item.totalHits}})</a></li>
+            {{/each}}
+        {{/if}}
+
+        <h1>Sökresultat</h1>
+        {{#each hit in searchHits}}
+            <li><a {{bindAttr href="hit.url"}} target="_blank">{{hit.title}} av {{hit.author}}</a></li>
+        {{/each}}
+    </script>
+
+
+    <!-- End main application template -->
+    <script src="js/application.js"></script>
+    <script src="js/parsers.js"></script>
+    <script src="js/providers.js"></script>
+    <script src="js/searcher.js"></script>
+    </body>
+</html>
+
