@@ -26,9 +26,14 @@ App.Searcher = Ember.Object.extend({
                 "%22&format=xml'&callback=?"
         )
         .done(function(data) {
-            var searchHits = outerThis.get('provider').get('parser').getHits(data.results[0], outerThis.get('provider').get('baseUrl'));
-            outerThis.set('searchHits', searchHits);
-            outerThis.set('isDone', true);
+            try {
+                var searchHits = outerThis.get('provider').get('parser').getHits(data.results[0], outerThis.get('provider').get('baseUrl'));
+                outerThis.set('searchHits', searchHits);
+                outerThis.set('isDone', true);
+            } catch (err) {
+                outerThis.set('isDone', true);
+                outerThis.set('isFailed', true);
+            }
         })
         .fail(function() {
                 outerThis.set('isDone', true);
