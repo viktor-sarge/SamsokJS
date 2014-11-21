@@ -1,26 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="sv">
+
     <head>
-        <meta charset="UTF-8">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Sams&ouml;k Halland</title>
 
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/ember.js/1.9.0-beta.1/ember.min.js"></script>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/ember-data.js/1.0.0-beta.11/ember-data.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <link href="css/agency.css" rel="stylesheet">
+
+        <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+        <link href='http://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
     </head>
-    <body>
+
+    <body id="page-top" class="index">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">Samsök Halland</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#providers">Välj kataloger</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#about">Om</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
 
     <script type="text/x-handlebars">
-        <div>
-            <h1>SamsökJS Proof Of Concept!</h1>
-            {{input class="newUser" type="text" value=searchQuery placeholder="Sök"}}
-            <button {{action 'doSearch' searchQuery}}>Send</button>
-        </div>
-        <div>
-            {{outlet}}
-        </div>
+
+        <!-- Header -->
+        <header>
+            <div class="container">
+                <div class="intro-text">
+                    <div class="intro-lead-in">Välkommen till Samsök Halland</div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="input-group">
+                            {{input action="doSearch" class="form-control" type="text" value=searchQuery placeholder="Sök"}}
+                            <span class="input-group-btn"><button class="btn btn-primary inline" {{action 'doSearch' searchQuery}}>Sök</button></span>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Searchresults Section -->
+        <section id="searchresult">
+            <div class="container">
+                {{outlet}}
+            </div>
+        </section>
+
+        <!-- Providers Section -->
+        <section id="providers">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading">Välj kataloger</h2>
+                        <h3 class="section-subheading text-muted">Här kan du välja vilka kataloger Samsök ska söka i.</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading">Om Samsök</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>Samsök Halland är en tjänst från Kultur i Halland - Regionbibliotek tänkt att fungera som ersättare för Bibliotek24 i fjärrlåearbetet.</p>
+                        <p>Tjänsten är under uppbyggnad och synpunkter mottages tacksamt till viktor [punkt] sarge [snabela] regionhalland [punkt] se</p>
+                        <p>Källkoden finns på regionbibliotekets Github-konto</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </script>
 
     <script type="text/x-handlebars" id="search">
@@ -41,21 +134,44 @@
         {{#if doneSearchers}}
             <p>Färdigsökt i:</p>
             {{#each item in doneSearchers}}
-                <li><a {{bindAttr href="item.url"}} target="_blank">{{item.provider.name}} ({{item.numberOfHits}} träffar hämtade av totalt {{item.totalHits}})</a></li>
+                <li>{{item.provider.name}} ({{item.numberOfHits}} träffar hämtade av <a {{bindAttr href="item.url"}} target="_blank">totalt {{item.totalHits}})</a></li>
             {{/each}}
         {{/if}}
 
         <h1>Sökresultat</h1>
         {{#each hit in searchHits}}
-            <li><a {{bindAttr href="hit.url"}} target="_blank">{{hit.title}} av {{hit.author}}</a></li>
+            <li>{{hit.title}} av {{hit.author}}(<a {{bindAttr href="hit.url"}} target="_blank">länk</a>)</li>
         {{/each}}
+
+        <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
     </script>
 
     <!-- End main application template -->
-    <script src="js/application.js"></script>
-    <script src="js/parsers.js"></script>
-    <script src="js/providers.js"></script>
-    <script src="js/searcher.js"></script>
+
+    <!-- jQuery -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- Handlebars and Ember -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/ember.js/1.9.0-beta.1/ember.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/ember-data.js/1.0.0-beta.11/ember-data.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/theme/classie.js"></script>
+    <script src="js/theme/cbpAnimatedHeader.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/theme/agency.js"></script>
+
+
+    <script src="js/samsok/application.js"></script>
+    <script src="js/samsok/parsers.js"></script>
+    <script src="js/samsok/providers.js"></script>
+    <script src="js/samsok/searcher.js"></script>
     </body>
 </html>
 

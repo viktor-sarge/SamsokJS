@@ -1,5 +1,11 @@
 window.App = Ember.Application.create();
 
+function scrollToSearchresult() {
+    $('html, body').stop().animate({
+        scrollTop: $("#searchresult").offset().top
+    }, 1500, 'easeInOutExpo');
+}
+
 App.Router.map(function() {
     this.resource('search', {path: '/search/:query'})
 });
@@ -7,6 +13,7 @@ App.Router.map(function() {
 App.ApplicationController = Ember.Controller.extend({
     actions: {
         doSearch: function(query) {
+            scrollToSearchresult();
             this.transitionToRoute('search', query);
         }
     }
@@ -17,6 +24,11 @@ App.IndexRoute = Ember.Route.extend({
 });
 
 App.SearchRoute = Ember.Route.extend({
+    activate: function() {
+        this._super.apply(this, arguments);
+        Ember.run.scheduleOnce('afterRender', this, scrollToSearchresult);
+    },
+
     model: function(params) {
         var searchers = [];
         getChosenProviders().forEach(function(p) {
