@@ -119,6 +119,14 @@
     <script type="text/x-handlebars" id="search">
         <h1>Söker efter: {{model.searchQuery}}</h1>
 
+        {{#if progress}}
+            <div class="progress">
+                <div {{bindAttr aria-valuenow="progress"}} {{bindAttr style="progressStyle"}} class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <span class="sr-only">{{progress}}% Complete</span>
+                </div>
+            </div>
+        {{/if}}
+
         {{#if remainingSearchers}}
             <p>Söker igenom:</p>
             {{#each item in remainingSearchers}}

@@ -6,6 +6,12 @@ function scrollToSearchresult() {
     }, 1500, 'easeInOutExpo');
 }
 
+App.ScrollLinksMixin = Ember.Mixin.create({
+    didInsertElement: function() {
+        setupScrolling();
+    }
+});
+
 App.Router.map(function() {
     this.resource('search', {path: '/search/:query'})
 });
@@ -22,6 +28,8 @@ App.ApplicationController = Ember.Controller.extend({
 App.IndexRoute = Ember.Route.extend({
 
 });
+
+App.IndexView = Ember.View.extend(App.ScrollLinksMixin);
 
 App.SearchRoute = Ember.Route.extend({
     activate: function() {
@@ -65,6 +73,20 @@ App.SearchController = Ember.Controller.extend({
         });
     }.property('model.searchers.@each.isDone'),
 
+    progress: function() {
+        var done = 0;
+        this.get('model.searchers').forEach(function(searcher) {
+            if (searcher.get('isDone')) {
+                done = done + 1;
+            }
+        });
+        return Math.round(100 * done / this.get('model.searchers').length);
+    }.property('model.searchers.@each.isDone'),
+
+    progressStyle: function() {
+        return "width: " + this.get("progress") + "%";
+    }.property("progress"),
+
     searchHits: function() {
         var contents = [];
         this.get('model.searchers').forEach(function(searcher) {
@@ -77,3 +99,5 @@ App.SearchController = Ember.Controller.extend({
         });
     }.property('model.searchers.@each.searchHits')
 });
+
+App.SearchView = Ember.View.extend(App.ScrollLinksMixin);
