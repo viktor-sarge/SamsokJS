@@ -24,7 +24,7 @@
     </script>
 
     <script type="text/x-handlebars" id="search">
-        <h1>Search</h1>
+        <h1>Söker efter: {{model.searchQuery}}</h1>
 
         {{#if remainingSearchers}}
             <p>Söker igenom:</p>
@@ -50,7 +50,6 @@
             <li><a {{bindAttr href="hit.url"}} target="_blank">{{hit.title}} av {{hit.author}}</a></li>
         {{/each}}
     </script>
-
 
     <!-- End main application template -->
     <script src="js/application.js"></script>

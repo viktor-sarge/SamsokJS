@@ -1,5 +1,3 @@
-var searchIdCounter = 0;
-
 function loadXml(xmlStr) {
     var parser, xmlDoc;
     if(window.DOMParser) {
@@ -14,20 +12,12 @@ function loadXml(xmlStr) {
 }
 
 function xpathString(node, expr) {
-    return document.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue;
+    return document.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue.trim();
 }
 
 function xpathNodes(node, expr) {
     return document.evaluate(expr, node, null, XPathResult.ANY_TYPE, null);
 }
-
-App.SearchHit = Ember.Object.extend({
-    title: null,
-    author: null,
-    type: null,
-    year: null,
-    url: null
-});
 
 App.XsearchParser = Ember.Object.extend({
     totalHits: null,
@@ -44,13 +34,13 @@ App.XsearchParser = Ember.Object.extend({
 
         js['list'].forEach(function(result) {
             hits.push(
-                App.SearchHit.create({
+                {
                     title: result['title'],
                     author: result['creator'],
                     type: result['type'],
                     year: result['date'],
                     url: result['identifier']
-                })
+                }
             );
         });
 
@@ -78,13 +68,13 @@ App.SsbParser = Ember.Object.extend({
             var year = xpathString(result, ".//span[@class='year']");
             var url = baseurl + xpathString(result, ".//div[@class='title']/h2/a/@href");
             hits.push(
-                App.SearchHit.create({
+                {
                     title: title,
                     author: author,
                     type: type,
                     year: year,
                     url: url
-                })
+                }
             );
             result = results.iterateNext();
         }

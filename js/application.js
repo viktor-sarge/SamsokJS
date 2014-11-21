@@ -18,43 +18,50 @@ App.IndexRoute = Ember.Route.extend({
 
 App.SearchRoute = Ember.Route.extend({
     model: function(params) {
-        var result = [];
+        var searchers = [];
         getChosenProviders().forEach(function(p) {
             var searcher = App.Searcher.create({
                 provider: p,
                 query: params.query
             });
             searcher.search();
-            result.push(searcher);
+            searchers.push(searcher);
         });
-        return result;
+        return {
+            searchQuery: params.query,
+            searchers: searchers
+        };
     }
 });
 
-App.SearchController = Ember.ArrayController.extend({
+App.SearchController = Ember.Controller.extend({
     remainingSearchers: function() {
-        return this.get('content').filter(function(searcher) {
+        return this.get('model.searchers').filter(function(searcher) {
             return !searcher.get('isDone') && !searcher.get('isFailed');
         });
-    }.property('content.@each.isDone'),
+    }.property('model.searchers.@each.isDone'),
 
     doneSearchers: function() {
-        return this.get('content').filter(function(searcher) {
+        return this.get('model.searchers').filter(function(searcher) {
             return searcher.get('isDone') && !searcher.get('isFailed');
         });
-    }.property('content.@each.isDone'),
+    }.property('model.searchers.@each.isDone'),
 
     failedSearchers: function() {
-        return this.get('content').filter(function(searcher) {
+        return this.get('model.searchers').filter(function(searcher) {
             return searcher.get('isDone') && searcher.get('isFailed');
         });
-    }.property('content.@each.isDone'),
+    }.property('model.searchers.@each.isDone'),
 
     searchHits: function() {
-        var result = [];
-        this.get('content').forEach(function (searcher) {
-           result = result.concat(searcher.get('searchHits'));
+        var contents = [];
+        this.get('model.searchers').forEach(function(searcher) {
+            contents.pushObjects(searcher.get('searchHits'));
         });
-        return result;
-    }.property('content.@each.searchHits')
+        return Ember.ArrayProxy.createWithMixins(Ember.SortableMixin, {
+            content: contents,
+            sortProperties: ['title'],
+            sortAscending: true
+        });
+    }.property('model.searchers.@each.searchHits')
 });

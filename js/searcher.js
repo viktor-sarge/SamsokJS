@@ -31,13 +31,14 @@ App.Searcher = Ember.Object.extend({
                 outerThis.set('searchHits', searchHits);
                 outerThis.set('isDone', true);
             } catch (err) {
-                outerThis.set('isDone', true);
+                console.log(err);
                 outerThis.set('isFailed', true);
+                outerThis.set('isDone', true);
             }
         })
         .fail(function() {
-                outerThis.set('isDone', true);
                 outerThis.set('isFailed', true);
+                outerThis.set('isDone', true);
         });
     }
 });
