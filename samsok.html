@@ -148,9 +148,19 @@
         {{/if}}
 
         <h1>Sökresultat ({{totalHits}} träffar totalt)</h1>
+        <div class="list-group">
         {{#each hit in searchHits}}
-            <li>{{hit.title}} av {{hit.author}}(<a {{bindAttr href="hit.url"}} target="_blank">länk</a>)</li>
+            <a {{bindAttr href="hit.url"}} class="list-group-item" target="_blank">
+                <h4 class="list-group-item-heading">{{hit.title}}</h4>
+                <p class="list-group-item-text">
+                    <div>{{hit.author}}</div>
+                    <div>{{hit.year}}</div>
+                    <div>{{hit.type}}</div>
+                    <div>{{hit.location}}</div>
+                </p>
+            </a>
         {{/each}}
+        </div>
 
         <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
     </script>
