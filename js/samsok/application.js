@@ -95,6 +95,13 @@ App.SearchController = Ember.Controller.extend({
         return "width: " + this.get("progress") + "%";
     }.property("progress"),
 
+    progressClass: function() {
+        if (this.get("progress") < 100)
+            return "progress-bar progress-bar-info progress-bar-striped";
+        else
+            return "progress-bar progress-bar-success progress-bar-striped";
+    }.property("progress"),
+
     searchHits: function() {
         var contents = [];
         this.get('model.searchers').forEach(function(searcher) {

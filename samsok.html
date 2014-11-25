@@ -122,7 +122,7 @@
 
         {{#if progress}}
             <div class="progress">
-                <div {{bindAttr aria-valuenow="progress"}} {{bindAttr style="progressStyle"}} class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <div {{bindAttr aria-valuenow="progress"}} {{bindAttr style="progressStyle"}} {{bindAttr class="progressClass"}} role="progressbar" aria-valuemin="0" aria-valuemax="100">
                     <span class="sr-only">{{progress}}% Complete</span>
                 </div>
             </div>
