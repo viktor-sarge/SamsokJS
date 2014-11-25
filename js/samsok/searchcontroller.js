@@ -93,8 +93,12 @@ App.SearchController = Ember.Controller.extend({
         if (term) {
             return result.filter(function (hit) {
                 for (var property in hit) {
-                    if (hit.hasOwnProperty(property) && hit[property].toUpperCase().indexOf(term) >= 0) {
-                        return true;
+                    if (hit.hasOwnProperty(property)) {
+                        if ((typeof hit[property] == 'string')) {
+                            if (hit[property].toUpperCase().indexOf(term) >= 0) {
+                                return true;
+                            }
+                        }
                     }
                 }
                 return false;
