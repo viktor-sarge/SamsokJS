@@ -18,6 +18,9 @@ App.Searcher = Ember.Object.extend({
     }.property(),
 
     search: function() {
+        this.set('isFailed', false);
+        this.set('isDone', false);
+
         var outerThis = this;
 
         $.getJSON("http://query.yahooapis.com/v1/public/yql?"+

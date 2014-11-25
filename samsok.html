@@ -137,13 +137,13 @@
         {{#if failedSearchers}}
             <p>Misslyckades med att söka i:</p>
             {{#each item in failedSearchers}}
-                <li>{{item.provider.name}}</li>
+                <li>{{item.provider.name}} (<a {{action 'retryFailed' item}}>försök igen</a>)</li>
             {{/each}}
         {{/if}}
         {{#if doneSearchers}}
             <p>Färdigsökt i:</p>
             {{#each item in doneSearchers}}
-                <li>{{item.provider.name}} ({{item.numberOfHits}} träffar hämtade av <a {{bindAttr href="item.url"}} target="_blank">totalt {{item.totalHits}})</a></li>
+                <li>{{item.provider.name}} ({{item.numberOfHits}} träffar hämtade av <a {{bindAttr href="item.url"}} target="_blank">totalt {{item.totalHits}}</a>)</li>
             {{/each}}
         {{/if}}
 

@@ -55,6 +55,12 @@ App.SearchRoute = Ember.Route.extend({
 });
 
 App.SearchController = Ember.Controller.extend({
+    actions: {
+        retryFailed: function(searcher) {
+            searcher.search();
+        }
+    },
+
     remainingSearchers: function() {
         return this.get('model.searchers').filter(function(searcher) {
             return !searcher.get('isDone') && !searcher.get('isFailed');
