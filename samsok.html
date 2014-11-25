@@ -118,7 +118,7 @@
     </script>
 
     <script type="text/x-handlebars" id="search">
-        <h1>Söker efter: {{model.searchQuery}}</h1>
+        <h2>Söker efter: {{model.searchQuery}}</h2>
 
         {{#if progress}}
             <div class="progress">
@@ -129,25 +129,25 @@
         {{/if}}
 
         {{#if remainingSearchers}}
-            <p>Söker igenom:</p>
+            <h4>Söker igenom:</h4>
             {{#each item in remainingSearchers}}
                 <li>{{item.provider.name}}</li>
             {{/each}}
         {{/if}}
         {{#if failedSearchers}}
-            <p>Misslyckades med att söka i:</p>
+            <h4>Misslyckades med att söka i:</h4>
             {{#each item in failedSearchers}}
                 <li>{{item.provider.name}} (<a {{action 'retryFailed' item}}>försök igen</a>)</li>
             {{/each}}
         {{/if}}
         {{#if doneSearchers}}
-            <p>Färdigsökt i:</p>
+            <h4>Färdigsökt i:</h4>
             {{#each item in doneSearchers}}
                 <li>{{item.provider.name}} ({{item.numberOfHits}} träffar hämtade av <a {{bindAttr href="item.url"}} target="_blank">totalt {{item.totalHits}}</a>)</li>
             {{/each}}
         {{/if}}
 
-        <h1>Sökresultat ({{totalHits}} träffar totalt)</h1>
+        <h2>Sökresultat ({{totalHits}} träffar totalt)</h2>
         {{input class="form-control" type="text" value=searchFilter placeholder="Sök i träfflistan"}}
         <div class="list-group">
         {{#each hit in searchHits}}
