@@ -103,16 +103,33 @@ App.SearchController = Ember.Controller.extend({
     }.property("progress"),
 
     searchHits: function() {
+        var term = null;
+        if (this.get('searchFilter'))
+            term = this.get('searchFilter').toUpperCase();
+
         var contents = [];
-        this.get('model.searchers').forEach(function(searcher) {
+        this.get('model.searchers').forEach(function (searcher) {
             contents.pushObjects(searcher.get('searchHits'));
         });
-        return Ember.ArrayProxy.createWithMixins(Ember.SortableMixin, {
+        var result = Ember.ArrayProxy.createWithMixins(Ember.SortableMixin, {
             content: contents,
             sortProperties: ['title'],
             sortAscending: true
-        });
-    }.property('model.searchers.@each.searchHits')
+        })
+
+        if (term) {
+            return result.filter(function (hit) {
+                for (var property in hit) {
+                    if (hit.hasOwnProperty(property) && hit[property].toUpperCase().indexOf(term) >= 0) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        } else {
+            return result;
+        }
+    }.property('model.searchers.@each.searchHits', 'searchFilter')
 });
 
 App.SearchView = Ember.View.extend(App.ScrollLinksMixin);

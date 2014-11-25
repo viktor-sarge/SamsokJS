@@ -148,6 +148,7 @@
         {{/if}}
 
         <h1>Sökresultat ({{totalHits}} träffar totalt)</h1>
+        {{input class="form-control" type="text" value=searchFilter placeholder="Sök i träfflistan"}}
         <div class="list-group">
         {{#each hit in searchHits}}
             <a {{bindAttr href="hit.url"}} class="list-group-item" target="_blank">
