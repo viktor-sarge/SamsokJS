@@ -73,6 +73,14 @@ App.SearchController = Ember.Controller.extend({
         });
     }.property('model.searchers.@each.isDone'),
 
+    totalHits: function() {
+        var hits = 0;
+        this.get('model.searchers').forEach(function(searcher) {
+            hits = hits + searcher.get('numberOfHits');
+        });
+        return hits;
+    }.property('model.searchers.@each.numberOfHits'),
+
     progress: function() {
         var done = 0;
         this.get('model.searchers').forEach(function(searcher) {

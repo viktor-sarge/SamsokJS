@@ -147,7 +147,7 @@
             {{/each}}
         {{/if}}
 
-        <h1>Sökresultat</h1>
+        <h1>Sökresultat ({{totalHits}} träffar totalt)</h1>
         {{#each hit in searchHits}}
             <li>{{hit.title}} av {{hit.author}}(<a {{bindAttr href="hit.url"}} target="_blank">länk</a>)</li>
         {{/each}}
