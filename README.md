@@ -1,4 +1,4 @@
-SamsokJavascript
+SamsokJS
 ================
 
-An Javascript based rewrite of our federated searching "Samsök". 
+A Javascript based rewrite of our federated searching "Samsök". 
