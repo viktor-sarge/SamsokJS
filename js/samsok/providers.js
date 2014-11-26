@@ -61,6 +61,12 @@ var providers = [
                 name: 'Stockholms Stadsbibliotek',
                 encoding: 'latin-1'
             }),
+            App.Provider.create({
+                parser: App.GotlibParser.create(),
+                baseUrl: 'http://encore.gotlib.goteborg.se/',
+                searchUrl: 'http://encore.gotlib.goteborg.se/iii/encore/search/C__S@QUERY@__Orightresult__U1?lang=swe&suite=pearl',
+                name: 'Göteborg',
+                encoding: 'utf-8'
             })
         ]
     })

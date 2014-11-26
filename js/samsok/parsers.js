@@ -82,6 +82,48 @@ App.SsbParser = Ember.Object.extend({
         return hits;
     }
 });
+
+App.GotlibParser = Ember.Object.extend({
+    totalHits: null,
+
+    getHits: function(content, baseurl) {
+        var hits = [];
+        html = loadXml(content);
+
+        var totalHitsSpan = xpathString(html, "//span[@class='noResultsHideMessage']");
+        if (totalHitsSpan.length > 0) {
+            var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
+            var match = hitsRegex.exec(totalHitsSpan);
+            if (match) {
+                this.set('totalHits', match[1]);
+            }
+        }
+
+
+        var results = xpathNodes(html, "//table[@class='browseResult']/tbody/tr");
+        var result = results.iterateNext();
+        while (result) {
+            var isProgram = xpathBoolean(result, './/span[contains(@id, "programMediaTypeInsertComponent")]');
+            if (isProgram) {
+                result = results.iterateNext();
+                continue;
+            }
+
+            var title = xpathString(result, ".//div[@class='dpBibTitle']");
+            var author = xpathString(result, ".//div[@class='dpBibAuthor']");
+            var type = xpathString(result, ".//span[@class='itemMediaDescription']");
+            var year = xpathString(result, ".//span[@class='itemMediaYear']");
+            var url = baseurl + xpathString(result, ".//div[@class='dpBibTitle']/a/@href");
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+
             result = results.iterateNext();
         }
 
