@@ -59,7 +59,7 @@ var providers = [
                 baseUrl: 'https://biblioteket.stockholm.se/',
                 searchUrl: 'http://biblioteket.stockholm.se/sok?freetext=',
                 name: 'Stockholms Stadsbibliotek',
-                encoding: 'latin-1'
+                encoding: 'utf-8'
             }),
             App.Provider.create({
                 parser: App.GotlibParser.create(),
