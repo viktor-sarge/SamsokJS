@@ -1,3 +1,5 @@
+var proxyBaseUrl = "http://samsokproxy.appspot.com/crossdomain";
+
 App.Searcher = Ember.Object.extend({
     provider: null,
     query: null,
@@ -23,20 +25,20 @@ App.Searcher = Ember.Object.extend({
 
         var outerThis = this;
 
-        $.getJSON("http://query.yahooapis.com/v1/public/yql?"+
-                "q=select%20*%20from%20html%20where%20url%3D%22"+
+        $.getJSON(proxyBaseUrl + "?url=" +
                 encodeURIComponent(this.get('provider').getSearchUrl(this.get('query').replace(' ', '+')))+
-                "%22&format=xml'&callback=?"
+                "&encoding=" + this.get('provider').get('encoding') +
+                "&callback=?"
         )
         .done(function(data) {
             try {
-                if (data.results.length == 0) {
+                if (!data.content) {
                     outerThis.set('isFailed', true);
                     outerThis.set('isDone', true);
                     return;
                 }
 
-                var searchHits = outerThis.get('provider').get('parser').getHits(data.results[0], outerThis.get('provider').get('baseUrl'));
+                var searchHits = outerThis.get('provider').get('parser').getHits(data.content, outerThis.get('provider').get('baseUrl'));
                 outerThis.set('searchHits', searchHits);
                 outerThis.set('isDone', true);
             } catch (err) {

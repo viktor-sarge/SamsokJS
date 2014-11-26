@@ -2,7 +2,7 @@ function loadXml(xmlStr) {
     var parser, xmlDoc;
     if(window.DOMParser) {
         parser = new DOMParser();
-        xmlDoc = parser.parseFromString(xmlStr, "text/xml");
+        xmlDoc = parser.parseFromString(xmlStr, "text/html");
     } else {
         xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
         xmlDoc.async=false;
@@ -15,6 +15,10 @@ function xpathString(node, expr) {
     return document.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue.trim();
 }
 
+function xpathBoolean(node, expr) {
+    return document.evaluate(expr, node, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
+}
+
 function xpathNodes(node, expr) {
     return document.evaluate(expr, node, null, XPathResult.ANY_TYPE, null);
 }
@@ -24,10 +28,6 @@ App.XsearchParser = Ember.Object.extend({
 
     getHits: function(content, baseurl) {
         var hits = [];
-
-        // YQL gives us some crap around the JSON that we need to remove
-        content = content.replace(/^[^{]*/mg, '');
-        content = content.replace(/[^}]*$/mg, '');
 
         var js = jQuery.parseJSON(content)['xsearch'];
         this.set('totalHits', js['records']);
@@ -56,7 +56,6 @@ App.SsbParser = Ember.Object.extend({
             html = loadXml(content);
 
         var totalHits = xpathString(html, "//div[@id='results-filter']/p[@class='total']/em[3]");
-
         this.set('totalHits', totalHits);
 
         var results = xpathNodes(html, "//ol[@class='results-icon']//div[string(number(@id)) != 'NaN' and @class='row-fluid']");
@@ -76,6 +75,13 @@ App.SsbParser = Ember.Object.extend({
                     url: url
                 }
             );
+
+            result = results.iterateNext();
+        }
+
+        return hits;
+    }
+});
             result = results.iterateNext();
         }
 

@@ -11,6 +11,7 @@ App.Provider = Ember.Object.extend({
     searchUrl: null,
     name: null,
     gotoUrl: null,
+    encoding: null,
     enabled: false,
 
     init: function() {
@@ -50,12 +51,16 @@ var providers = [
                 baseUrl: 'http://www.sverigesdepabibliotekochlanecentral.se/',
                 searchUrl: 'http://libris.kb.se/xsearch?query=@QUERY@%20AND%20bibl:umdp&format=json&holdings=true&n=200',
                 name: 'Depåbiblioteket i Umeå',
-                gotoUrl: 'http://libris.kb.se/hitlist?q=@QUERY@+bib%3aumdp&d=libris&m=10&p=1&s=r'
+                gotoUrl: 'http://libris.kb.se/hitlist?q=@QUERY@+bib%3aumdp&d=libris&m=10&p=1&s=r',
+                encoding: 'utf-8'
             }),
             App.Provider.create({
                 parser: App.SsbParser.create(),
                 baseUrl: 'https://biblioteket.stockholm.se/',
-                searchUrl: 'https://biblioteket.stockholm.se/sok?freetext=',
+                searchUrl: 'http://biblioteket.stockholm.se/sok?freetext=',
+                name: 'Stockholms Stadsbibliotek',
+                encoding: 'latin-1'
+            }),
             })
         ]
     })
