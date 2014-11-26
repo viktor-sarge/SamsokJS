@@ -25,7 +25,7 @@ App.Searcher = Ember.Object.extend({
 
         $.getJSON("http://query.yahooapis.com/v1/public/yql?"+
                 "q=select%20*%20from%20html%20where%20url%3D%22"+
-                encodeURIComponent(this.get('provider').getSearchUrl(this.query.replace(' ', '+')))+
+                encodeURIComponent(this.get('provider').getSearchUrl(this.get('query').replace(' ', '+')))+
                 "%22&format=xml'&callback=?"
         )
         .done(function(data) {

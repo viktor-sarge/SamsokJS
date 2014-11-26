@@ -48,7 +48,7 @@
                         <a href="#page-top"></a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#providers">Välj kataloger</a>
+                        <a class="page-scroll" href="#providersSection">Välj kataloger</a>
                     </li>
                     <li>
                         <a class="page-scroll" href="#about">Om</a>
@@ -81,18 +81,15 @@
         <!-- Searchresults Section -->
         <section id="searchresult">
             <div class="container">
-                {{outlet}}
-            </div>
-        </section>
-
-        <!-- Providers Section -->
-        <section id="providers">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <h2 class="section-heading">Välj kataloger</h2>
-                        <h3 class="section-subheading text-muted">Här kan du välja vilka kataloger Samsök ska söka i.</h3>
-                    </div>
+                <div class="col-md-12 col-lg-8">
+                    <h2 class="section-heading">Sökresultat</h2>
+                    {{outlet}}
+                </div>
+                <div class="col-md-12 col-lg-4">
+                    <!-- Providers Section -->
+                    <section id="providersSection">
+                        {{render "providers"}}
+                    </section>
                 </div>
             </div>
         </section>
@@ -118,15 +115,13 @@
     </script>
 
     <script type="text/x-handlebars" id="search">
-        <h2>Söker efter: {{model.searchQuery}}</h2>
+        <h2>Söker efter: {{model}}</h2>
 
-        {{#if progress}}
-            <div class="progress">
-                <div {{bindAttr aria-valuenow="progress"}} {{bindAttr style="progressStyle"}} {{bindAttr class="progressClass"}} role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                    <span class="sr-only">{{progress}}% Complete</span>
-                </div>
+        <div class="progress">
+            <div {{bind-attr aria-valuenow="progress"}} {{bind-attr style="progressStyle"}} {{bind-attr class="progressClass"}} role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <span class="sr-only">{{progress}}% Complete</span>
             </div>
-        {{/if}}
+        </div>
 
         {{#if remainingSearchers}}
             <h4>Söker igenom:</h4>
@@ -143,15 +138,15 @@
         {{#if doneSearchers}}
             <h4>Färdigsökt i:</h4>
             {{#each item in doneSearchers}}
-                <li>{{item.provider.name}} ({{item.numberOfHits}} träffar hämtade av <a {{bindAttr href="item.url"}} target="_blank">totalt {{item.totalHits}}</a>)</li>
+                <li>{{item.provider.name}} ({{item.numberOfHits}} träffar hämtade av <a {{bind-attr href="item.url"}} target="_blank">totalt {{item.totalHits}}</a>)</li>
             {{/each}}
         {{/if}}
 
-        <h2>Sökresultat ({{totalHits}} träffar totalt)</h2>
+        <h2>({{totalHits}} träffar totalt)</h2>
         {{input class="form-control" type="text" value=searchFilter placeholder="Sök i träfflistan"}}
         <div class="list-group">
         {{#each hit in searchHits}}
-            <a {{bindAttr href="hit.url"}} class="list-group-item" target="_blank">
+            <a {{bind-attr href="hit.url"}} class="list-group-item" target="_blank">
                 <h4 class="list-group-item-heading">{{hit.title}}</h4>
                 <p class="list-group-item-text">
                     <div>{{hit.author}}</div>
@@ -166,14 +161,33 @@
         <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
     </script>
 
-    <!-- End main application template -->
+    <script type="text/x-handlebars" id="providers">
+        <div class="panel panel-default">
+        <div class="panel-heading"><h2 class="section-heading">Kataloger</h2></div>
+        <div class="panel-body">
+        <h3 class="section-subheading text-muted">Här kan du välja vilka kataloger Samsök ska söka i.</h3>
+        {{#each provider in providers}}
+            <h5>{{provider.groupName}}</h5>
+            {{#each provider in provider.providers}}
+                {{#view class="checkbox" tagName="li"}}
+                    <label {{bind-attr for="view.checkboxView.elementId"}}>
+                        {{input type="checkbox" checked=provider.enabled viewName="checkboxView"}}
+                        {{provider.name}}
+                    </label>
+                {{/view}}
+            {{/each}}
+        {{/each}}
+        <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
+        </div>
+        </div>
+    </script>
 
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
     <!-- Handlebars and Ember -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ember.js/1.9.0-beta.1/ember.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ember.js/1.9.0-beta.1/ember.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ember-data.js/1.0.0-beta.11/ember-data.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
@@ -187,10 +201,14 @@
     <!-- Custom Theme JavaScript -->
     <script src="js/theme/agency.js"></script>
 
+    <!-- Other libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
 
     <!-- Samsok scripts -->
     <script src="js/samsok/application.js"></script>
     <script src="js/samsok/searchcontroller.js"></script>
+    <script src="js/samsok/providerscontroller.js"></script>
     <script src="js/samsok/parsers.js"></script>
     <script src="js/samsok/providers.js"></script>
     <script src="js/samsok/searcher.js"></script>

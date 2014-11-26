@@ -5,64 +5,102 @@ App.SearchRoute = Ember.Route.extend({
     },
 
     model: function(params) {
-        var searchers = [];
-        getChosenProviders().forEach(function(p) {
-            var searcher = App.Searcher.create({
-                provider: p,
-                query: params.query
-            });
-            searcher.search();
-            searchers.push(searcher);
-        });
-        return {
-            searchQuery: params.query,
-            searchers: searchers
-        };
+        return params.query;
     }
 });
 
 App.SearchController = Ember.Controller.extend({
+    needs: 'providers',
+    searchers: [],
+
     actions: {
         retryFailed: function(searcher) {
             searcher.search();
         }
     },
 
+    modelDidChange: function() {
+        console.log("Model updated");
+        this.get('searchers').clear();
+        this.updateSearchers();
+    }.observes('model'),
+
+    updateSearchers: function() {
+        // Add any new providers
+        console.log('updateSearchers');
+        if (this.get('model')) {
+            var outerThis = this;
+            this.get('controllers.providers.allProviders').filterBy('enabled', true).forEach(function(provider) {
+                var exists = false;
+                outerThis.get('searchers').forEach(function(searcher) {
+                    if (searcher.get('provider.name') == provider.get('name')) {
+                        exists = true;
+                    }
+                });
+
+                if (!exists) {
+                    var searcher = App.Searcher.create({
+                        provider: provider,
+                        query: outerThis.get('model')
+                    });
+                    searcher.search();
+                    outerThis.get('searchers').pushObject(searcher);
+                    console.log("Added searcher: " + searcher)
+                }
+            });
+
+            // Remove any that are no longer enabled
+            this.get('searchers').forEach(function(searcher) {
+                var exists = false;
+                outerThis.get('controllers.providers.allProviders').filterBy('enabled', false).forEach(function(provider) {
+                        if (searcher.get('provider.name') == provider.get('name')) {
+                            exists = true;
+                        }
+                    });
+
+                if (exists) {
+                    outerThis.get('searchers').removeObject(searcher);
+                    console.log("Removed searcher: " + searcher)
+                }
+            });
+        }
+    }.observes('controllers.providers.allProviders', 'controllers.providers.allProviders.@each.enabled'),
+
     remainingSearchers: function() {
-        return this.get('model.searchers').filter(function(searcher) {
+        return this.get('searchers').filter(function(searcher) {
             return !searcher.get('isDone') && !searcher.get('isFailed');
         });
-    }.property('model.searchers.@each.isDone'),
+    }.property('searchers.@each.isDone'),
 
     doneSearchers: function() {
-        return this.get('model.searchers').filter(function(searcher) {
+        return this.get('searchers').filter(function(searcher) {
             return searcher.get('isDone') && !searcher.get('isFailed');
         });
-    }.property('model.searchers.@each.isDone'),
+    }.property('searchers.@each.isDone'),
 
     failedSearchers: function() {
-        return this.get('model.searchers').filter(function(searcher) {
+        return this.get('searchers').filter(function(searcher) {
             return searcher.get('isDone') && searcher.get('isFailed');
         });
-    }.property('model.searchers.@each.isDone'),
+    }.property('searchers.@each.isDone'),
 
     totalHits: function() {
         var hits = 0;
-        this.get('model.searchers').forEach(function(searcher) {
+        this.get('searchers').forEach(function(searcher) {
             hits = hits + searcher.get('numberOfHits');
         });
         return hits;
-    }.property('model.searchers.@each.numberOfHits'),
+    }.property('searchers.@each.numberOfHits'),
 
     progress: function() {
         var done = 0;
-        this.get('model.searchers').forEach(function(searcher) {
+        this.get('searchers').forEach(function(searcher) {
             if (searcher.get('isDone')) {
                 done = done + 1;
             }
         });
-        return Math.round(100 * done / this.get('model.searchers').length);
-    }.property('model.searchers.@each.isDone'),
+        return Math.round(100 * done / this.get('searchers').get('length'));
+    }.property('searchers.@each.isDone'),
 
     progressStyle: function() {
         return "width: " + this.get("progress") + "%";
@@ -81,14 +119,14 @@ App.SearchController = Ember.Controller.extend({
             term = this.get('searchFilter').toUpperCase();
 
         var contents = [];
-        this.get('model.searchers').forEach(function (searcher) {
+        this.get('searchers').forEach(function (searcher) {
             contents.pushObjects(searcher.get('searchHits'));
         });
         var result = Ember.ArrayProxy.createWithMixins(Ember.SortableMixin, {
             content: contents,
             sortProperties: ['title'],
             sortAscending: true
-        })
+        });
 
         if (term) {
             return result.filter(function (hit) {
@@ -106,7 +144,7 @@ App.SearchController = Ember.Controller.extend({
         } else {
             return result;
         }
-    }.property('model.searchers.@each.searchHits', 'searchFilter')
+    }.property('searchers.@each.searchHits', 'searchFilter')
 });
 
 App.SearchView = Ember.View.extend(App.ScrollLinksMixin);

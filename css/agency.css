@@ -339,6 +339,20 @@ section h3.section-subheading {
     font-weight: 400;
 }
 
+section#providersSection {
+    padding: 20px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+section#providersSection h3.section-subheading {
+    margin-bottom: 20px;
+}
+
+section#providersSection h2.section-heading {
+    margin-bottom: 0px;
+}
+
 @media(min-width:768px) {
     section {
         padding: 150px 0;
