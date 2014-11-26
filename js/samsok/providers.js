@@ -88,6 +88,13 @@ var providers = [
                 searchUrl: 'http://hylte.bibkat.se/cgi-bin/koha/opac-search.pl?q=@QUERY@&branch_group_limit=',
                 name: 'Hylte',
                 encoding: 'utf-8'
+            }),
+            App.Provider.create({
+                parser: App.MinabibliotekParser.create(),
+                baseUrl: 'http://www.minabibliotek.se/',
+                searchUrl: 'http://www.minabibliotek.se/search?query=@QUERY@&sort=Relevance&snabbsokknapp=Sök&searchtype=Biblioteket&fLibId=00000000-0000-0000-0000-000000000000',
+                name: 'Minabibliotek',
+                encoding: 'utf-8'
             })
         ]
     })

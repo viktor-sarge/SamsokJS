@@ -286,3 +286,56 @@ App.KohaParser = Ember.Object.extend({
         return hits;
     }
 });
+
+App.MinabibliotekParser = Ember.Object.extend({
+    totalHits: null,
+
+    getHits: function(content, baseurl) {
+        var hits = [];
+        html = loadXml(content);
+
+        var totalHitsSpan = xpathString(html, "//form[@id='SearchResultForm']/p[@class='information']");
+        if (totalHitsSpan.length > 0) {
+            var hitsRegex = /(\d+)/g;
+            var match = hitsRegex.exec(totalHitsSpan);
+            if (match) {
+                this.set('totalHits', match[1]);
+            }
+        }
+
+        var results = xpathNodes(html, "//form[@id='MemorylistForm']/ol[@class='CS_list-container']/li");
+        var result = results.iterateNext();
+        while (result) {
+            var title = xpathString(result, ".//h3[@class='title']/a");
+            var author = xpathString(result, ".//p[@class='author']");
+            if (author.toLowerCase().indexOf("av:") == 0) {
+                author = author.substr("av:".length, author.length);
+            }
+            var types = xpathNodes(result, ".//ol[@class='media-type CS_clearfix']/li/a/span");
+            var typesArray = [];
+            var typesIter = types.iterateNext();
+            while (typesIter) {
+                typesArray.push(typesIter.stringValue);
+                typesIter = types.iterateNext();
+            }
+            var type = typesArray.join(' / ');
+
+            var year = xpathString(result, ".//span[@class='date']");
+            var url = baseurl + xpathString(result, ".//h3[@class='title']/a/@href");
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+
+            result = results.iterateNext();
+        }
+
+        return hits;
+    }
+});
