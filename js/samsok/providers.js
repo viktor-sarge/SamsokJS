@@ -50,15 +50,12 @@ var providers = [
                 baseUrl: 'http://www.sverigesdepabibliotekochlanecentral.se/',
                 searchUrl: 'http://libris.kb.se/xsearch?query=@QUERY@%20AND%20bibl:umdp&format=json&holdings=true&n=200',
                 name: 'Depåbiblioteket i Umeå',
-                gotoUrl: 'http://libris.kb.se/hitlist?q=@QUERY@+bib%3aumdp&d=libris&m=10&p=1&s=r',
-                group: 'Testgrupp'
+                gotoUrl: 'http://libris.kb.se/hitlist?q=@QUERY@+bib%3aumdp&d=libris&m=10&p=1&s=r'
             }),
             App.Provider.create({
                 parser: App.SsbParser.create(),
-                baseUrl: 'https://biblioteket.stockholm.se',
+                baseUrl: 'https://biblioteket.stockholm.se/',
                 searchUrl: 'https://biblioteket.stockholm.se/sok?freetext=',
-                name: 'Stockholms Stadsbibliotek',
-                group: 'Testgrupp'
             })
         ]
     })
