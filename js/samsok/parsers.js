@@ -185,3 +185,57 @@ App.MalmoParser = Ember.Object.extend({
         return hits;
     }
 });
+
+App.OlaParser = Ember.Object.extend({
+    totalHits: null,
+
+    getHits: function(content, baseurl) {
+        var hits = [];
+        html = loadXml(content);
+
+        var totalHitsSpan = xpathString(html, "//span[@class='result-text']");
+        if (totalHitsSpan.length > 0) {
+            var hitsRegex = /(\d+)/g;
+            var match = hitsRegex.exec(totalHitsSpan);
+            if (match) {
+                this.set('totalHits', match[1]);
+            }
+        }
+
+        var results = xpathNodes(html, "//ol[@class='search-result clearfix']/li[@class='work-item clearfix']");
+        var result = results.iterateNext();
+        while (result) {
+            title = xpathString(result, ".//h3[@class='work-details-header']/a");
+            var author = xpathString(result, ".//div[@class='work-details']/p");
+            if (author.toLowerCase().indexOf("av:") == 0) {
+                author = author.substr("av:".length, author.length);
+            }
+            var types = xpathNodes(result, ".//ol[@class='media-type-list']/li/a/span");
+            var typesArray = [];
+            var typesIter = types.iterateNext();
+            while (typesIter) {
+                typesArray.push(typesIter.stringValue);
+                typesIter = types.iterateNext();
+            }
+            var type = typesArray.join(' / ');
+
+            var year = xpathString(result, ".//h3[@class='work-details-header']/small");
+            year = year.substring(1, year.length - 1);
+            var url = baseurl + xpathString(result, ".//h3[@class='work-details-header']/a/@href");
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+
+            result = results.iterateNext();
+        }
+
+        return hits;
+    }
+});

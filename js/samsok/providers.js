@@ -74,6 +74,13 @@ var providers = [
                 searchUrl: 'http://malmo.stadsbibliotek.org/search~S7*swe/?SUBMIT=Sök+%3E%3E%searchtype=X&searcharg=',
                 name: 'Malmö',
                 encoding: 'utf-8'
+            }),
+            App.Provider.create({
+                parser: App.OlaParser.create(),
+                baseUrl: 'http://bibliotek.boras.se/',
+                searchUrl: 'http://bibliotek.boras.se/search?query=@QUERY@&searchtype=Biblioteket&sort=Relevance&fLibId=00000000-0000-0000-0000-000000000000',
+                name: 'Borås',
+                encoding: 'utf-8'
             })
         ]
     })
