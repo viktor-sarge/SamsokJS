@@ -130,3 +130,58 @@ App.GotlibParser = Ember.Object.extend({
         return hits;
     }
 });
+
+App.MalmoParser = Ember.Object.extend({
+    totalHits: null,
+
+    getHits: function(content, baseurl) {
+        var hits = [];
+        html = loadXml(content);
+
+        var totalHitsSpan = xpathString(html, "//td[@class='browseHeaderData']");
+        if (totalHitsSpan.length > 0) {
+            var hitsRegex = /\d+-\d+ .*? (\d+)/g;
+            var match = hitsRegex.exec(totalHitsSpan);
+            if (match) {
+                this.set('totalHits', match[1]);
+            }
+        }
+
+
+        var results = xpathNodes(html, "//tr[@class='briefCitRow']");
+        var result = results.iterateNext();
+        while (result) {
+            var titletags = xpathNodes(result, ".//span[@class='briefcitTitle']/../a");
+            if (titletags.length == 0) {
+                result = results.iterateNext();
+                continue;
+            }
+            var titletagsFirst = titletags.iterateNext();
+            title = xpathString(titletagsFirst, ".");
+            var author = xpathString(result, ".//span[@class='briefcitTitle']");
+            var type = xpathString(result, ".//span[@class='briefcitMedia']/img[1]/@alt");
+            var year = xpathString(result, ".//table/tr/td[5]");
+            if (year.length >= 4) {
+                year = year.substr(year.length - 4, year.length);
+                if (!isNaN(year)) {
+                    year = "";
+                }
+            }
+            var url = baseurl + xpathString(titletagsFirst, "@href");
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+
+            result = results.iterateNext();
+        }
+
+        return hits;
+    }
+});

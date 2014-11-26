@@ -67,6 +67,13 @@ var providers = [
                 searchUrl: 'http://encore.gotlib.goteborg.se/iii/encore/search/C__S@QUERY@__Orightresult__U1?lang=swe&suite=pearl',
                 name: 'Göteborg',
                 encoding: 'utf-8'
+            }),
+            App.Provider.create({
+                parser: App.MalmoParser.create(),
+                baseUrl: 'http://malmo.stadsbibliotek.org/',
+                searchUrl: 'http://malmo.stadsbibliotek.org/search~S7*swe/?SUBMIT=Sök+%3E%3E%searchtype=X&searcharg=',
+                name: 'Malmö',
+                encoding: 'utf-8'
             })
         ]
     })
