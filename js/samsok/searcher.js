@@ -30,11 +30,16 @@ App.Searcher = Ember.Object.extend({
         )
         .done(function(data) {
             try {
+                if (data.results.length == 0) {
+                    outerThis.set('isFailed', true);
+                    outerThis.set('isDone', true);
+                    return;
+                }
+
                 var searchHits = outerThis.get('provider').get('parser').getHits(data.results[0], outerThis.get('provider').get('baseUrl'));
                 outerThis.set('searchHits', searchHits);
                 outerThis.set('isDone', true);
             } catch (err) {
-                console.log(err);
                 outerThis.set('isFailed', true);
                 outerThis.set('isDone', true);
             }
