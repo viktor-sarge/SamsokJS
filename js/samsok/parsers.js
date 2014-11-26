@@ -163,7 +163,7 @@ App.MalmoParser = Ember.Object.extend({
             var year = xpathString(result, ".//table/tr/td[5]");
             if (year.length >= 4) {
                 year = year.substr(year.length - 4, year.length);
-                if (!isNaN(year)) {
+                if (isNaN(year)) {
                     year = "";
                 }
             }
@@ -222,6 +222,53 @@ App.OlaParser = Ember.Object.extend({
             var year = xpathString(result, ".//h3[@class='work-details-header']/small");
             year = year.substring(1, year.length - 1);
             var url = baseurl + xpathString(result, ".//h3[@class='work-details-header']/a/@href");
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+
+            result = results.iterateNext();
+        }
+
+        return hits;
+    }
+});
+
+App.KohaParser = Ember.Object.extend({
+    totalHits: null,
+
+    getHits: function(content, baseurl) {
+        var hits = [];
+        html = loadXml(content);
+
+        var totalHitsSpan = xpathString(html, "//p[@id='numresults']");
+        if (totalHitsSpan.length > 0) {
+            var hitsRegex = /(\d+)/g;
+            var match = hitsRegex.exec(totalHitsSpan);
+            if (match) {
+                this.set('totalHits', match[1]);
+            }
+        }
+
+        var results = xpathNodes(html, "//td[@class='bibliocol']");
+        var result = results.iterateNext();
+        while (result) {
+            var title = xpathString(result, ".//a[@class='title']");
+            var author = xpathString(result, ".//span[@class='author']");
+            var type = xpathString(result, ".//span[@class='results_summary type']");
+
+            var publisher = xpathString(result, ".//span[@class='results_summary publisher']")
+            var year = "";
+            if (publisher.length >= 4 && !isNaN(publisher.substring(publisher.length - 4, publisher.length))) {
+                year = publisher.substring(publisher.length - 4, publisher.length);
+            }
+            var url = baseurl + xpathString(result, ".//a[@class='title']/@href");
 
             hits.push(
                 {

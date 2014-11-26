@@ -92,7 +92,7 @@ App.SearchController = Ember.Controller.extend({
         if (this.get('searchers').get('length') == 0) {
             return 100;
         }
-        
+
         var done = 0;
         this.get('searchers').forEach(function(searcher) {
             if (searcher.get('isDone')) {

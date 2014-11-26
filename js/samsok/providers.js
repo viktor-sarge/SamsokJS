@@ -81,6 +81,13 @@ var providers = [
                 searchUrl: 'http://bibliotek.boras.se/search?query=@QUERY@&searchtype=Biblioteket&sort=Relevance&fLibId=00000000-0000-0000-0000-000000000000',
                 name: 'Borås',
                 encoding: 'utf-8'
+            }),
+            App.Provider.create({
+                parser: App.KohaParser.create(),
+                baseUrl: 'http://hylte.bibkat.se/',
+                searchUrl: 'http://hylte.bibkat.se/cgi-bin/koha/opac-search.pl?q=@QUERY@&branch_group_limit=',
+                name: 'Hylte',
+                encoding: 'utf-8'
             })
         ]
     })
