@@ -20,14 +20,12 @@ App.SearchController = Ember.Controller.extend({
     },
 
     modelDidChange: function() {
-        console.log("Model updated");
         this.get('searchers').clear();
         this.updateSearchers();
     }.observes('model'),
 
     updateSearchers: function() {
         // Add any new providers
-        console.log('updateSearchers');
         if (this.get('model')) {
             var outerThis = this;
             this.get('controllers.providers.allProviders').filterBy('enabled', true).forEach(function(provider) {
@@ -45,7 +43,6 @@ App.SearchController = Ember.Controller.extend({
                     });
                     searcher.search();
                     outerThis.get('searchers').pushObject(searcher);
-                    console.log("Added searcher: " + searcher)
                 }
             });
 
@@ -60,7 +57,6 @@ App.SearchController = Ember.Controller.extend({
 
                 if (exists) {
                     outerThis.get('searchers').removeObject(searcher);
-                    console.log("Removed searcher: " + searcher)
                 }
             });
         }
