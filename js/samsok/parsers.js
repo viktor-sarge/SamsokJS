@@ -390,3 +390,47 @@ App.LibraParser = Ember.Object.extend({
         return hits;
     }
 });
+
+App.MicroMarcParser = Ember.Object.extend({
+    totalHits: null,
+
+    getHits: function(content, baseurl) {
+        var hits = [];
+        html = loadXml(content);
+
+        var totalHits = xpathString(html, "//span[contains(@id, 'LabelSearchHeader')]");
+        this.set('totalHits', totalHits);
+
+        var results = xpathNodes(html, "//tr[contains(@id, 'RadGridHitList')]");
+        var result = results.iterateNext();
+        while (result) {
+            var title = xpathString(result, ".//td[3]/a");
+            var author = xpathNodes(result, ".//td[3]/span").iterateNext().innerHTML;
+            console.log(author);
+            var authorRegex = /<br>(.*?)<span/g;
+            var match = authorRegex.exec(author);
+            if (match) {
+                author = match[1];
+            } else {
+                author = "";
+            }
+            var type = xpathString(result, ".//td[5]/a/@title");
+            var year = xpathString(result, ".//td[4]");
+            var url = baseurl + xpathString(result, ".//td[3]/a/@href");
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+
+            result = results.iterateNext();
+        }
+
+        return hits;
+    }
+});

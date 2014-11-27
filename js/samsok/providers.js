@@ -131,6 +131,25 @@ var providers = [
             })
         ]
     }),
+    App.ProviderGroup.create({
+        groupName: 'Mikromarc',
+        providers: [
+            App.Provider.create({
+                parser: App.MicroMarcParser.create(),
+                baseUrl: 'http://webbsok.mikromarc.se/Mikromarc3/web/',
+                searchUrl: 'http://webbsok.mikromarc.se/Mikromarc3/web/search.aspx?Unit=6471&db=bollebygd-fb&SC=FT&SW=@QUERY@&LB=FT&IN=&SU=19116&',
+                name: 'Bollebygd',
+                encoding: 'utf-8'
+            }),
+            App.Provider.create({
+                parser: App.MicroMarcParser.create(),
+                baseUrl: 'http://webbsok.mikromarc.se/Mikromarc3/web/',
+                searchUrl: 'http://webbsok.mikromarc.se/Mikromarc3/Web/search.aspx?Unit=6469&db=vargarda&SC=FT&SW=@QUERY@&LB=FT&IN=&SU=0&',
+                name: 'Vårgårda',
+                encoding: 'utf-8'
+            })
+        ]
+    })
 ];
 
 function isProviderEnabled(provider) {
