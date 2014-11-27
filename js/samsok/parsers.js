@@ -406,7 +406,6 @@ App.MicroMarcParser = Ember.Object.extend({
         while (result) {
             var title = xpathString(result, ".//td[3]/a");
             var author = xpathNodes(result, ".//td[3]/span").iterateNext().innerHTML;
-            console.log(author);
             var authorRegex = /<br>(.*?)<span/g;
             var match = authorRegex.exec(author);
             if (match) {
