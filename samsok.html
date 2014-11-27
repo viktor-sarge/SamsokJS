@@ -149,10 +149,12 @@
             <a {{bind-attr href="hit.url"}} class="list-group-item" target="_blank">
                 <h4 class="list-group-item-heading">{{hit.title}}</h4>
                 <p class="list-group-item-text">
-                    <div>{{hit.author}}</div>
-                    <div>{{hit.year}}</div>
-                    <div>{{hit.type}}</div>
-                    <div>{{hit.location}}</div>
+                    <div class="row"><div class="col-md-12">{{hit.author}}</div></div>
+                    <div class="row"><div class="col-md-12">{{hit.year}}</div></div>
+                    <div class="row">
+                        <div class="col-md-8">{{hit.type}}</div>
+                        <div class="col-md-4 text-right"><small>{{hit.location}}</small></div>
+                    </div>
                 </p>
             </a>
         {{/each}}

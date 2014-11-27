@@ -39,6 +39,10 @@ App.Searcher = Ember.Object.extend({
                 }
 
                 var searchHits = outerThis.get('provider').get('parser').getHits(data.content, outerThis.get('provider').get('baseUrl'));
+                var location = outerThis.get('provider').get('name');
+                searchHits.forEach(function(hit) {
+                    hit['location'] = location;
+                });
                 outerThis.set('searchHits', searchHits);
                 outerThis.set('isDone', true);
             } catch (err) {
