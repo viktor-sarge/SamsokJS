@@ -454,7 +454,7 @@ App.ArenaParser = Ember.Object.extend({
             this.set('totalHits', totalmatch[1]);
         } else {
             totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
-            totalmatch = totalRegex.exec(content);;
+            totalmatch = totalRegex.exec(content);
             if (totalmatch) {
                 this.set('totalHits', totalmatch[1]);
             }
