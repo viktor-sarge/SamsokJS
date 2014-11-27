@@ -26,7 +26,7 @@ App.Searcher = Ember.Object.extend({
         var outerThis = this;
 
         $.getJSON(proxyBaseUrl + "?url=" +
-                encodeURIComponent(this.get('provider').getSearchUrl(this.get('query').replace(' ', '+')))+
+                encodeURIComponent(this.get('provider').getSearchUrl(this.get('query').replace(' ', '%20')))+
                 "&encoding=" + this.get('provider').get('encoding') +
                 "&callback=?"
         )
