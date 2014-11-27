@@ -2,7 +2,7 @@ App.ProvidersController = Ember.Controller.extend({
     providers: null,
 
     init: function() {
-        this.set('providers', Ember.ArrayProxy.create({content: providers}));
+        this.set('providers', providers);
     },
 
     allProviders: function() {
@@ -13,5 +13,13 @@ App.ProvidersController = Ember.Controller.extend({
             });
         }
         return result;
-    }.property('providers')
+    }.property('providers'),
+
+    allEnabled: function(key, value) {
+        if (arguments.length === 1) /* get */ {
+            return this.get('allProviders').isEvery('enabled');
+        } else /* set */ {
+            this.get('allProviders').setEach('enabled', value);
+        }
+    }.property('allProviders.@each.enabled')
 });

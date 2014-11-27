@@ -192,6 +192,13 @@
                 {{/view}}
             {{/each}}
         {{/each}}
+        <h5>Alla</h5>
+        {{#view class="checkbox" tagName="div"}}
+            <label {{bind-attr for="view.checkboxView.elementId"}}>
+                {{input type="checkbox" checked=allEnabled viewName="checkboxView"}}
+                Markera/avmarkera alla
+            </label>
+        {{/view}}
         <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
         </div>
         </div>
