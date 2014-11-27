@@ -439,3 +439,49 @@ App.MicroMarcParser = Ember.Object.extend({
         return hits;
     }
 });
+
+App.ArenaParser = Ember.Object.extend({
+    totalHits: null,
+
+    getHits: function(content, baseurl) {
+        var hits = [];
+        html = loadXml(content);
+
+
+        var totalRegex = /<span class="feedbackPanelINFO">.*?(\d+).*?<\/span>/g;
+        var totalmatch = totalRegex.exec(content);
+        if (totalmatch) {
+            this.set('totalHits', totalmatch[1]);
+        } else {
+            totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
+            totalmatch = totalRegex.exec(content);;
+            if (totalmatch) {
+                this.set('totalHits', totalmatch[1]);
+            }
+        }
+
+        var results = xpathNodes(html, "//div[@class='arena-record-details']");
+        var result = results.iterateNext();
+        while (result) {
+            var title = xpathString(result, ".//div[@class='arena-record-title']/a/span");
+            var author = xpathString(result, ".//div[@class='arena-record-author']/span[@class='arena-value']");
+            var type = xpathString(result, ".//div[@class='arena-record-media']/span[@class='arena-value']");
+            var year = xpathString(result, ".//div[@class='arena-record-year']/span[@class='arena-value']");
+            var url = xpathString(result, ".//div[@class='arena-record-title']/a/@href");
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+
+            result = results.iterateNext();
+        }
+
+        return hits;
+    }
+});
