@@ -146,21 +146,34 @@
         {{input class="form-control" type="text" value=searchFilter placeholder="Sök i träfflistan"}}
         <div class="list-group">
         {{#each hit in searchHits}}
-            <a {{bind-attr href="hit.url"}} class="list-group-item" target="_blank">
-                <h4 class="list-group-item-heading">{{hit.title}}</h4>
-                <p class="list-group-item-text">
-                    <div class="row"><div class="col-md-12">{{hit.author}}</div></div>
-                    <div class="row"><div class="col-md-12">{{hit.year}}</div></div>
-                    <div class="row">
-                        <div class="col-md-8">{{hit.type}}</div>
-                        <div class="col-md-4 text-right"><small>{{hit.location}}</small></div>
-                    </div>
-                </p>
-            </a>
+            {{render "searchHit" hit}}
         {{/each}}
         </div>
 
         <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
+    </script>
+    
+    <script type="text/x-handlebars" id="searchHit">
+        <a {{bind-attr href="model.url"}} class="list-group-item" target="_blank">
+        <div class="row">
+            <div class="col-md-10 vcenter">
+                <h4 class="list-group-item-heading">{{model.title}}</h4>
+                <p class="list-group-item-text">
+                <div class="row"><div class="col-md-12">{{model.author}}</div></div>
+                <div class="row"><div class="col-md-12">{{model.year}}</div></div>
+                <div class="row">
+                    <div class="col-md-8">{{model.type}}</div>
+                    <div class="col-md-4 text-right"><small>{{model.location}}</small></div>
+                </div>
+                </p>
+            </div><!--
+            --><div class="col-md-2 text-center vcenter">
+                <button {{action 'openLibris'}} type="button" class="btn btn-link" aria-label="Libris">
+                <span class="glyphicon glyphicon-book" aria-hidden="true" style="font-size: 30px;"></span>
+                </button>
+            </div>
+        </div>
+        </a>
     </script>
 
     <script type="text/x-handlebars" id="providers">

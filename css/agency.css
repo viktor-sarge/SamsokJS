@@ -117,6 +117,41 @@ fieldset[disabled] .btn-primary.active {
     background-color: #fff;
 }
 
+.btn-link {
+    font-weight: normal;
+    color: #fed136;
+    border-radius: 0;
+    background-color: #fff;
+}
+.btn-link,
+.btn-link:active,
+.btn-link.active,
+.btn-link[disabled],
+fieldset[disabled] .btn-link {
+    background-color: transparent;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.btn-link,
+.btn-link:hover,
+.btn-link:focus,
+.btn-link:active {
+    border-color: transparent;
+}
+.btn-link:hover,
+.btn-link:focus {
+    color: #fec503;
+    text-decoration: underline;
+    background-color: transparent;
+}
+.btn-link[disabled]:hover,
+fieldset[disabled] .btn-link:hover,
+.btn-link[disabled]:focus,
+fieldset[disabled] .btn-link:focus {
+    color: #fed136;
+    text-decoration: none;
+}
+
 .btn-xl {
     padding: 20px 40px;
     border-color: #fed136;

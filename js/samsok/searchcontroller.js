@@ -148,3 +148,24 @@ App.SearchController = Ember.Controller.extend({
 });
 
 App.SearchView = Ember.View.extend(App.ScrollLinksMixin);
+
+App.SearchHitController = Ember.Controller.extend({
+    actions: {
+        openLibris: function() {
+            var url = "http://libris.kb.se/hitlist?d=libris&q=";
+            var fields = ['author', 'title', 'year'];
+            var params = [];
+            var outerThis = this;
+
+            fields.forEach(function(field) {
+                if (outerThis.get('model.' + field)) {
+                    params.push(outerThis.get('model.' + field));
+                }
+            });
+            url = url + params.join('+');
+
+
+            window.open(url, "_blank");
+        }
+    }
+});

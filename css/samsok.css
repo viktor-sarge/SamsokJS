@@ -7,3 +7,9 @@ input.form-control {
     font-size: 24px;
     height: auto;
 }
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
