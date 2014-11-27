@@ -11,16 +11,16 @@ function loadXml(xmlStr) {
     return xmlDoc;
 }
 
-function xpathString(node, expr) {
-    return document.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue.trim();
+function xpathString(doc, node, expr) {
+    return doc.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue.trim();
 }
 
-function xpathBoolean(node, expr) {
-    return document.evaluate(expr, node, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
+function xpathBoolean(doc, node, expr) {
+    return doc.evaluate(expr, node, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
 }
 
-function xpathNodes(node, expr) {
-    return document.evaluate(expr, node, null, XPathResult.ANY_TYPE, null);
+function xpathNodes(doc, node, expr) {
+    return doc.evaluate(expr, node, null, XPathResult.ANY_TYPE, null);
 }
 
 App.XsearchParser = Ember.Object.extend({
@@ -55,17 +55,17 @@ App.SsbParser = Ember.Object.extend({
         var hits = [];
             html = loadXml(content);
 
-        var totalHits = xpathString(html, "//div[@id='results-filter']/p[@class='total']/em[3]");
+        var totalHits = xpathString(html, html, "//div[@id='results-filter']/p[@class='total']/em[3]");
         this.set('totalHits', totalHits);
 
-        var results = xpathNodes(html, "//ol[@class='results-icon']//div[string(number(@id)) != 'NaN' and @class='row-fluid']");
+        var results = xpathNodes(html, html, "//ol[@class='results-icon']//div[string(number(@id)) != 'NaN' and @class='row-fluid']");
         var result = results.iterateNext();
         while (result) {
-            var title = xpathString(result, ".//div[@class='title']/h2");
-            var author = xpathString(result, ".//span[@class='author']");
-            var type = xpathString(result, ".//span[@class='mediatype']");
-            var year = xpathString(result, ".//span[@class='year']");
-            var url = baseurl + xpathString(result, ".//div[@class='title']/h2/a/@href");
+            var title = xpathString(html, result, ".//div[@class='title']/h2");
+            var author = xpathString(html, result, ".//span[@class='author']");
+            var type = xpathString(html, result, ".//span[@class='mediatype']");
+            var year = xpathString(html, result, ".//span[@class='year']");
+            var url = baseurl + xpathString(html, result, ".//div[@class='title']/h2/a/@href");
             hits.push(
                 {
                     title: title,
@@ -90,7 +90,7 @@ App.GotlibParser = Ember.Object.extend({
         var hits = [];
         html = loadXml(content);
 
-        var totalHitsSpan = xpathString(html, "//span[@class='noResultsHideMessage']");
+        var totalHitsSpan = xpathString(html, html, "//span[@class='noResultsHideMessage']");
         if (totalHitsSpan.length > 0) {
             var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
             var match = hitsRegex.exec(totalHitsSpan);
@@ -100,20 +100,20 @@ App.GotlibParser = Ember.Object.extend({
         }
 
 
-        var results = xpathNodes(html, "//table[@class='browseResult']/tbody/tr");
+        var results = xpathNodes(html, html, "//table[@class='browseResult']/tbody/tr");
         var result = results.iterateNext();
         while (result) {
-            var isProgram = xpathBoolean(result, './/span[contains(@id, "programMediaTypeInsertComponent")]');
+            var isProgram = xpathBoolean(html, result, './/span[contains(@id, "programMediaTypeInsertComponent")]');
             if (isProgram) {
                 result = results.iterateNext();
                 continue;
             }
 
-            var title = xpathString(result, ".//div[@class='dpBibTitle']");
-            var author = xpathString(result, ".//div[@class='dpBibAuthor']");
-            var type = xpathString(result, ".//span[@class='itemMediaDescription']");
-            var year = xpathString(result, ".//span[@class='itemMediaYear']");
-            var url = baseurl + xpathString(result, ".//div[@class='dpBibTitle']/a/@href");
+            var title = xpathString(html, result, ".//div[@class='dpBibTitle']");
+            var author = xpathString(html, result, ".//div[@class='dpBibAuthor']");
+            var type = xpathString(html, result, ".//span[@class='itemMediaDescription']");
+            var year = xpathString(html, result, ".//span[@class='itemMediaYear']");
+            var url = baseurl + xpathString(html, result, ".//div[@class='dpBibTitle']/a/@href");
             hits.push(
                 {
                     title: title,
@@ -138,7 +138,7 @@ App.MalmoParser = Ember.Object.extend({
         var hits = [];
         html = loadXml(content);
 
-        var totalHitsSpan = xpathString(html, "//td[@class='browseHeaderData']");
+        var totalHitsSpan = xpathString(html, html, "//td[@class='browseHeaderData']");
         if (totalHitsSpan.length > 0) {
             var hitsRegex = /\d+-\d+ .*? (\d+)/g;
             var match = hitsRegex.exec(totalHitsSpan);
@@ -148,26 +148,26 @@ App.MalmoParser = Ember.Object.extend({
         }
 
 
-        var results = xpathNodes(html, "//tr[@class='briefCitRow']");
+        var results = xpathNodes(html, html, "//tr[@class='briefCitRow']");
         var result = results.iterateNext();
         while (result) {
-            var titletags = xpathNodes(result, ".//span[@class='briefcitTitle']/../a");
+            var titletags = xpathNodes(html, result, ".//span[@class='briefcitTitle']/../a");
             if (titletags.length == 0) {
                 result = results.iterateNext();
                 continue;
             }
             var titletagsFirst = titletags.iterateNext();
-            title = xpathString(titletagsFirst, ".");
-            var author = xpathString(result, ".//span[@class='briefcitTitle']");
-            var type = xpathString(result, ".//span[@class='briefcitMedia']/img[1]/@alt");
-            var year = xpathString(result, ".//table/tr/td[5]");
+            title = xpathString(html, titletagsFirst, ".");
+            var author = xpathString(html, result, ".//span[@class='briefcitTitle']");
+            var type = xpathString(html, result, ".//span[@class='briefcitMedia']/img[1]/@alt");
+            var year = xpathString(html, result, ".//table/tr/td[5]");
             if (year.length >= 4) {
                 year = year.substr(year.length - 4, year.length);
                 if (isNaN(year)) {
                     year = "";
                 }
             }
-            var url = baseurl + xpathString(titletagsFirst, "@href");
+            var url = baseurl + xpathString(html, titletagsFirst, "@href");
 
             hits.push(
                 {
@@ -193,7 +193,7 @@ App.OlaParser = Ember.Object.extend({
         var hits = [];
         html = loadXml(content);
 
-        var totalHitsSpan = xpathString(html, "//span[@class='result-text']");
+        var totalHitsSpan = xpathString(html, html, "//span[@class='result-text']");
         if (totalHitsSpan.length > 0) {
             var hitsRegex = /(\d+)/g;
             var match = hitsRegex.exec(totalHitsSpan);
@@ -202,15 +202,15 @@ App.OlaParser = Ember.Object.extend({
             }
         }
 
-        var results = xpathNodes(html, "//ol[@class='search-result clearfix']/li[@class='work-item clearfix']");
+        var results = xpathNodes(html, html, "//ol[@class='search-result clearfix']/li[@class='work-item clearfix']");
         var result = results.iterateNext();
         while (result) {
-            title = xpathString(result, ".//h3[@class='work-details-header']/a");
-            var author = xpathString(result, ".//div[@class='work-details']/p");
+            title = xpathString(html, result, ".//h3[@class='work-details-header']/a");
+            var author = xpathString(html, result, ".//div[@class='work-details']/p");
             if (author.toLowerCase().indexOf("av:") == 0) {
                 author = author.substr("av:".length, author.length);
             }
-            var types = xpathNodes(result, ".//ol[@class='media-type-list']/li/a/span");
+            var types = xpathNodes(html, result, ".//ol[@class='media-type-list']/li/a/span");
             var typesArray = [];
             var typesIter = types.iterateNext();
             while (typesIter) {
@@ -219,9 +219,9 @@ App.OlaParser = Ember.Object.extend({
             }
             var type = typesArray.join(' / ');
 
-            var year = xpathString(result, ".//h3[@class='work-details-header']/small");
+            var year = xpathString(html, result, ".//h3[@class='work-details-header']/small");
             year = year.substring(1, year.length - 1);
-            var url = baseurl + xpathString(result, ".//h3[@class='work-details-header']/a/@href");
+            var url = baseurl + xpathString(html, result, ".//h3[@class='work-details-header']/a/@href");
 
             hits.push(
                 {
@@ -247,7 +247,7 @@ App.KohaParser = Ember.Object.extend({
         var hits = [];
         html = loadXml(content);
 
-        var totalHitsSpan = xpathString(html, "//p[@id='numresults']");
+        var totalHitsSpan = xpathString(html, html, "//p[@id='numresults']");
         if (totalHitsSpan.length > 0) {
             var hitsRegex = /(\d+)/g;
             var match = hitsRegex.exec(totalHitsSpan);
@@ -256,19 +256,19 @@ App.KohaParser = Ember.Object.extend({
             }
         }
 
-        var results = xpathNodes(html, "//td[@class='bibliocol']");
+        var results = xpathNodes(html, html, "//td[@class='bibliocol']");
         var result = results.iterateNext();
         while (result) {
-            var title = xpathString(result, ".//a[@class='title']");
-            var author = xpathString(result, ".//span[@class='author']");
-            var type = xpathString(result, ".//span[@class='results_summary type']");
+            var title = xpathString(html, result, ".//a[@class='title']");
+            var author = xpathString(html, result, ".//span[@class='author']");
+            var type = xpathString(html, result, ".//span[@class='results_summary type']");
 
-            var publisher = xpathString(result, ".//span[@class='results_summary publisher']")
+            var publisher = xpathString(html, result, ".//span[@class='results_summary publisher']")
             var year = "";
             if (publisher.length >= 4 && !isNaN(publisher.substring(publisher.length - 4, publisher.length))) {
                 year = publisher.substring(publisher.length - 4, publisher.length);
             }
-            var url = baseurl + xpathString(result, ".//a[@class='title']/@href");
+            var url = baseurl + xpathString(html, result, ".//a[@class='title']/@href");
 
             hits.push(
                 {
@@ -294,7 +294,7 @@ App.MinabibliotekParser = Ember.Object.extend({
         var hits = [];
         html = loadXml(content);
 
-        var totalHitsSpan = xpathString(html, "//form[@id='SearchResultForm']/p[@class='information']");
+        var totalHitsSpan = xpathString(html, html, "//form[@id='SearchResultForm']/p[@class='information']");
         if (totalHitsSpan.length > 0) {
             var hitsRegex = /(\d+)/g;
             var match = hitsRegex.exec(totalHitsSpan);
@@ -303,15 +303,15 @@ App.MinabibliotekParser = Ember.Object.extend({
             }
         }
 
-        var results = xpathNodes(html, "//form[@id='MemorylistForm']/ol[@class='CS_list-container']/li");
+        var results = xpathNodes(html, html, "//form[@id='MemorylistForm']/ol[@class='CS_list-container']/li");
         var result = results.iterateNext();
         while (result) {
-            var title = xpathString(result, ".//h3[@class='title']/a");
-            var author = xpathString(result, ".//p[@class='author']");
+            var title = xpathString(html, result, ".//h3[@class='title']/a");
+            var author = xpathString(html, result, ".//p[@class='author']");
             if (author.toLowerCase().indexOf("av:") == 0) {
                 author = author.substr("av:".length, author.length);
             }
-            var types = xpathNodes(result, ".//ol[@class='media-type CS_clearfix']/li/a/span");
+            var types = xpathNodes(html, result, ".//ol[@class='media-type CS_clearfix']/li/a/span");
             var typesArray = [];
             var typesIter = types.iterateNext();
             while (typesIter) {
@@ -320,8 +320,8 @@ App.MinabibliotekParser = Ember.Object.extend({
             }
             var type = typesArray.join(' / ');
 
-            var year = xpathString(result, ".//span[@class='date']");
-            var url = baseurl + xpathString(result, ".//h3[@class='title']/a/@href");
+            var year = xpathString(html, result, ".//span[@class='date']");
+            var url = baseurl + xpathString(html, result, ".//h3[@class='title']/a/@href");
 
             hits.push(
                 {
@@ -347,7 +347,7 @@ App.LibraParser = Ember.Object.extend({
         var hits = [];
         html = loadXml(content);
 
-        var totalHitsSpan = xpathString(html, "//form[@name='FormPaging']/b[1]");
+        var totalHitsSpan = xpathString(html, html, "//form[@name='FormPaging']/b[1]");
         if (totalHitsSpan.length > 0) {
             var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
             var match = hitsRegex.exec(totalHitsSpan);
@@ -356,23 +356,23 @@ App.LibraParser = Ember.Object.extend({
             }
         }
 
-        var results = xpathNodes(html, "//form[@name='FormPaging']/table[@class='list']/tbody/tr[contains(@class, 'listLine')]");
+        var results = xpathNodes(html, html, "//form[@name='FormPaging']/table[@class='list']/tbody/tr[contains(@class, 'listLine')]");
         var result = results.iterateNext();
         while (result) {
-            var title = xpathString(result, ".//td[2]/a");
+            var title = xpathString(html, result, ".//td[2]/a");
             var author;
             if (!title) {
-                title = xpathString(result, ".//td[1]/a")
-                author = xpathString(result, ".//td[2]");
+                title = xpathString(html, result, ".//td[1]/a")
+                author = xpathString(html, result, ".//td[2]");
             } else {
-                author = xpathString(result, ".//td[1]");
+                author = xpathString(html, result, ".//td[1]");
             }
-            var type = xpathString(result, ".//td[5]/img/@alt");
+            var type = xpathString(html, result, ".//td[5]/img/@alt");
             if (!type) {
-                type = xpathString(result, ".//td[5]");
+                type = xpathString(html, result, ".//td[5]");
             }
-            var year = xpathString(result, ".//td[4]");
-            var url = baseurl + xpathString(result, ".//td[2]/a/@href");
+            var year = xpathString(html, result, ".//td[4]");
+            var url = baseurl + xpathString(html, result, ".//td[2]/a/@href");
 
             hits.push(
                 {
@@ -398,7 +398,7 @@ App.MicroMarcParser = Ember.Object.extend({
         var hits = [];
         html = loadXml(content);
 
-        var totalHitsSpan = xpathString(html, "//span[contains(@id, 'LabelSearchHeader')]");
+        var totalHitsSpan = xpathString(html, html, "//span[contains(@id, 'LabelSearchHeader')]");
         if (totalHitsSpan.length > 0) {
             var hitsRegex = /(\d+)/g;
             var match = hitsRegex.exec(totalHitsSpan);
@@ -407,11 +407,11 @@ App.MicroMarcParser = Ember.Object.extend({
             }
         }
 
-        var results = xpathNodes(html, "//tr[contains(@id, 'RadGridHitList')]");
+        var results = xpathNodes(html, html, "//tr[contains(@id, 'RadGridHitList')]");
         var result = results.iterateNext();
         while (result) {
-            var title = xpathString(result, ".//td[3]/a");
-            var author = xpathNodes(result, ".//td[3]/span").iterateNext().innerHTML;
+            var title = xpathString(html, result, ".//td[3]/a");
+            var author = xpathNodes(html, result, ".//td[3]/span").iterateNext().innerHTML;
             var authorRegex = /<br>(.*?)<span/g;
             var match = authorRegex.exec(author);
             if (match) {
@@ -419,9 +419,9 @@ App.MicroMarcParser = Ember.Object.extend({
             } else {
                 author = "";
             }
-            var type = xpathString(result, ".//td[5]/a/@title");
-            var year = xpathString(result, ".//td[4]");
-            var url = baseurl + xpathString(result, ".//td[3]/a/@href");
+            var type = xpathString(html, result, ".//td[5]/a/@title");
+            var year = xpathString(html, result, ".//td[4]");
+            var url = baseurl + xpathString(html, result, ".//td[3]/a/@href");
 
             hits.push(
                 {
@@ -460,14 +460,14 @@ App.ArenaParser = Ember.Object.extend({
             }
         }
 
-        var results = xpathNodes(html, "//div[@class='arena-record-details']");
+        var results = xpathNodes(html, html, "//div[@class='arena-record-details']");
         var result = results.iterateNext();
         while (result) {
-            var title = xpathString(result, ".//div[@class='arena-record-title']/a/span");
-            var author = xpathString(result, ".//div[@class='arena-record-author']/span[@class='arena-value']");
-            var type = xpathString(result, ".//div[@class='arena-record-media']/span[@class='arena-value']");
-            var year = xpathString(result, ".//div[@class='arena-record-year']/span[@class='arena-value']");
-            var url = xpathString(result, ".//div[@class='arena-record-title']/a/@href");
+            var title = xpathString(html, result, ".//div[@class='arena-record-title']/a/span");
+            var author = xpathString(html, result, ".//div[@class='arena-record-author']/span[@class='arena-value']");
+            var type = xpathString(html, result, ".//div[@class='arena-record-media']/span[@class='arena-value']");
+            var year = xpathString(html, result, ".//div[@class='arena-record-year']/span[@class='arena-value']");
+            var url = xpathString(html, result, ".//div[@class='arena-record-title']/a/@href");
 
             hits.push(
                 {
