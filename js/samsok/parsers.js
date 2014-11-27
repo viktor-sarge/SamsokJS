@@ -339,3 +339,54 @@ App.MinabibliotekParser = Ember.Object.extend({
         return hits;
     }
 });
+
+App.LibraParser = Ember.Object.extend({
+    totalHits: null,
+
+    getHits: function(content, baseurl) {
+        var hits = [];
+        html = loadXml(content);
+
+        var totalHitsSpan = xpathString(html, "//form[@name='FormPaging']/b[1]");
+        if (totalHitsSpan.length > 0) {
+            var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
+            var match = hitsRegex.exec(totalHitsSpan);
+            if (match) {
+                this.set('totalHits', match[1]);
+            }
+        }
+
+        var results = xpathNodes(html, "//form[@name='FormPaging']/table[@class='list']/tbody/tr[contains(@class, 'listLine')]");
+        var result = results.iterateNext();
+        while (result) {
+            var title = xpathString(result, ".//td[2]/a");
+            var author;
+            if (!title) {
+                title = xpathString(result, ".//td[1]/a")
+                author = xpathString(result, ".//td[2]");
+            } else {
+                author = xpathString(result, ".//td[1]");
+            }
+            var type = xpathString(result, ".//td[5]/img/@alt");
+            if (!type) {
+                type = xpathString(result, ".//td[5]");
+            }
+            var year = xpathString(result, ".//td[4]");
+            var url = baseurl + xpathString(result, ".//td[2]/a/@href");
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+
+            result = results.iterateNext();
+        }
+
+        return hits;
+    }
+});

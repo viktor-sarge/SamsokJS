@@ -97,7 +97,40 @@ var providers = [
                 encoding: 'utf-8'
             })
         ]
-    })
+    }),
+    App.ProviderGroup.create({
+        groupName: 'Libra',
+        providers: [
+            App.Provider.create({
+                parser: App.LibraParser.create(),
+                baseUrl: 'http://opac.laholm.axiell.com/opac/',
+                searchUrl: 'http://opac.laholm.axiell.com/opac/search_result.aspx?TextFritext=',
+                name: 'Laholm',
+                encoding: 'utf-8'
+            }),
+            App.Provider.create({
+                parser: App.LibraParser.create(),
+                baseUrl: 'http://www5.falkenberg.se/opac/opac/',
+                searchUrl: 'http://www5.falkenberg.se/opac/opac/search_result.aspx?TextFritext=',
+                name: 'Falkenberg',
+                encoding: 'utf-8'
+            }),
+            App.Provider.create({
+                parser: App.LibraParser.create(),
+                baseUrl: 'http://bibold.kungsbacka.se/opac/',
+                searchUrl: 'http://bibold.kungsbacka.se/opac/search_result.aspx?TextFritext=',
+                name: 'Kungsbacka',
+                encoding: 'utf-8'
+            }),
+            App.Provider.create({
+                parser: App.LibraParser.create(),
+                baseUrl: 'http://bib.varberg.se/opac/',
+                searchUrl: 'http://bib.varberg.se/opac/search_result.aspx?TextFritext=',
+                name: 'Varberg',
+                encoding: 'utf-8'
+            })
+        ]
+    }),
 ];
 
 function isProviderEnabled(provider) {
