@@ -398,8 +398,14 @@ App.MicroMarcParser = Ember.Object.extend({
         var hits = [];
         html = loadXml(content);
 
-        var totalHits = xpathString(html, "//span[contains(@id, 'LabelSearchHeader')]");
-        this.set('totalHits', totalHits);
+        var totalHitsSpan = xpathString(html, "//span[contains(@id, 'LabelSearchHeader')]");
+        if (totalHitsSpan.length > 0) {
+            var hitsRegex = /(\d+)/g;
+            var match = hitsRegex.exec(totalHitsSpan);
+            if (match) {
+                this.set('totalHits', match[1]);
+            }
+        }
 
         var results = xpathNodes(html, "//tr[contains(@id, 'RadGridHitList')]");
         var result = results.iterateNext();
