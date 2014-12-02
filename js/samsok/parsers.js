@@ -12,15 +12,24 @@ function loadXml(xmlStr) {
 }
 
 function xpathString(doc, node, expr) {
-    return doc.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue.trim();
+    if (doc.evaluate)
+        return doc.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue.trim();
+    else
+        return document.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue.trim();
 }
 
 function xpathBoolean(doc, node, expr) {
-    return doc.evaluate(expr, node, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
+    if (doc.evaluate)
+        return doc.evaluate(expr, node, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
+    else
+        return document.evaluate(expr, node, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
 }
 
 function xpathNodes(doc, node, expr) {
-    return doc.evaluate(expr, node, null, XPathResult.ANY_TYPE, null);
+    if (doc.evaluate)
+        return doc.evaluate(expr, node, null, XPathResult.ANY_TYPE, null);
+    else
+        return document.evaluate(expr, node, null, XPathResult.ANY_TYPE, null);
 }
 
 App.XsearchParser = Ember.Object.extend({
