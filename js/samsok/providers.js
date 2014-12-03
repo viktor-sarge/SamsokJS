@@ -220,27 +220,20 @@ var providers = [
     })
 ];
 
-function isProviderEnabled(provider) {
-    if (!Modernizr.localstorage) {
-        return true;
-    }
-    if (!window.localStorage['disabledProviders']) {
-        return true;
-    }
+$.cookie.json = true;
 
-    var disabledProviders = JSON.parse(window.localStorage["disabledProviders"]);
-    return disabledProviders.indexOf(provider) == -1;
+function isProviderEnabled(provider) {
+    var disabledProviders = $.cookie('disabledProviders');
+    if (disabledProviders != null)
+        return disabledProviders.indexOf(provider) == -1;
+    else
+        return true;
 }
 
 function setProviderEnabled(provider, enabled) {
-    if (!Modernizr.localstorage) {
-        return;
-    }
-
-    var disabledProviders = [];
-    if (window.localStorage['disabledProviders']) {
-        disabledProviders = JSON.parse(window.localStorage["disabledProviders"]);
-    }
+    var disabledProviders = $.cookie('disabledProviders');
+    if (!disabledProviders)
+        disabledProviders = [];
 
     if (!enabled) {
         if (disabledProviders.indexOf(provider) == -1) {
@@ -251,5 +244,6 @@ function setProviderEnabled(provider, enabled) {
             disabledProviders.splice(disabledProviders.indexOf(provider), 1);
         }
     }
-    window.localStorage['disabledProviders'] = JSON.stringify(disabledProviders);
+
+    var disabledProviders = $.cookie('disabledProviders', disabledProviders);
 }
