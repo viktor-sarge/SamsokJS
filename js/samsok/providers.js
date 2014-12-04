@@ -237,12 +237,9 @@ $.cookie.json = true;
 
 function getDisabledProviders() {
     if (isMsie() || !Modernizr.localstorage)
-        return $.cookie('disabledProviders');
+        return $.cookie('disabledProviders') || [];
     else {
-        if (!window.localStorage['disabledProviders'])
-            return [];
-
-        return JSON.parse(window.localStorage["disabledProviders"]);
+        return JSON.parse(window.localStorage["disabledProviders"]) || [];
     }
 }
 
