@@ -220,20 +220,47 @@ var providers = [
     })
 ];
 
+function isMsie() {
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE ");
+
+    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))
+        return true;
+    else
+        return false;
+}
+
 $.cookie.json = true;
 
+// Use cookies for MSIE, localStorage otherwise when available. This is because MSIE won't allow localStorage when running on
+// file://, and Chrome won't allow cookies when running from file://
+
+function getDisabledProviders() {
+    if (isMsie() || !Modernizr.localstorage)
+        return $.cookie('disabledProviders');
+    else {
+        if (!window.localStorage['disabledProviders'])
+            return [];
+
+        return JSON.parse(window.localStorage["disabledProviders"]);
+    }
+}
+
+function setDisabledProviders(disabledProviders) {
+    if (isMsie() || !Modernizr.localstorage)
+        $.cookie('disabledProviders', disabledProviders);
+    else {
+        window.localStorage['disabledProviders'] = JSON.stringify(disabledProviders);
+    }
+}
+
 function isProviderEnabled(provider) {
-    var disabledProviders = $.cookie('disabledProviders');
-    if (disabledProviders != null)
-        return disabledProviders.indexOf(provider) == -1;
-    else
-        return true;
+    var disabledProviders = getDisabledProviders();
+    return disabledProviders.indexOf(provider) == -1;
 }
 
 function setProviderEnabled(provider, enabled) {
-    var disabledProviders = $.cookie('disabledProviders');
-    if (!disabledProviders)
-        disabledProviders = [];
+    var disabledProviders = getDisabledProviders();
 
     if (!enabled) {
         if (disabledProviders.indexOf(provider) == -1) {
@@ -245,5 +272,5 @@ function setProviderEnabled(provider, enabled) {
         }
     }
 
-    var disabledProviders = $.cookie('disabledProviders', disabledProviders);
+    setDisabledProviders(disabledProviders);
 }
