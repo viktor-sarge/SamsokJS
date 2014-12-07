@@ -1,6 +1,3 @@
-// Install Wicked Good XPath first of all - gives XPath support in MSIE
-wgxpath.install();
-
 window.App = Ember.Application.create();
 
 function scrollToSearchresult() {

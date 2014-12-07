@@ -1,182 +1,131 @@
-function loadXml(xmlStr) {
-    var parser, xmlDoc;
-    if(window.DOMParser) {
-        parser = new DOMParser();
-        xmlDoc = parser.parseFromString(xmlStr, "text/html");
-    } else {
-        xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.async=false;
-        xmlDoc.loadXML(xmlStr);
-    }
-    return xmlDoc;
-}
+// These are the parsers, the functions that do all the heavy lifting.
+// Note that they must be able to run both in a Web Worker thread and from
+// the main thread, so any libraries they use must be referenced both from
+// webworker.js and samsok.html, and all the usual restrictions for Web Workers
+// apply (i.e. no document or window objects, no DOM, no Ember, no shared data, etc).
 
-function xpathString(doc, node, expr) {
-    if (doc.evaluate)
-        return doc.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue.trim();
-    else
-        return document.evaluate(expr, node, null, XPathResult.STRING_TYPE, null).stringValue.trim();
-}
+var XsearchParser = function(content, baseurl) {
+    var hits = [];
 
-function xpathBoolean(doc, node, expr) {
-    if (doc.evaluate)
-        return doc.evaluate(expr, node, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
-    else
-        return document.evaluate(expr, node, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
-}
+    var js = JSON.parse(content)['xsearch'];
+    var totalHits = js['records'];
 
-function xpathNodes(doc, node, expr) {
-    if (doc.evaluate)
-        return doc.evaluate(expr, node, null, XPathResult.ANY_TYPE, null);
-    else
-        return document.evaluate(expr, node, null, XPathResult.ANY_TYPE, null);
-}
-
-App.XsearchParser = Ember.Object.extend({
-    totalHits: null,
-
-    getHits: function(content, baseurl) {
-        var hits = [];
-
-        var js = jQuery.parseJSON(content)['xsearch'];
-        this.set('totalHits', js['records']);
-
-        js['list'].forEach(function(result) {
-            hits.push(
-                {
-                    title: result['title'],
-                    author: result['creator'],
-                    type: result['type'],
-                    year: result['date'],
-                    url: result['identifier']
-                }
-            );
-        });
-
-        return hits;
-    }
-});
-
-App.SsbParser = Ember.Object.extend({
-    totalHits: null,
-
-    getHits: function(content, baseurl) {
-        var hits = [];
-            html = loadXml(content);
-
-        var totalHits = xpathString(html, html, "//div[@id='results-filter']/p[@class='total']/em[3]");
-        this.set('totalHits', totalHits);
-
-        var results = xpathNodes(html, html, "//ol[@class='results-icon']//div[string(number(@id)) != 'NaN' and @class='row-fluid']");
-        var result = results.iterateNext();
-        while (result) {
-            var title = xpathString(html, result, ".//div[@class='title']/h2");
-            var author = xpathString(html, result, ".//span[@class='author']");
-            var type = xpathString(html, result, ".//span[@class='mediatype']");
-            var year = xpathString(html, result, ".//span[@class='year']");
-            var url = baseurl + xpathString(html, result, ".//div[@class='title']/h2/a/@href");
-            hits.push(
-                {
-                    title: title,
-                    author: author,
-                    type: type,
-                    year: year,
-                    url: url
-                }
-            );
-
-            result = results.iterateNext();
-        }
-
-        return hits;
-    }
-});
-
-App.GotlibParser = Ember.Object.extend({
-    totalHits: null,
-
-    getHits: function(content, baseurl) {
-        var hits = [];
-        html = loadXml(content);
-
-        var totalHitsSpan = xpathString(html, html, "//span[@class='noResultsHideMessage']");
-        if (totalHitsSpan.length > 0) {
-            var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
-            var match = hitsRegex.exec(totalHitsSpan);
-            if (match) {
-                this.set('totalHits', match[1]);
+    js['list'].forEach(function(result) {
+        hits.push(
+            {
+                title: result['title'],
+                author: result['creator'],
+                type: result['type'],
+                year: result['date'],
+                url: result['identifier']
             }
-        }
+        );
+    });
 
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};
 
-        var results = xpathNodes(html, html, "//table[@class='browseResult']/tbody/tr");
-        var result = results.iterateNext();
-        while (result) {
-            var isProgram = xpathBoolean(html, result, './/span[contains(@id, "programMediaTypeInsertComponent")]');
-            if (isProgram) {
-                result = results.iterateNext();
-                continue;
+var SsbParser = function(content, baseurl) {
+    var hits = [],
+        $ = cheerio.load(content);
+
+    var totalHits = $('div#results-filter p.total em').eq(2).text().trim();
+
+    $('ol.results-icon div.row-fluid').filter(isNumeric).each(function(i, element) {
+        var result = $(this);
+        var title = result.find('div.title h2').text().trim();
+        var author = result.find('span.author').text().trim();
+        var type = result.find('span.mediatype').text().trim();
+        var year = result.find('span.year').text().trim();
+        var url = baseurl + result.find('div.title h2 a').attr('href');
+        hits.push(
+            {
+                title: title,
+                author: author,
+                type: type,
+                year: year,
+                url: url
             }
+        );
+    });
 
-            var title = xpathString(html, result, ".//div[@class='dpBibTitle']");
-            var author = xpathString(html, result, ".//div[@class='dpBibAuthor']");
-            var type = xpathString(html, result, ".//span[@class='itemMediaDescription']");
-            var year = xpathString(html, result, ".//span[@class='itemMediaYear']");
-            var url = baseurl + xpathString(html, result, ".//div[@class='dpBibTitle']/a/@href");
-            hits.push(
-                {
-                    title: title,
-                    author: author,
-                    type: type,
-                    year: year,
-                    url: url
-                }
-            );
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};
 
-            result = results.iterateNext();
+var GotlibParser = function(content, baseurl) {
+    var hits = [],
+        $ = cheerio.load(content);
+
+    var totalHits;
+    var totalHitsSpan = $('span.noResultsHideMessage');
+    if (totalHitsSpan.length > 0) {
+        var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
+        var match = hitsRegex.exec(totalHitsSpan);
+        if (match) {
+            totalHits = match[1];
         }
-
-        return hits;
     }
-});
 
-App.MalmoParser = Ember.Object.extend({
-    totalHits: null,
 
-    getHits: function(content, baseurl) {
-        var hits = [];
-        html = loadXml(content);
-
-        var totalHitsSpan = xpathString(html, html, "//td[@class='browseHeaderData']");
-        if (totalHitsSpan.length > 0) {
-            var hitsRegex = /\d+-\d+ .*? (\d+)/g;
-            var match = hitsRegex.exec(totalHitsSpan);
-            if (match) {
-                this.set('totalHits', match[1]);
+    $('table.browseResult > tr').each(function(i, element) {
+        var result = $(this);
+        var title = result.find('div.dpBibTitle').text().trim();
+        var author = result.find('div.dpBibAuthor').text().trim();
+        var type = result.find('span.itemMediaDescription').text().trim();
+        var year = result.find('span.itemMediaYear').text().trim();
+        var url = baseurl + result.find('div.dpBibTitle a').attr('href');
+        hits.push(
+            {
+                title: title,
+                author: author,
+                type: type,
+                year: year,
+                url: url
             }
+        );
+    });
+
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};
+
+var MalmoParser = function(content, baseurl) {
+    var hits = [],
+        $ = cheerio.load(content);
+
+    var totalHits;
+    var totalHitsSpan = $('td.browseHeaderData');
+    if (totalHitsSpan.length > 0) {
+        var hitsRegex = /\d+-\d+ .*? (\d+)/g;
+        var match = hitsRegex.exec(totalHitsSpan);
+        if (match) {
+            totalHits = match[1];
         }
+    }
 
-
-        var results = xpathNodes(html, html, "//tr[@class='briefCitRow']");
-        var result = results.iterateNext();
-        while (result) {
-            var titletags = xpathNodes(html, result, ".//span[@class='briefcitTitle']/../a");
-            if (titletags.length == 0) {
-                result = results.iterateNext();
-                continue;
-            }
-            var titletagsFirst = titletags.iterateNext();
-            title = xpathString(html, titletagsFirst, ".");
-            var author = xpathString(html, result, ".//span[@class='briefcitTitle']");
-            var type = xpathString(html, result, ".//span[@class='briefcitMedia']/img[1]/@alt");
-            var year = xpathString(html, result, ".//table/tr/td[5]");
+    $('tr.briefCitRow').each(function(i, element) {
+        var result = $(this);
+        var titletags = $('span.briefcitTitle').parent().find('a');
+        if (titletags.length > 0) {
+            var title = titletags.eq(0).text().trim();
+            var author = result.find('span.briefcitTitle').text().trim();
+            var type = result.find('span.briefcitMedia > img').eq(0).attr('alt');
+            var year = result.find('table tr td').eq(5).text().trim();
             if (year.length >= 4) {
                 year = year.substr(year.length - 4, year.length);
                 if (isNaN(year)) {
                     year = "";
                 }
             }
-            var url = baseurl + xpathString(html, titletagsFirst, "@href");
+            var url = baseurl + titletags.eq(0).attr('href');
 
             hits.push(
                 {
@@ -187,310 +136,283 @@ App.MalmoParser = Ember.Object.extend({
                     url: url
                 }
             );
-
-            result = results.iterateNext();
         }
+    });
 
-        return hits;
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};
+
+var OlaParser = function(content, baseurl) {
+    var hits = [],
+        $ = cheerio.load(content);
+
+    var totalHits;
+    var totalHitsSpan = $('span.result-text');
+    if (totalHitsSpan.length > 0) {
+        var hitsRegex = / (\d+) /g;
+        var match = hitsRegex.exec(totalHitsSpan);
+        if (match) {
+            totalHits = match[1];
+        }
     }
-});
 
-App.OlaParser = Ember.Object.extend({
-    totalHits: null,
-
-    getHits: function(content, baseurl) {
-        var hits = [];
-        html = loadXml(content);
-
-        var totalHitsSpan = xpathString(html, html, "//span[@class='result-text']");
-        if (totalHitsSpan.length > 0) {
-            var hitsRegex = /(\d+)/g;
-            var match = hitsRegex.exec(totalHitsSpan);
-            if (match) {
-                this.set('totalHits', match[1]);
-            }
+    $('ol.search-result li.work-item').each(function(i, element) {
+        var result = $(this);
+        var title = result.find('h3.work-details-header a').text().trim();
+        var author = result.find('div.work-details p').text().trim();
+        if (author.toLowerCase().indexOf("av:") == 0) {
+            author = author.substr("av:".length, author.length).trim();
         }
+        var typesArray = [];
+        result.find('ol.media-type-list li a span').each(function(i, t) {
+            typesArray.push($(t).text().trim());
+        });
+        var type = typesArray.join(' / ');
 
-        var results = xpathNodes(html, html, "//ol[@class='search-result clearfix']/li[@class='work-item clearfix']");
-        var result = results.iterateNext();
-        while (result) {
-            title = xpathString(html, result, ".//h3[@class='work-details-header']/a");
-            var author = xpathString(html, result, ".//div[@class='work-details']/p");
-            if (author.toLowerCase().indexOf("av:") == 0) {
-                author = author.substr("av:".length, author.length);
+        var year = result.find('h3.work-details-header small').text().trim();
+        year = year.substring(1, year.length - 1);
+        var url = baseurl + result.find('h3.work-details-header a').attr('href');
+
+        hits.push(
+            {
+                title: title,
+                author: author,
+                type: type,
+                year: year,
+                url: url
             }
-            var types = xpathNodes(html, result, ".//ol[@class='media-type-list']/li/a/span");
-            var typesArray = [];
-            var typesIter = types.iterateNext();
-            while (typesIter) {
-                typesArray.push(typesIter.stringValue);
-                typesIter = types.iterateNext();
-            }
-            var type = typesArray.join(' / ');
+        );
+    });
 
-            var year = xpathString(html, result, ".//h3[@class='work-details-header']/small");
-            year = year.substring(1, year.length - 1);
-            var url = baseurl + xpathString(html, result, ".//h3[@class='work-details-header']/a/@href");
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};
 
-            hits.push(
-                {
-                    title: title,
-                    author: author,
-                    type: type,
-                    year: year,
-                    url: url
-                }
-            );
+var KohaParser = function(content, baseurl) {
+    var hits = [],
+        $ = cheerio.load(content);
 
-            result = results.iterateNext();
+    var totalHits;
+    var totalHitsSpan = $('p#numresults');
+    if (totalHitsSpan.length > 0) {
+        var hitsRegex = / (\d+) /g;
+        var match = hitsRegex.exec(totalHitsSpan);
+        if (match) {
+            totalHits = match[1];
         }
-
-        return hits;
     }
-});
 
-App.KohaParser = Ember.Object.extend({
-    totalHits: null,
-
-    getHits: function(content, baseurl) {
-        var hits = [];
-        html = loadXml(content);
-
-        var totalHitsSpan = xpathString(html, html, "//p[@id='numresults']");
-        if (totalHitsSpan.length > 0) {
-            var hitsRegex = /(\d+)/g;
-            var match = hitsRegex.exec(totalHitsSpan);
-            if (match) {
-                this.set('totalHits', match[1]);
-            }
+    $('td.bibliocol').each(function(i, element) {
+        var result = $(this);
+        var title = result.find('a.title').text().trim();
+        var author = result.find('span.author').text().trim();
+        var type = result.find('span.results_summary.type').text().trim();
+        var publisher = result.find('span.results_summary.publisher').text().trim();
+        var year = "";
+        if (publisher.length >= 4 && !isNaN(publisher.substring(publisher.length - 4, publisher.length))) {
+            year = publisher.substring(publisher.length - 4, publisher.length);
         }
+        var url = baseurl + result.find('a.title').attr('href');
 
-        var results = xpathNodes(html, html, "//td[@class='bibliocol']");
-        var result = results.iterateNext();
-        while (result) {
-            var title = xpathString(html, result, ".//a[@class='title']");
-            var author = xpathString(html, result, ".//span[@class='author']");
-            var type = xpathString(html, result, ".//span[@class='results_summary type']");
-
-            var publisher = xpathString(html, result, ".//span[@class='results_summary publisher']")
-            var year = "";
-            if (publisher.length >= 4 && !isNaN(publisher.substring(publisher.length - 4, publisher.length))) {
-                year = publisher.substring(publisher.length - 4, publisher.length);
+        hits.push(
+            {
+                title: title,
+                author: author,
+                type: type,
+                year: year,
+                url: url
             }
-            var url = baseurl + xpathString(html, result, ".//a[@class='title']/@href");
+        );
+    });
 
-            hits.push(
-                {
-                    title: title,
-                    author: author,
-                    type: type,
-                    year: year,
-                    url: url
-                }
-            );
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};
 
-            result = results.iterateNext();
+var MinabibliotekParser = function(content, baseurl) {
+    var hits = [],
+        $ = cheerio.load(content);
+
+    var totalHits;
+    var totalHitsSpan = $('form#SearchResultForm p.information');
+    if (totalHitsSpan.length > 0) {
+        var hitsRegex = / (\d+) /g;
+        var match = hitsRegex.exec(totalHitsSpan);
+        if (match) {
+            totalHits = match[1];
         }
-
-        return hits;
     }
-});
 
-App.MinabibliotekParser = Ember.Object.extend({
-    totalHits: null,
-
-    getHits: function(content, baseurl) {
-        var hits = [];
-        html = loadXml(content);
-
-        var totalHitsSpan = xpathString(html, html, "//form[@id='SearchResultForm']/p[@class='information']");
-        if (totalHitsSpan.length > 0) {
-            var hitsRegex = /(\d+)/g;
-            var match = hitsRegex.exec(totalHitsSpan);
-            if (match) {
-                this.set('totalHits', match[1]);
-            }
+    $('form#MemorylistForm > ol.CS_list-container > li').each(function(i, element) {
+        var result = $(this);
+        var title = result.find('h3.title a').text().trim();
+        var author = result.find('p.author').text().trim();
+        if (author.toLowerCase().indexOf("av:") == 0) {
+            author = author.substr("av:".length, author.length).trim();
         }
 
-        var results = xpathNodes(html, html, "//form[@id='MemorylistForm']/ol[@class='CS_list-container']/li");
-        var result = results.iterateNext();
-        while (result) {
-            var title = xpathString(html, result, ".//h3[@class='title']/a");
-            var author = xpathString(html, result, ".//p[@class='author']");
-            if (author.toLowerCase().indexOf("av:") == 0) {
-                author = author.substr("av:".length, author.length);
+        var typesArray = [];
+        result.find('ol.media-type li a span').each(function(i, t) {
+            typesArray.push($(t).text().trim());
+        });
+        var type = typesArray.join(' / ');
+
+        var year = result.find('span.date').text().trim();
+        var url = baseurl + result.find('h2.title a').attr('href');
+
+        hits.push(
+            {
+                title: title,
+                author: author,
+                type: type,
+                year: year,
+                url: url
             }
-            var types = xpathNodes(html, result, ".//ol[@class='media-type CS_clearfix']/li/a/span");
-            var typesArray = [];
-            var typesIter = types.iterateNext();
-            while (typesIter) {
-                typesArray.push(typesIter.stringValue);
-                typesIter = types.iterateNext();
-            }
-            var type = typesArray.join(' / ');
+        );
+    });
 
-            var year = xpathString(html, result, ".//span[@class='date']");
-            var url = baseurl + xpathString(html, result, ".//h3[@class='title']/a/@href");
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};
 
-            hits.push(
-                {
-                    title: title,
-                    author: author,
-                    type: type,
-                    year: year,
-                    url: url
-                }
-            );
+var LibraParser = function(content, baseurl) {
+    var hits = [],
+        $ = cheerio.load(content);
 
-            result = results.iterateNext();
+    var totalHits;
+    var totalHitsSpan = $('form[name=FormPaging] b').eq(0);
+    if (totalHitsSpan.length > 0) {
+        var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
+        var match = hitsRegex.exec(totalHitsSpan);
+        if (match) {
+            totalHits = match[1];
         }
-
-        return hits;
     }
-});
 
-App.LibraParser = Ember.Object.extend({
-    totalHits: null,
-
-    getHits: function(content, baseurl) {
-        var hits = [];
-        html = loadXml(content);
-
-        var totalHitsSpan = xpathString(html, html, "//form[@name='FormPaging']/b[1]");
-        if (totalHitsSpan.length > 0) {
-            var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
-            var match = hitsRegex.exec(totalHitsSpan);
-            if (match) {
-                this.set('totalHits', match[1]);
-            }
-        }
-
-        var results = xpathNodes(html, html, "//form[@name='FormPaging']/table[@class='list']/tbody/tr[contains(@class, 'listLine')]");
-        var result = results.iterateNext();
-        while (result) {
-            var title = xpathString(html, result, ".//td[2]/a");
-            var author;
-            if (!title) {
-                title = xpathString(html, result, ".//td[1]/a")
-                author = xpathString(html, result, ".//td[2]");
-            } else {
-                author = xpathString(html, result, ".//td[1]");
-            }
-            var type = xpathString(html, result, ".//td[5]/img/@alt");
-            if (!type) {
-                type = xpathString(html, result, ".//td[5]");
-            }
-            var year = xpathString(html, result, ".//td[4]");
-            var url = baseurl + xpathString(html, result, ".//td[2]/a/@href");
-
-            hits.push(
-                {
-                    title: title,
-                    author: author,
-                    type: type,
-                    year: year,
-                    url: url
-                }
-            );
-
-            result = results.iterateNext();
-        }
-
-        return hits;
-    }
-});
-
-App.MicroMarcParser = Ember.Object.extend({
-    totalHits: null,
-
-    getHits: function(content, baseurl) {
-        var hits = [];
-        html = loadXml(content);
-
-        var totalHitsSpan = xpathString(html, html, "//span[contains(@id, 'LabelSearchHeader')]");
-        if (totalHitsSpan.length > 0) {
-            var hitsRegex = /(\d+)/g;
-            var match = hitsRegex.exec(totalHitsSpan);
-            if (match) {
-                this.set('totalHits', match[1]);
-            }
-        }
-
-        var results = xpathNodes(html, html, "//tr[contains(@id, 'RadGridHitList')]");
-        var result = results.iterateNext();
-        while (result) {
-            var title = xpathString(html, result, ".//td[3]/a");
-            var author = xpathNodes(html, result, ".//td[3]/span").iterateNext().innerHTML;
-            var authorRegex = /<br>(.*?)<span/g;
-            var match = authorRegex.exec(author);
-            if (match) {
-                author = match[1];
-            } else {
-                author = "";
-            }
-            var type = xpathString(html, result, ".//td[5]/a/@title");
-            var year = xpathString(html, result, ".//td[4]");
-            var url = baseurl + xpathString(html, result, ".//td[3]/a/@href");
-
-            hits.push(
-                {
-                    title: title,
-                    author: author,
-                    type: type,
-                    year: year,
-                    url: url
-                }
-            );
-
-            result = results.iterateNext();
-        }
-
-        return hits;
-    }
-});
-
-App.ArenaParser = Ember.Object.extend({
-    totalHits: null,
-
-    getHits: function(content, baseurl) {
-        var hits = [];
-        html = loadXml(content);
-
-
-        var totalRegex = /<span class="feedbackPanelINFO">.*?(\d+).*?<\/span>/g;
-        var totalmatch = totalRegex.exec(content);
-        if (totalmatch) {
-            this.set('totalHits', totalmatch[1]);
+    $('form[name=FormPaging] table.list tr[class*=listLine]').each(function(i, element) {
+        var result = $(this);
+        var title = result.find('td').eq(1).find('a').text().trim();
+        var author;
+        if (!title) {
+            title = result.find('td').eq(0).find('a').text().trim();
+            author = result.find('td').eq(1).text().trim();
         } else {
-            totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
-            totalmatch = totalRegex.exec(content);
-            if (totalmatch) {
-                this.set('totalHits', totalmatch[1]);
+            author = result.find('td').eq(0).text().trim();
+        }
+        var type = result.find('td').eq(4).find('img').attr('alt');
+        if (!type) {
+            type = result.find('td').eq(4).text().trim();
+        }
+        var year = result.find('td').eq(3).text().trim();
+        var url = baseurl + result.find('td').eq(1).find('a').attr('href');
+
+        hits.push(
+            {
+                title: title,
+                author: author,
+                type: type,
+                year: year,
+                url: url
             }
+        );
+    });
+
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};
+
+var MicroMarcParser = function(content, baseurl) {
+    var hits = [],
+        $ = cheerio.load(content);
+
+    var totalHits = $('span[id*=LabelSearchHeader] b').text().trim();
+
+    $('tr[id*=RadGridHitList]').each(function(i, element) {
+        var result = $(this);
+        var title = result.find('td').eq(2).find('a').text().trim();
+        var author = result.find('td').eq(2).html();
+        var authorRegex = /<br>(.*?)<span/g;
+        var match = authorRegex.exec(author);
+        if (match) {
+            // The little trick with the div is to render any HTML entities that we got by
+            // calling .html() instead of .text() above
+            author = $('<div></div>').html(match[1]).text();
+        } else {
+            author = "";
+        }
+        var type = result.find('td').eq(4).find('a').attr('title');
+        var year = result.find('td').eq(3).text().trim();
+        var url = result.find('td').eq(2).find('a').attr('href');
+        if (url.indexOf('http://') != 0) {
+            url = baseurl + url;
         }
 
-        var results = xpathNodes(html, html, "//div[@class='arena-record-details']");
-        var result = results.iterateNext();
-        while (result) {
-            var title = xpathString(html, result, ".//div[@class='arena-record-title']/a/span");
-            var author = xpathString(html, result, ".//div[@class='arena-record-author']/span[@class='arena-value']");
-            var type = xpathString(html, result, ".//div[@class='arena-record-media']/span[@class='arena-value']");
-            var year = xpathString(html, result, ".//div[@class='arena-record-year']/span[@class='arena-value']");
-            var url = xpathString(html, result, ".//div[@class='arena-record-title']/a/@href");
+        hits.push(
+            {
+                title: title,
+                author: author,
+                type: type,
+                year: year,
+                url: url
+            }
+        );
+    });
 
-            hits.push(
-                {
-                    title: title,
-                    author: author,
-                    type: type,
-                    year: year,
-                    url: url
-                }
-            );
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};
 
-            result = results.iterateNext();
+ArenaParser = function(content, baseurl) {
+    var hits = [],
+        $ = cheerio.load(content);
+
+    var totalHits;
+    var totalRegex = /<span class="feedbackPanelINFO">.*?(\d+).*?<\/span>/g;
+    var totalmatch = totalRegex.exec(content);
+    if (totalmatch) {
+        totalHits = totalmatch[1];
+    } else {
+        totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
+        totalmatch = totalRegex.exec(content);
+        if (totalmatch) {
+            totalHits = totalmatch[1];
         }
-
-        return hits;
     }
-});
+
+    $('div.arena-record-details').each(function(i, element) {
+        var result = $(this);
+        var title = result.find('div.arena-record-title a span').text().trim();
+        var author = result.find('div.arena-record-author span.arena-value').text().trim();
+        var type = result.find('div.arena-record-media span.arena-value').text().trim();
+        var year = result.find('div.arena-record-year span.arena-value').text().trim();
+        var url = result.find('div.arena-record-title a').attr('href');
+
+        hits.push(
+            {
+                title: title,
+                author: author,
+                type: type,
+                year: year,
+                url: url
+            }
+        );
+    });
+
+    return {
+        totalHits: totalHits,
+        hits: hits
+    };
+};

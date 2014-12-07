@@ -1,19 +1,70 @@
 var proxyBaseUrl = "http://samsokproxy.appspot.com/crossdomain";
 
+// Create a Web Worker from a function, which fully runs in the scope of a new
+//    Worker
+function spawnWorker(func, content, baseUrl, callback, errorhandler) {
+    // Stringify the code. Example:  (function(){/*logic*/}).call(self);
+    var code = 'self.postMessage((' + func + ').call(self, "' + escapeString(content) + '", "' + escapeString(baseUrl) + '"));';
+    try {
+        var worker = new Worker('js/samsok/webworker.js');
+    } catch(err) {
+        // This could fail because of an old browser that doesn't support web workers, or because of Chrome's
+        // security settings when running from file://
+        // Run it in the main thread instead!
+        try {
+            callback(func(content, baseUrl));
+        } catch (err) {
+            errorhandler(err);
+        }
+        return;
+    }
+    // Initialise worker
+    worker.onmessage = function(e) {
+        if (e.data.debug) {
+            console.log(JSON.parse(e.data.debug));
+        } else {
+            callback(e.data);
+        }
+    };
+    worker.onerror = errorhandler;
+    worker.postMessage(code);
+    return worker;
+}
+
+function escapeString(string) {
+    return ('' + string).replace(/["'\\\n\r\u2028\u2029]/g, function (character) {
+        // Escape all characters not included in SingleStringCharacters and
+        // DoubleStringCharacters on
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.4
+        switch (character) {
+            case '"':
+            case "'":
+            case '\\':
+                return '\\' + character;
+            // Four possible LineTerminator characters need to be escaped:
+            case '\n':
+                return '\\n';
+            case '\r':
+                return '\\r';
+            case '\u2028':
+                return '\\u2028';
+            case '\u2029':
+                return '\\u2029';
+        }
+    })
+}
+
 App.Searcher = Ember.Object.extend({
     provider: null,
     query: null,
     isDone: false,
     isFailed: false,
     searchHits: [],
+    totalHits: null,
 
     numberOfHits: function() {
         return this.get('searchHits').length;
     }.property('searchHits'),
-
-    totalHits: function() {
-        return this.get('provider').get('parser').get('totalHits');
-    }.property(),
 
     url: function() {
         return this.get('provider').getGotoUrl(this.get('query'));
@@ -31,24 +82,24 @@ App.Searcher = Ember.Object.extend({
                 "&callback=?"
         )
         .done(function(data) {
-            try {
-                if (!data.content) {
-                    outerThis.set('isFailed', true);
-                    outerThis.set('isDone', true);
-                    return;
-                }
-
-                var searchHits = outerThis.get('provider').get('parser').getHits(data.content, outerThis.get('provider').get('baseUrl'));
-                var location = outerThis.get('provider').get('name');
-                searchHits.forEach(function(hit) {
-                    hit['location'] = location;
-                });
-                outerThis.set('searchHits', searchHits);
-                outerThis.set('isDone', true);
-            } catch (err) {
+            if (!data.content) {
                 outerThis.set('isFailed', true);
                 outerThis.set('isDone', true);
+                return;
             }
+
+            var worker = spawnWorker(outerThis.get('provider').get('parser'), data.content, outerThis.get('provider').get('baseUrl'),
+                function(e) {
+                    outerThis.set('totalHits', e.totalHits);
+                    outerThis.set('searchHits', e.hits);
+                    outerThis.set('isFailed', false);
+                    outerThis.set('isDone', true);
+                }, function(e) {
+                    console.log(e);
+                    outerThis.set('isFailed', true);
+                    outerThis.set('isDone', true);
+                }
+            );
         })
         .fail(function() {
                 outerThis.set('isFailed', true);
