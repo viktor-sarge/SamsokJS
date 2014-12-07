@@ -1,4 +1,4 @@
-var proxyBaseUrl = "http://samsokproxy.appspot.com/crossdomain";
+var proxyBaseUrl = (location.protocol == 'https:' ? 'https:' : 'http:') + "//samsokproxy.appspot.com/crossdomain";
 
 // Create a Web Worker from a function, which fully runs in the scope of a new
 //    Worker
