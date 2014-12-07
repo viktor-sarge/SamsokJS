@@ -215,7 +215,7 @@ var providers = [
                 searchUrl: 'http://bibliotek.vaxjo.se/web/arena/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=4&p_p_col_id=column-1&p_p_col_pos=2&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
                 name: 'Växjö',
                 encoding: 'utf-8'
-            }),
+            })
         ]
     })
 ];
@@ -236,16 +236,24 @@ $.cookie.json = true;
 // file://, and Chrome won't allow cookies when running from file://
 
 function getDisabledProviders() {
-    if (isMsie() || !Modernizr.localstorage)
-        return $.cookie('disabledProviders') || [];
-    else {
-        return JSON.parse(window.localStorage["disabledProviders"]) || [];
+    if (isMsie() || !Modernizr.localstorage) {
+        var disabledProviders = $.cookie('disabledProviders');
+        if (disabledProviders)
+            return disabledProviders;
+    } else {
+        if (window.localStorage['disabledProviders']) {
+            try {
+                return JSON.parse(window.localStorage["disabledProviders"]);
+            } catch (err) {
+            }
+        }
     }
+    return [];
 }
 
 function setDisabledProviders(disabledProviders) {
     if (isMsie() || !Modernizr.localstorage)
-        $.cookie('disabledProviders', disabledProviders);
+        $.cookie('disabledProviders', disabledProviders, { expires: 365 });
     else {
         window.localStorage['disabledProviders'] = JSON.stringify(disabledProviders);
     }
