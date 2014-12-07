@@ -95,7 +95,6 @@ App.Searcher = Ember.Object.extend({
                     outerThis.set('isFailed', false);
                     outerThis.set('isDone', true);
                 }, function(e) {
-                    console.log(e);
                     outerThis.set('isFailed', true);
                     outerThis.set('isDone', true);
                 }
