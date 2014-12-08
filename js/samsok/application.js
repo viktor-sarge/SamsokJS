@@ -13,14 +13,14 @@ App.ScrollLinksMixin = Ember.Mixin.create({
 });
 
 App.Router.map(function() {
-    this.resource('search', {path: '/search/:query'})
+    this.resource('search', {path: '/search'})
 });
 
 App.ApplicationController = Ember.Controller.extend({
     actions: {
         doSearch: function(query) {
             scrollToSearchresult();
-            this.transitionToRoute('search', query);
+            this.transitionToRoute('search', {queryParams: {query: query}});
         }
     }
 });

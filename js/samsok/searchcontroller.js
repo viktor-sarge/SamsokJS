@@ -2,15 +2,13 @@ App.SearchRoute = Ember.Route.extend({
     activate: function() {
         this._super.apply(this, arguments);
         Ember.run.scheduleOnce('afterRender', this, scrollToSearchresult);
-    },
-
-    model: function(params) {
-        return params.query;
     }
 });
 
 App.SearchController = Ember.Controller.extend({
     needs: 'providers',
+    queryParams: ['query'],
+    query: null,
     searchers: [],
 
     actions: {
@@ -19,14 +17,14 @@ App.SearchController = Ember.Controller.extend({
         }
     },
 
-    modelDidChange: function() {
+    queryDidChange: function() {
         this.get('searchers').clear();
         this.updateSearchers();
-    }.observes('model'),
+    }.observes('query'),
 
     updateSearchers: function() {
         // Add any new providers
-        if (this.get('model')) {
+        if (this.get('query')) {
             var outerThis = this;
             this.get('controllers.providers.allProviders').filterBy('enabled', true).forEach(function(provider) {
                 var exists = false;
@@ -39,7 +37,7 @@ App.SearchController = Ember.Controller.extend({
                 if (!exists) {
                     var searcher = App.Searcher.create({
                         provider: provider,
-                        query: outerThis.get('model')
+                        query: outerThis.get('query')
                     });
                     searcher.search();
                     outerThis.get('searchers').pushObject(searcher);
@@ -159,7 +157,7 @@ App.SearchHitController = Ember.Controller.extend({
 
             fields.forEach(function(field) {
                 if (outerThis.get('model.' + field)) {
-                    params.push(outerThis.get('model.' + field));
+                    params.push(outerThis.get('query.' + field));
                 }
             });
             url = url + params.join('+');
