@@ -10,6 +10,7 @@ App.SearchController = Ember.Controller.extend({
     queryParams: ['query'],
     query: null,
     searchers: [],
+    searcherCache: new Array(),
 
     actions: {
         retryFailed: function(searcher) {
@@ -35,11 +36,26 @@ App.SearchController = Ember.Controller.extend({
                 });
 
                 if (!exists) {
-                    var searcher = App.Searcher.create({
-                        provider: provider,
-                        query: outerThis.get('query')
-                    });
-                    searcher.search();
+                    var query = outerThis.get('query');
+                    var searcher = null;
+                    var cache = outerThis.get('searcherCache');
+                    if (cache[provider.get('name')]) {
+                        if (cache[provider.get('name')][query]) {
+                            searcher = cache[provider.get('name')][query];
+                        }
+                    }
+                    if (!searcher) {
+                        searcher = App.Searcher.create({
+                            provider: provider,
+                            query: query
+                        });
+                        searcher.search();
+
+                        if (!cache[provider.get('name')]) {
+                            cache[provider.get('name')] = new Array();
+                        }
+                        cache[provider.get('name')][query] = searcher;
+                    }
                     outerThis.get('searchers').pushObject(searcher);
                 }
             });
