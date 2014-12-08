@@ -33,6 +33,8 @@ var SsbParser = function(content, baseurl) {
         $ = cheerio.load(content);
 
     var totalHits = $('div#results-filter p.total em').eq(2).text().trim();
+    if (!totalHits)
+        totalHits = "0";
 
     $('ol.results-icon div.row-fluid').filter(isNumeric).each(function(i, element) {
         var result = $(this);
@@ -62,7 +64,7 @@ var GotlibParser = function(content, baseurl) {
     var hits = [],
         $ = cheerio.load(content);
 
-    var totalHits;
+    var totalHits = "0";
     var totalHitsSpan = $('span.noResultsHideMessage');
     if (totalHitsSpan.length > 0) {
         var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
@@ -101,7 +103,7 @@ var MalmoParser = function(content, baseurl) {
     var hits = [],
         $ = cheerio.load(content);
 
-    var totalHits;
+    var totalHits = "0";
     var totalHitsSpan = $('td.browseHeaderData');
     if (totalHitsSpan.length > 0) {
         var hitsRegex = /\d+-\d+ .*? (\d+)/g;
@@ -149,7 +151,7 @@ var OlaParser = function(content, baseurl) {
     var hits = [],
         $ = cheerio.load(content);
 
-    var totalHits;
+    var totalHits = "0";
     var totalHitsSpan = $('span.result-text');
     if (totalHitsSpan.length > 0) {
         var hitsRegex = / (\d+) /g;
@@ -197,7 +199,7 @@ var KohaParser = function(content, baseurl) {
     var hits = [],
         $ = cheerio.load(content);
 
-    var totalHits;
+    var totalHits = "0";
     var totalHitsSpan = $('p#numresults');
     if (totalHitsSpan.length > 0) {
         var hitsRegex = / (\d+) /g;
@@ -240,7 +242,7 @@ var MinabibliotekParser = function(content, baseurl) {
     var hits = [],
         $ = cheerio.load(content);
 
-    var totalHits;
+    var totalHits = "0";
     var totalHitsSpan = $('form#SearchResultForm p.information');
     if (totalHitsSpan.length > 0) {
         var hitsRegex = / (\d+) /g;
@@ -288,7 +290,7 @@ var LibraParser = function(content, baseurl) {
     var hits = [],
         $ = cheerio.load(content);
 
-    var totalHits;
+    var totalHits = "0";
     var totalHitsSpan = $('form[name=FormPaging] b').eq(0);
     if (totalHitsSpan.length > 0) {
         var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
@@ -337,6 +339,8 @@ var MicroMarcParser = function(content, baseurl) {
         $ = cheerio.load(content);
 
     var totalHits = $('span[id*=LabelSearchHeader] b').text().trim();
+    if (!totalHits)
+        totalHits = "0";
 
     $('tr[id*=RadGridHitList]').each(function(i, element) {
         var result = $(this);
@@ -379,16 +383,18 @@ ArenaParser = function(content, baseurl) {
     var hits = [],
         $ = cheerio.load(content);
 
-    var totalHits;
-    var totalRegex = /<span class="feedbackPanelINFO">.*?(\d+).*?<\/span>/g;
+    var totalHits = "0";
+    totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
     var totalmatch = totalRegex.exec(content);
     if (totalmatch) {
         totalHits = totalmatch[1];
     } else {
-        totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
+        var totalRegex = /<span class="feedbackPanelINFO">.*?(\d+).*?<\/span>/g;
         totalmatch = totalRegex.exec(content);
         if (totalmatch) {
-            totalHits = totalmatch[1];
+            // Växjö displays alternative search result hits - we don't want that!
+            if (totalmatch[0].indexOf('alternativa') == -1)
+                totalHits = totalmatch[1];
         }
     }
 
