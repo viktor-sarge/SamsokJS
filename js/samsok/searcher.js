@@ -90,6 +90,10 @@ App.Searcher = Ember.Object.extend({
 
             var worker = spawnWorker(outerThis.get('provider').get('parser'), data.content, outerThis.get('provider').get('baseUrl'),
                 function(e) {
+                    var location = outerThis.get('provider').get('name');
+                    e.hits.forEach(function(hit) {
+                        hit['location'] = location;
+                    });
                     outerThis.set('totalHits', e.totalHits);
                     outerThis.set('searchHits', e.hits);
                     outerThis.set('isFailed', false);
