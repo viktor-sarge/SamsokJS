@@ -173,7 +173,7 @@ App.SearchHitController = Ember.Controller.extend({
 
             fields.forEach(function(field) {
                 if (outerThis.get('model.' + field)) {
-                    params.push(outerThis.get('query.' + field));
+                    params.push(outerThis.get('model.' + field));
                 }
             });
             url = url + params.join('+');
