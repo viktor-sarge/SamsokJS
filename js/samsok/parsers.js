@@ -308,22 +308,49 @@ var LibraParser = function(content, baseurl) {
         }
     }
 
+    headers = $('form[name=FormPaging] table.list th[class*=listHeader]').map(function(i, element) {
+        return $(this).text().trim().toLowerCase();
+    }).get();
+
     $('form[name=FormPaging] table.list tr[class*=listLine]').each(function(i, element) {
         var result = $(this);
-        var title = result.find('td').eq(1).find('a').text().trim();
-        var author;
-        if (!title) {
-            title = result.find('td').eq(0).find('a').text().trim();
-            author = result.find('td').eq(1).text().trim();
+
+        var title;
+        var url;
+        if (headers.indexOf('titel') >= 0) {
+            title = result.find('td').eq(headers.indexOf('titel')).find('a').text().trim();
+            url = baseurl + result.find('td').eq(headers.indexOf('titel')).find('a').attr('href');
         } else {
-            author = result.find('td').eq(0).text().trim();
+            title = result.find('td').eq(1).find('a').text().trim();
+            url = baseurl + result.find('td').eq(1).find('a').attr('href');
         }
-        var type = result.find('td').eq(4).find('img').attr('alt');
-        if (!type) {
-            type = result.find('td').eq(4).text().trim();
+
+        var author;
+        if (headers.indexOf('författare') >= 0)
+            author = result.find('td').eq(headers.indexOf('författare')).text().trim();
+        else {
+            if (!title) {
+                title = result.find('td').eq(0).find('a').text().trim();
+                author = result.find('td').eq(1).text().trim();
+            } else {
+                author = result.find('td').eq(0).text().trim();
+            }
         }
-        var year = result.find('td').eq(3).text().trim();
-        var url = baseurl + result.find('td').eq(1).find('a').attr('href');
+
+        var type;
+        if (headers.indexOf('medietyp') >= 0)
+            type = result.find('td').eq(headers.indexOf('medietyp')).find('img').attr('alt');
+        else {
+            type = result.find('td').eq(4).find('img').attr('alt');
+            if (!type) {
+                type = result.find('td').eq(4).text().trim();
+            }
+        }
+        var year;
+        if (headers.indexOf('år') >= 0)
+            year = result.find('td').eq(headers.indexOf('år')).text().trim();
+        else
+            year = result.find('td').eq(3).text().trim();
 
         hits.push(
             {
