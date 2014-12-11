@@ -380,16 +380,7 @@ var MicroMarcParser = function(content, baseurl) {
     $('tr[id*=RadGridHitList]').each(function(i, element) {
         var result = $(this);
         var title = result.find('td').eq(2).find('a').text().trim();
-        var author = result.find('td').eq(2).html();
-        var authorRegex = /<br>(.*?)<span/g;
-        var match = authorRegex.exec(author);
-        if (match) {
-            // The little trick with the div is to render any HTML entities that we got by
-            // calling .html() instead of .text() above
-            author = $('<div></div>').html(match[1]).text();
-        } else {
-            author = "";
-        }
+        var author = result.find('td').eq(2).children('span').eq(0).contents().slice(0, -1).not('span[style*="display: none"]').text();
         var type = result.find('td').eq(4).find('a').attr('title');
         var year = result.find('td').eq(3).text().trim();
         var url = result.find('td').eq(2).find('a').attr('href');
