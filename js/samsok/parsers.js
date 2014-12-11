@@ -262,7 +262,7 @@ var MinabibliotekParser = function(content, baseurl) {
 
     $('form#MemorylistForm > ol.CS_list-container > li').each(function(i, element) {
         var result = $(this);
-        var title = result.find('h3.title a').text().trim();
+        var title = result.find(':header.title a').text().trim();
         var author = result.find('p.author').text().trim();
         if (author.toLowerCase().indexOf("av:") == 0) {
             author = author.substr("av:".length, author.length).trim();
@@ -275,7 +275,7 @@ var MinabibliotekParser = function(content, baseurl) {
         var type = typesArray.join(' / ');
 
         var year = result.find('span.date').text().trim();
-        var url = baseurl + result.find('h2.title a').attr('href');
+        var url = baseurl + result.find(':header.title a').attr('href');
 
         hits.push(
             {
