@@ -19,6 +19,7 @@ App.SearchController = Ember.Controller.extend({
     },
 
     queryDidChange: function() {
+        this.set('searchFilter', '');
         this.get('searchers').clear();
         this.updateSearchers();
     }.observes('query'),
