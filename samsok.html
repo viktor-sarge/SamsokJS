@@ -156,18 +156,18 @@
     <script type="text/x-handlebars" id="searchHit">
         <a {{bind-attr href="model.url"}} class="list-group-item" target="_blank">
         <div class="row">
-            <div class="col-md-10 vcenter">
+            <div class="col-sm-10 vcenter">
                 <h4 class="list-group-item-heading">{{model.title}}</h4>
                 <p class="list-group-item-text">
                 <div class="row"><div class="col-md-12">{{model.author}}</div></div>
                 <div class="row"><div class="col-md-12">{{model.year}}</div></div>
                 <div class="row">
-                    <div class="col-md-8">{{model.type}}</div>
-                    <div class="col-md-4 text-right"><small>{{model.location}}</small></div>
+                    <div class="col-sm-8">{{model.type}}</div>
+                    <div class="col-sm-4 text-right"><small>{{model.location}}</small></div>
                 </div>
                 </p>
             </div><!--
-            --><div class="col-md-2 text-center vcenter">
+            --><div class="col-sm-2 text-center vcenter">
                 <button {{action 'openLibris'}} type="button" class="btn btn-link" aria-label="Libris">
                 <img src="img/libris_leaf.gif">
                 </button>
