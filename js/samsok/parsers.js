@@ -7,15 +7,7 @@
 var XsearchParser = function(content, baseurl) {
     var hits = [];
 
-    try {
-        var js = JSON.parse(content)['xsearch'];
-    } catch(err) {
-        // If there are no hits, the service will return invalid JSON.
-        return {
-            totalHits: "0",
-            hits: []
-        }
-    }
+    var js = JSON.parse(content)['xsearch'];
     var totalHits = js['records'];
 
     js['list'].forEach(function(result) {
