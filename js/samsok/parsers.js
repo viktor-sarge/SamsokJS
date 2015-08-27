@@ -291,59 +291,15 @@ var LibraParser = function(content, baseurl) {
         $ = cheerio.load(content);
 
     var totalHits = "0";
-    var totalHitsSpan = $('form[name=FormPaging] b').eq(0);
-    if (totalHitsSpan.length > 0) {
-        var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
-        var match = hitsRegex.exec(totalHitsSpan);
-        if (match) {
-            totalHits = match[1];
-        }
-    }
 
-    headers = $('form[name=FormPaging] table.list th[class*=listHeader]').map(function(i, element) {
-        return $(this).text().trim().toLowerCase();
-    }).get();
-
-    $('form[name=FormPaging] table.list tr[class*=listLine]').each(function(i, element) {
-        var result = $(this);
-
-        var title;
-        var url;
-        if (headers.indexOf('titel') >= 0) {
-            title = result.find('td').eq(headers.indexOf('titel')).find('a').text().trim();
-            url = baseurl + result.find('td').eq(headers.indexOf('titel')).find('a').attr('href');
-        } else {
-            title = result.find('td').eq(1).find('a').text().trim();
-            url = baseurl + result.find('td').eq(1).find('a').attr('href');
-        }
-
-        var author;
-        if (headers.indexOf('författare') >= 0)
-            author = result.find('td').eq(headers.indexOf('författare')).text().trim();
-        else {
-            if (!title) {
-                title = result.find('td').eq(0).find('a').text().trim();
-                author = result.find('td').eq(1).text().trim();
-            } else {
-                author = result.find('td').eq(0).text().trim();
-            }
-        }
-
-        var type;
-        if (headers.indexOf('medietyp') >= 0)
-            type = result.find('td').eq(headers.indexOf('medietyp')).find('img').attr('alt');
-        else {
-            type = result.find('td').eq(4).find('img').attr('alt');
-            if (!type) {
-                type = result.find('td').eq(4).text().trim();
-            }
-        }
-        var year;
-        if (headers.indexOf('år') >= 0)
-            year = result.find('td').eq(headers.indexOf('år')).text().trim();
-        else
-            year = result.find('td').eq(3).text().trim();
-
+    // Special case - many libraries go directly to the result if there's only one hit.
+    if (!$("table.list")) {
+        totalHits = 1;
+        var author = $("tr[class*=listline] td:contains('Författare:')").next("td").find("a").text().trim();
+        var title = $("tr[class*=listline] td:contains('Titel:')").next("td").text().trim();
+        var type = "";
+        var year = "";
+        var url = baseurl + $("a[href*=show_catalogue]").attr("href");
         hits.push(
             {
                 title: title,
@@ -353,7 +309,71 @@ var LibraParser = function(content, baseurl) {
                 url: url
             }
         );
-    });
+    } else {
+        var totalHitsSpan = $('form[name=FormPaging] b').eq(0);
+        if (totalHitsSpan.length > 0) {
+            var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
+            var match = hitsRegex.exec(totalHitsSpan);
+            if (match) {
+                totalHits = match[1];
+            }
+        }
+
+        headers = $('form[name=FormPaging] table.list th[class*=listHeader]').map(function(i, element) {
+            return $(this).text().trim().toLowerCase();
+        }).get();
+
+        $('form[name=FormPaging] table.list tr[class*=listLine]').each(function(i, element) {
+            var result = $(this);
+
+            var title;
+            var url;
+            if (headers.indexOf('titel') >= 0) {
+                title = result.find('td').eq(headers.indexOf('titel')).find('a').text().trim();
+                url = baseurl + result.find('td').eq(headers.indexOf('titel')).find('a').attr('href');
+            } else {
+                title = result.find('td').eq(1).find('a').text().trim();
+                url = baseurl + result.find('td').eq(1).find('a').attr('href');
+            }
+
+            var author;
+            if (headers.indexOf('författare') >= 0)
+                author = result.find('td').eq(headers.indexOf('författare')).text().trim();
+            else {
+                if (!title) {
+                    title = result.find('td').eq(0).find('a').text().trim();
+                    author = result.find('td').eq(1).text().trim();
+                } else {
+                    author = result.find('td').eq(0).text().trim();
+                }
+            }
+
+            var type;
+            if (headers.indexOf('medietyp') >= 0)
+                type = result.find('td').eq(headers.indexOf('medietyp')).find('img').attr('alt');
+            else {
+                type = result.find('td').eq(4).find('img').attr('alt');
+                if (!type) {
+                    type = result.find('td').eq(4).text().trim();
+                }
+            }
+            var year;
+            if (headers.indexOf('år') >= 0)
+                year = result.find('td').eq(headers.indexOf('år')).text().trim();
+            else
+                year = result.find('td').eq(3).text().trim();
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+        });
+    }
 
     return {
         totalHits: totalHits,
