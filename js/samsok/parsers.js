@@ -75,13 +75,13 @@ var GotlibParser = function(content, baseurl) {
     }
 
 
-    $('table.browseResult > tr').each(function(i, element) {
+    $('div[class=dpBibTitle]').each(function(i, element) {
         var result = $(this);
-        var title = result.find('div.dpBibTitle').text().trim();
-        var author = result.find('div.dpBibAuthor').text().trim();
+        var title = result.find('span.title a').text().trim();
+        var author = result.find('div.dpBibAuthor a').text().trim();
         var type = result.find('span.itemMediaDescription').text().trim();
         var year = result.find('span.itemMediaYear').text().trim();
-        var url = baseurl + result.find('div.dpBibTitle a').attr('href');
+        var url = baseurl + result.find('span.title a').attr("href");
         hits.push(
             {
                 title: title,
