@@ -2,9 +2,9 @@ var proxyBaseUrl = (location.protocol == 'https:' ? 'https:' : 'http:') + "//sam
 
 // Create a Web Worker from a function, which fully runs in the scope of a new
 //    Worker
-function spawnWorker(func, content, baseUrl, callback, errorhandler) {
+function spawnWorker(func, content, baseUrl, searchUrl, callback, errorhandler) {
     // Stringify the code. Example:  (function(){/*logic*/}).call(self);
-    var code = 'self.postMessage((' + func + ').call(self, "' + escapeString(content) + '", "' + escapeString(baseUrl) + '"));';
+    var code = 'self.postMessage((' + func + ').call(self, "' + escapeString(content) + '", "' + escapeString(baseUrl) + '", "' + escapeString(searchUrl) + '"));';
     try {
         var worker = new Worker('js/samsok/webworker.js');
     } catch(err) {
@@ -12,7 +12,7 @@ function spawnWorker(func, content, baseUrl, callback, errorhandler) {
         // security settings when running from file://
         // Run it in the main thread instead!
         try {
-            callback(func(content, baseUrl));
+            callback(func(content, baseUrl, searchUrl));
         } catch (err) {
             errorhandler(err);
         }
@@ -76,37 +76,44 @@ App.Searcher = Ember.Object.extend({
 
         var outerThis = this;
 
-        $.getJSON(proxyBaseUrl + "?url=" +
-                encodeURIComponent(this.get('provider').getSearchUrl(this.get('query').replace(/ /g, '%20')))+
-                "&encoding=" + this.get('provider').get('encoding') +
-                "&callback=?"
-        )
+        var searchUrl = this.get('provider').getSearchUrl(this.get('query').replace(/ /g, '%20'));
+        var proxyUrl = proxyBaseUrl + "?url=" +
+            encodeURIComponent(searchUrl) +
+            "&encoding=" + this.get('provider').get('encoding') +
+            "&callback=?";
+        $.getJSON(proxyUrl)
         .done(function(data) {
+
             if (!data.content) {
                 outerThis.set('isFailed', true);
                 outerThis.set('isDone', true);
                 return;
             }
 
-            var worker = spawnWorker(outerThis.get('provider').get('parser'), data.content, outerThis.get('provider').get('baseUrl'),
-                function(e) {
-                    var location = outerThis.get('provider').get('name');
-                    e.hits.forEach(function(hit) {
-                        hit['location'] = location;
-                    });
-                    outerThis.set('totalHits', e.totalHits);
-                    outerThis.set('searchHits', e.hits);
-                    outerThis.set('isFailed', false);
-                    outerThis.set('isDone', true);
-                }, function(e) {
-                    outerThis.set('isFailed', true);
-                    outerThis.set('isDone', true);
-                }
-            );
-        })
-        .fail(function() {
-                outerThis.set('isFailed', true);
-                outerThis.set('isDone', true);
+            var runWorker = function(content) {
+                spawnWorker(outerThis.get('provider').get('parser'), content, outerThis.get('provider').get('baseUrl'), searchUrl,
+                    function(e) {
+                        var location = outerThis.get('provider').get('name');
+                        e.hits.forEach(function(hit) {
+                            hit['location'] = location;
+                        });
+                        outerThis.set('totalHits', e.totalHits);
+                        outerThis.set('searchHits', e.hits);
+                        outerThis.set('isFailed', false);
+                        outerThis.set('isDone', true);
+                    }, function(e) {
+                        outerThis.set('isFailed', true);
+                        outerThis.set('isDone', true);
+                    }
+                );
+            };
+
+            var preprocessor = outerThis.get('provider').get('preprocessor');
+            if (preprocessor) {
+                preprocessor(outerThis.get('provider'), data.content, runWorker);
+            } else {
+                runWorker(data.content);
+            }
         });
     }
 });

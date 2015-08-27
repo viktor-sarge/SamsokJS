@@ -99,47 +99,72 @@ var GotlibParser = function(content, baseurl) {
     };
 };
 
-var MalmoParser = function(content, baseurl) {
+var MalmoParser = function(content, baseurl, searchurl) {
     var hits = [],
         $ = cheerio.load(content);
 
     var totalHits = "0";
-    var totalHitsSpan = $('td.browseHeaderData');
-    if (totalHitsSpan.length > 0) {
-        var hitsRegex = /\d+-\d+ .*? (\d+)/g;
-        var match = hitsRegex.exec(totalHitsSpan);
+    // Special case - if there's only one hit, it goes directly to the hit
+    if ($('table.browseScreen').length == 0) {
+        totalHits = "1";
+        var title = $("td.bibInfoLabel:contains('Titel')").next("td.bibInfoData").text();
+        if (title.lastIndexOf('/') > -1) {
+            title = title.substr(0, title.lastIndexOf('/') + 1);
+        }
+        var author = $("td.bibInfoLabel:contains('Namn')").next("td.bibInfoData a").text();
+        var type = $("td.media img").attr("alt");
+        var year = "";
+        var yearRegExp = /, (\d{4})/g;
+        var match = yearRegExp.exec($("td.bibInfoLabel:contains('Utgivning')").next("td.bibInfoData").text());
         if (match) {
-            totalHits = match[1];
+            year = match[1];
         }
-    }
 
-    $('tr.briefCitRow').each(function(i, element) {
-        var result = $(this);
-        var titletags = $('span.briefcitTitle').parent().find('a');
-        if (titletags.length > 0) {
-            var title = titletags.eq(0).text().trim();
-            var author = result.find('span.briefcitTitle').text().trim();
-            var type = result.find('span.briefcitMedia > img').eq(0).attr('alt');
-            var year = result.find('table tr td').eq(5).text().trim();
-            if (year.length >= 4) {
-                year = year.substr(year.length - 4, year.length);
-                if (isNaN(year)) {
-                    year = "";
-                }
+        hits.push({
+                title: title,
+                author: author,
+                type: type,
+                year: year,
+                url: searchurl
+        });
+    } else {
+        var totalHitsSpan = $('td.browseHeaderData');
+        if (totalHitsSpan.length > 0) {
+            var hitsRegex = /\d+-\d+ .*? (\d+)/g;
+            var match = hitsRegex.exec(totalHitsSpan);
+            if (match) {
+                totalHits = match[1];
             }
-            var url = baseurl + titletags.eq(0).attr('href');
-
-            hits.push(
-                {
-                    title: title,
-                    author: author,
-                    type: type,
-                    year: year,
-                    url: url
-                }
-            );
         }
-    });
+
+        $('tr.briefCitRow').each(function(i, element) {
+            var result = $(this);
+            var titletags = $('span.briefcitTitle').parent().find('a');
+            if (titletags.length > 0) {
+                var title = titletags.eq(0).text().trim();
+                var author = result.find('span.briefcitTitle').text().trim();
+                var type = result.find('span.briefcitMedia > img').eq(0).attr('alt');
+                var year = result.find('table tr td').eq(5).text().trim();
+                if (year.length >= 4) {
+                    year = year.substr(year.length - 4, year.length);
+                    if (isNaN(year)) {
+                        year = "";
+                    }
+                }
+                var url = baseurl + titletags.eq(0).attr('href');
+
+                hits.push(
+                    {
+                        title: title,
+                        author: author,
+                        type: type,
+                        year: year,
+                        url: url
+                    }
+                );
+            }
+        });
+    }
 
     return {
         totalHits: totalHits,
@@ -293,7 +318,7 @@ var LibraParser = function(content, baseurl) {
     var totalHits = "0";
 
     // Special case - many libraries go directly to the result if there's only one hit.
-    if (!$("table.list")) {
+    if ($("td.resultlink").text().trim() != "") {
         totalHits = 1;
         var author = $("tr[class*=listline] td:contains('Författare:')").next("td").find("a").text().trim();
         var title = $("tr[class*=listline] td:contains('Titel:')").next("td").text().trim();
@@ -422,27 +447,16 @@ ArenaParser = function(content, baseurl) {
         $ = cheerio.load(content);
 
     var totalHits = "0";
-    totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
-    var totalmatch = totalRegex.exec(content);
-    if (totalmatch) {
-        totalHits = totalmatch[1];
-    } else {
-        var totalRegex = /<span class="feedbackPanelINFO">.*?(\d+).*?<\/span>/g;
-        totalmatch = totalRegex.exec(content);
-        if (totalmatch) {
-            // Växjö displays alternative search result hits - we don't want that!
-            if (totalmatch[0].indexOf('alternativa') == -1)
-                totalHits = totalmatch[1];
-        }
-    }
 
-    $('div.arena-record-details').each(function(i, element) {
-        var result = $(this);
-        var title = result.find('div.arena-record-title a span').text().trim();
-        var author = result.find('div.arena-record-author span.arena-value').text().trim();
-        var type = result.find('div.arena-record-media span.arena-value').text().trim();
-        var year = result.find('div.arena-record-year span.arena-value').text().trim();
-        var url = result.find('div.arena-record-title a').attr('href');
+    // Special case for a single hit
+    if ($('div.arena-detail-title').length > 0) {
+        totalHits = "1";
+
+        var title = $("div.arena-detail-title span").eq(1).text().trim();
+        var author = $("div.arena-detail-author span.arena-value").text().trim();
+        var type = $("div.arena-detail-media span.arena-value").text().trim();
+        var year = $("div.arena-detail-year span.arena-value").text().trim();
+        var url = $("a.arena-linktopage").attr("href");
 
         hits.push(
             {
@@ -453,7 +467,40 @@ ArenaParser = function(content, baseurl) {
                 url: url
             }
         );
-    });
+    } else {
+        totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
+        var totalmatch = totalRegex.exec(content);
+        if (totalmatch) {
+            totalHits = totalmatch[1];
+        } else {
+            var totalRegex = /<span class="feedbackPanelINFO">.*?(\d+).*?<\/span>/g;
+            totalmatch = totalRegex.exec(content);
+            if (totalmatch) {
+                // Växjö displays alternative search result hits - we don't want that!
+                if (totalmatch[0].indexOf('alternativa') == -1)
+                    totalHits = totalmatch[1];
+            }
+        }
+
+        $('div.arena-record-details').each(function(i, element) {
+            var result = $(this);
+            var title = result.find('div.arena-record-title a span').text().trim();
+            var author = result.find('div.arena-record-author span.arena-value').text().trim();
+            var type = result.find('div.arena-record-media span.arena-value').text().trim();
+            var year = result.find('div.arena-record-year span.arena-value').text().trim();
+            var url = result.find('div.arena-record-title a').attr('href');
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+        });
+    }
 
     return {
         totalHits: totalHits,
