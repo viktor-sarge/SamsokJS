@@ -67,7 +67,7 @@ App.Searcher = Ember.Object.extend({
     }.property('searchHits'),
 
     url: function() {
-        return this.get('provider').getGotoUrl(this.get('query'));
+        return this.get('provider').getGotoUrl(encodeURIComponent(this.get('query')));
     }.property(),
 
     search: function() {
