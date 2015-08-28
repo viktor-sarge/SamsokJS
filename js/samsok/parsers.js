@@ -442,7 +442,7 @@ var MicroMarcParser = function(content, baseurl) {
     };
 };
 
-ArenaParser = function(content, baseurl) {
+ArenaParser = function(content, baseurl, searchurl) {
     var hits = [],
         $ = cheerio.load(content);
 
@@ -457,6 +457,9 @@ ArenaParser = function(content, baseurl) {
         var type = $("div.arena-detail-media span.arena-value").text().trim();
         var year = $("div.arena-detail-year span.arena-value").text().trim();
         var url = $("a.arena-linktopage").attr("href");
+        if (!url) {
+            url = searchurl;
+        }
 
         hits.push(
             {

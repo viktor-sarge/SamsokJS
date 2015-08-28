@@ -17,7 +17,7 @@ var ArenaPreprocessor = function(provider, content, func) {
             if (!data.content) {
                 throw "Error getting page";
             }
-            func(data.content);
+            func(data.content, match[1]);
         });
     } else {
         func(content);

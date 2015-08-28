@@ -90,8 +90,14 @@ App.Searcher = Ember.Object.extend({
                 return;
             }
 
-            var runWorker = function(content) {
-                spawnWorker(outerThis.get('provider').get('parser'), content, outerThis.get('provider').get('baseUrl'), searchUrl,
+            var runWorker = function(content, newSearchUrl) {
+                var s;
+                if (newSearchUrl)
+                    s = newSearchUrl;
+                else
+                    s = searchUrl;
+
+                spawnWorker(outerThis.get('provider').get('parser'), content, outerThis.get('provider').get('baseUrl'), s,
                     function(e) {
                         var location = outerThis.get('provider').get('name');
                         e.hits.forEach(function(hit) {
