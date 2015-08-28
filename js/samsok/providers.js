@@ -155,6 +155,7 @@ var providers = [
         providers: [
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
                 searchUrl: 'http://bibliotek.mark.se/web/arena/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=4&p_p_col_id=column-1&p_p_col_pos=1&p_p_mode=view&search_item_no=0&search_type=solr&search_query=',
                 name: 'Mark',
@@ -162,6 +163,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
                 searchUrl: 'http://www.falkopingsbibliotek.se/web/arena/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=4&p_p_col_id=column-1&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
                 name: 'Falköping',
@@ -169,6 +171,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
                 searchUrl: 'http://biblioteken.vara.se/web/pub/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=3&p_p_col_id=column-1&p_p_col_pos=1&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
                 name: 'Vara',
@@ -176,6 +179,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
                 searchUrl: 'http://bibliotek.halmstad.se/web/arena/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=11&p_p_col_id=column-1&p_p_mode=view&search_item_no=0&search_type=solr&search_query=',
                 name: 'Halmstad',
@@ -183,6 +187,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
                 searchUrl: 'http://bibliotek.jonkoping.se/web/arena/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=4&p_p_col_id=column-1&p_p_col_pos=3&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
                 name: 'Jönköping',
@@ -190,6 +195,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
                 searchUrl: 'http://bookitpub.kalmar.se/web/pub/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=3&p_p_col_id=column-1&p_p_col_pos=1&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
                 name: 'Kalmar',
@@ -197,6 +203,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
                 searchUrl: 'http://bibliotek.karlskrona.se/web/arena/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=5&p_p_col_id=column-2&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
                 name: 'Karlskrona',
@@ -204,6 +211,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
                 searchUrl: 'http://bookitpub.bibliotekskno.se/web/pub/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=3&p_p_col_id=column-1&p_p_col_pos=1&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
                 name: 'SkåneNO',
@@ -211,6 +219,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
                 searchUrl: 'http://bibliotek.vaxjo.se/web/arena/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=4&p_p_col_id=column-1&p_p_col_pos=2&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
                 name: 'Växjö',
