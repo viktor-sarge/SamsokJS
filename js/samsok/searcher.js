@@ -67,7 +67,7 @@ App.Searcher = Ember.Object.extend({
     }.property('searchHits'),
 
     url: function() {
-        return this.get('provider').getGotoUrl(encodeURIComponent(this.get('query')));
+        return this.get('provider').getGotoUrl(this.get('query'));
     }.property(),
 
     search: function() {
@@ -76,7 +76,7 @@ App.Searcher = Ember.Object.extend({
 
         var outerThis = this;
 
-        var searchUrl = this.get('provider').getSearchUrl(this.get('query').replace(/ /g, '%20'));
+        var searchUrl = this.get('provider').getSearchUrl(this.get('query'));
         var proxyUrl = proxyBaseUrl + "?url=" +
             encodeURIComponent(searchUrl) +
             "&encoding=" + this.get('provider').get('encoding') +

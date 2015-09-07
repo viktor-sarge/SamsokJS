@@ -13,12 +13,17 @@ App.Provider = Ember.Object.extend({
     gotoUrl: null,
     encoding: null,
     enabled: false,
+    preprocessor: null,
+    queryModifier: DefaultQueryModifier,
 
     init: function() {
         this.set('enabled', isProviderEnabled(this.get('name')));
     },
 
     getSearchUrl: function(query) {
+        if (this.get('queryModifier'))
+            query = this.get('queryModifier')(query);
+
         if (this.get('searchUrl').indexOf(QUERY_TOKEN) >= 0)
             return this.get('searchUrl').replace(QUERY_TOKEN, query);
         else
@@ -27,9 +32,11 @@ App.Provider = Ember.Object.extend({
 
     getGotoUrl: function(query) {
         if (!this.get('gotoUrl')) {
-            return this.getSearchUrl(query)
             return this.getSearchUrl(query);
         } else {
+            if (this.get('queryModifier'))
+                query = this.get('queryModifier')(query);
+
             if (this.gotoUrl.indexOf(QUERY_TOKEN) >= 0)
                 return this.gotoUrl.replace(QUERY_TOKEN, query);
             else
@@ -179,7 +186,8 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
-                preprocessor: ArenaPreprocessor, 
+                preprocessor: ArenaPreprocessor,
+                queryModifier: SpacetoPlusQueryModifier,
                 baseUrl: '',
                 searchUrl: 'http://bibliotek.halmstad.se/web/arena/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=11&p_p_col_id=column-1&p_p_mode=view&search_item_no=0&search_type=solr&search_query=',
                 name: 'Halmstad',
