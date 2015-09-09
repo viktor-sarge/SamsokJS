@@ -105,7 +105,7 @@ var MalmoParser = function(content, baseurl, searchurl) {
 
     var totalHits = "0";
     // Special case - if there's only one hit, it goes directly to the hit
-    if ($('table.browseScreen').length == 0) {
+    if (content && $('table.browseScreen').length == 0) {
         totalHits = "1";
         var title = $("td.bibInfoLabel:contains('Titel')").next("td.bibInfoData").text();
         if (title.lastIndexOf('/') > -1) {

@@ -77,6 +77,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: MalmoParser,
+                preprocessor: BlockPhrasePreprocessorGenerator('Din sökfråga har blivit ändrad'),
                 baseUrl: 'http://malmo.stadsbibliotek.org/',
                 searchUrl: 'http://malmo.stadsbibliotek.org/search~S7*swe/?SUBMIT=Sök+%3E%3E%searchtype=X&searcharg=',
                 name: 'Malmö',

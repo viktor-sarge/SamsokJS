@@ -23,3 +23,13 @@ var ArenaPreprocessor = function(provider, content, func) {
         func(content);
     }
 };
+
+var BlockPhrasePreprocessorGenerator = function(phrase) {
+    return function(provider, content, func) {
+        if (content.indexOf(phrase) >= 0) {
+            func("");
+        } else {
+            func(content);
+        }
+    };
+};
