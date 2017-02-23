@@ -100,7 +100,7 @@ var providers = [
             App.Provider.create({
                 parser: MinabibliotekParser,
                 baseUrl: 'http://www.minabibliotek.se/',
-                searchUrl: 'http://www.minabibliotek.se/search?query=@QUERY@&sort=Relevance&snabbsokknapp=Sök&searchtype=Biblioteket&fLibId=00000000-0000-0000-0000-000000000000',
+                searchUrl: 'https://www.minabibliotek.se/search?query=@QUERY@&fMediaId=&fTarget=',
                 name: 'Minabibliotek',
                 encoding: 'utf-8'
             })

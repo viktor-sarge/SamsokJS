@@ -268,31 +268,28 @@ var MinabibliotekParser = function(content, baseurl) {
         $ = cheerio.load(content);
 
     var totalHits = "0";
-    var totalHitsSpan = $('form#SearchResultForm p.information');
+    var totalHitsSpan = $('span.result-count').first().text().trim();
     if (totalHitsSpan.length > 0) {
-        var hitsRegex = / (\d+) /g;
-        var match = hitsRegex.exec(totalHitsSpan);
-        if (match) {
-            totalHits = match[1];
-        }
+        totalHits = totalHitsSpan;
     }
 
-    $('form#MemorylistForm > ol.CS_list-container > li').each(function(i, element) {
+    $('div.catalog-search-result-container > ol.search-result > li').each(function(i, element) {
+        console.log("Matchar 1gng");
         var result = $(this);
-        var title = result.find(':header.title a').text().trim();
-        var author = result.find('p.author').text().trim();
+        var title = result.find(':header a.work-link').text().trim();
+        var author = result.find('span.author-name').text().trim();
         if (author.toLowerCase().indexOf("av:") == 0) {
             author = author.substr("av:".length, author.length).trim();
         }
 
         var typesArray = [];
-        result.find('ol.media-type li a span').each(function(i, t) {
+        result.find('ul.media-types li a span').each(function(i, t) {
             typesArray.push($(t).text().trim());
         });
         var type = typesArray.join(' / ');
 
-        var year = result.find('span.date').text().trim();
-        var url = baseurl + result.find(':header.title a').attr('href');
+        var year = result.find('span.published-name').text().trim();
+        var url = baseurl + result.find(':header a.work-link').attr('href');
 
         hits.push(
             {
