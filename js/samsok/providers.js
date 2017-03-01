@@ -145,10 +145,9 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: ArenaParser,
-                preprocessor: ArenaPreprocessor, 
-                baseUrl: '',
-                searchUrl: 'http://bibliotek.jonkoping.se/web/arena/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=4&p_p_col_id=column-1&p_p_col_pos=3&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
+                parser: MinabibliotekParser, 
+                baseUrl: 'https://bibliotek.jonkoping.se/',
+                searchUrl: 'https://bibliotek.jonkoping.se/search?query=@QUERY@&fMediaId=&fTarget=',
                 name: 'Jönköping',
                 encoding: 'utf-8'
             }),
