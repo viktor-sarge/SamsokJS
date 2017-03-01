@@ -208,7 +208,7 @@ var providers = [
                 parser: ArenaParser,
                 preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
-                searchUrl: 'http://biblioteken.vara.se/web/pub/search?p_p_state=normal&p_p_lifecycle=1&p_p_action=1&p_p_id=searchResult_WAR_arenaportlets&p_p_col_count=3&p_p_col_id=column-1&p_p_col_pos=1&p_p_mode=view&facet_queries=&search_item_no=0&search_type=solr&search_query=',
+                searchUrl: 'https://biblioteken.vara.se/web/pub/search?p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=',
                 name: 'Vara',
                 encoding: 'utf-8'
             }),
