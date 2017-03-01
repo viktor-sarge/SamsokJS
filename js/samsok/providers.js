@@ -91,9 +91,9 @@ var providers = [
                 encoding: 'utf-8'
             }),            
             App.Provider.create({
-                parser: LibraParser,
-                baseUrl: 'http://bib.varberg.se/opac/',
-                searchUrl: 'http://bib.varberg.se/opac/search_result.aspx?TextFritext=',
+                parser: ArenaParser,
+                baseUrl: 'https://www.varbergsbibliotek.se/web/arena',
+                searchUrl: 'https://www.varbergsbibliotek.se/web/arena/search?p_auth=kQ6Gal85&p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=@QUERY@',
                 name: 'Varberg',
                 encoding: 'utf-8'
             })
