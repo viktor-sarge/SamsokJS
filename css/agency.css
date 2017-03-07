@@ -33,7 +33,7 @@ a:active,
 a.active {
     outline: 0;
 }
-
+/*
 a {
     color: #fed136;
 }
@@ -43,7 +43,7 @@ a:focus,
 a:active,
 a.active {
     color: #fec503;
-}
+} */
 
 h1,
 h2,
@@ -254,7 +254,7 @@ fieldset[disabled] .btn-xl.active {
 
 .navbar-default .navbar-nav>.active>a {
     border-radius: 0;
-    color: #fff;
+    color: black;
     background-color: #fed136;
 }
 

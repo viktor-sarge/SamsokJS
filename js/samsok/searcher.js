@@ -61,6 +61,9 @@ App.Searcher = Ember.Object.extend({
     isFailed: false,
     searchHits: [],
     totalHits: null,
+    oneHit: false,
+    allHitsFetched: false,
+    percent: null,
 
     numberOfHits: function() {
         return this.get('searchHits').length;
@@ -105,6 +108,20 @@ App.Searcher = Ember.Object.extend({
                         });
                         outerThis.set('totalHits', e.totalHits);
                         outerThis.set('searchHits', e.hits);
+                        if (e.hits.length === 1) {
+                            outerThis.set('oneHit', true);
+                        }
+                        if (e.hits.length >= e.totalHits) {
+                            outerThis.set('allHitsFetched', true)
+                        }
+                        if (e.totalHits == 0) {
+                            outerThis.set('percent', 100);
+                        } else {
+                            outerThis.set('percent', Math.floor((e.hits.length / e.totalHits) * 100));
+                            if (outerThis.get('percent') == 0) {
+                                outerThis.set('percent', ((e.hits.length / e.totalHits) * 100).toFixed(2));
+                            }
+                        }
                         outerThis.set('isFailed', false);
                         outerThis.set('isDone', true);
                     }, function(e) {
