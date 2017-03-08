@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Sams&ouml;k Halland</title>
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link href="css/agency.css" rel="stylesheet">
+        <link href="css/samsok.css" rel="stylesheet">
+
+        <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="css/montserrat.css" rel="stylesheet" type="text/css">
+        <link href='css/kaushan.css' rel='stylesheet' type='text/css'>
+        <link href='css/droid.css' rel='stylesheet' type='text/css'>
+        <link href='css/roboto-slab.css' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+
+    <body id="page-top" class="index">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">Samsök Halland</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#providersSection">Välj kataloger</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#about">Om</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <script type="text/x-handlebars">
+
+        <!-- Header -->
+        <header>
+            <div class="container">
+                <div class="intro-text">
+                    <div class="intro-lead-in">Välkommen till Samsök Halland</div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="input-group form-group">
+                            {{input action="doSearch" class="form-control" type="text" value=searchQuery placeholder="Sök"}}
+                            <span class="input-group-btn"><button class="btn btn-primary inline" {{action 'doSearch' searchQuery}}>Sök</button></span>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Searchresults Section -->
+        <section id="searchresult">
+            <div class="container">
+                <div class="col-md-12 col-lg-8">
+                    <h2 class="section-heading">Sökresultat</h2>
+                    {{outlet}}
+                </div>
+                <div class="col-md-12 col-lg-4">
+                    <!-- Providers Section -->
+                    <section id="providersSection">
+                        {{render "providers"}}
+                    </section>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading">Om Samsök</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <p>Samsök Halland är en tjänst från <a href="http://www.regionhalland.se/regionbibliotek" target="_blank">Kultur i Halland - Regionbibliotek</a> tänkt att fungera som ersättare för Bibliotek24 i fjärrlåearbetet.</p>
+                        <p>Tjänsten är under uppbyggnad och synpunkter mottages tacksamt till viktor [punkt] sarge [snabela] regionhalland [punkt] se</p>
+                        <p>Källkoden finns på <a href="https://github.com/regionbibliotekhalland/SamsokJS" target="_blank">regionbibliotekets Github-konto</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </script>
+
+    <script type="text/x-handlebars" id="search">
+        <h2>Söker efter: {{query}}</h2>
+
+        <div class="progress">
+            <div {{bind-attr aria-valuenow="progress"}} {{bind-attr style="progressStyle"}} {{bind-attr class="progressClass"}} role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <span class="sr-only">{{progress}}% Complete</span>
+            </div>
+        </div>
+
+        {{#if remainingSearchers}}
+            <h4>Söker igenom:</h4>
+            {{#each item in remainingSearchers}}
+                <li>{{item.provider.name}}</li>
+            {{/each}}
+        {{/if}}
+        {{#if failedSearchers}}
+            <h4>Misslyckades med att söka i:</h4>
+            {{#each item in failedSearchers}}
+                <li>{{item.provider.name}} (<a {{action 'retryFailed' item}}>försök igen</a>)</li>
+            {{/each}}
+        {{/if}}
+        {{#if doneSearchers}}
+            <h4>Färdigsökt i:</h4>
+            {{#each item in doneSearchers}}
+                {{#if item.allHitsFetched}}
+                    <li><strong>{{item.provider.name}}:</strong> Alla träffar hämtade (<a {{bind-attr href="item.url"}} target="_blank">totalt {{item.numberOfHits}}</a>)</li>
+                {{else}}
+                    <li><strong>{{item.provider.name}}: <span class="fewHitsWarning">Visar {{item.percent}}%</span></strong> ({{item.numberOfHits}} träffar av <a {{bind-attr href="item.url"}} target="_blank">totalt {{item.totalHits}}</a>)</li>
+                {{/if}}
+            {{/each}}
+        {{/if}}
+
+        <h2>({{totalHits}} träffar totalt)</h2>
+        {{input class="form-control" type="text" value=searchFilter placeholder="Sök i träfflistan"}}
+        <div class="list-group">
+        {{#each hit in searchHits}}
+            {{render "searchHit" hit}}
+        {{/each}}
+        </div>
+
+        <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
+    </script>
+    
+    <script type="text/x-handlebars" id="searchHit">
+        <a {{bind-attr href="model.url"}} class="list-group-item" target="_blank">
+        <div class="row">
+            <div class="col-sm-10 vcenter">
+                <h4 class="list-group-item-heading">{{model.title}}</h4>
+                <p class="list-group-item-text">
+                <div class="row"><div class="col-md-12">{{model.author}}</div></div>
+                <div class="row"><div class="col-md-12">{{model.year}}</div></div>
+                <div class="row">
+                    <div class="col-sm-8">{{model.type}}</div>
+                    <div class="col-sm-4 text-right"><small>{{model.location}}</small></div>
+                </div>
+                </p>
+            </div><!--
+            --><div class="col-sm-2 text-center vcenter">
+                <button {{action 'openLibris'}} type="button" class="btn btn-link" aria-label="Libris">
+                <img src="img/libris_leaf.gif">
+                </button>
+            </div>
+        </div>
+        </a>
+    </script>
+
+    <script type="text/x-handlebars" id="providers">
+        <div class="panel panel-default">
+        <div class="panel-heading"><h2 class="section-heading">Kataloger</h2></div>
+        <div class="panel-body">
+        <h3 class="section-subheading text-muted">Här kan du välja vilka kataloger Samsök ska söka i.</h3>
+        {{#each provider in providers}}
+            <h5>{{provider.groupName}}</h5>
+            {{#each provider in provider.providers}}
+                {{#view class="checkbox" tagName="li"}}
+                    <label {{bind-attr for="view.checkboxView.elementId"}}>
+                        {{input type="checkbox" checked=provider.enabled viewName="checkboxView"}}
+                        {{provider.name}}
+                    </label>
+                {{/view}}
+            {{/each}}
+        {{/each}}
+        <h5>Alla</h5>
+        {{#view class="checkbox" tagName="div"}}
+            <label {{bind-attr for="view.checkboxView.elementId"}}>
+                {{input type="checkbox" checked=allEnabled viewName="checkboxView"}}
+                Markera/avmarkera alla
+            </label>
+        {{/view}}
+        <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
+        </div>
+        </div>
+    </script>
+
+    <!-- Cheerio -->
+    <script src="js/cheerio.browserified.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="js/jquery.min.js"></script>
+
+    <!-- Handlebars and Ember -->
+    <script src="js/handlebars.min.js"></script>
+    <script src="js/ember.min.js"></script>
+    <script src="js/ember-data.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="js/jquery.easing.min.js"></script>
+    <script src="js/theme/classie.js"></script>
+    <script src="js/theme/cbpAnimatedHeader.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/theme/agency.js"></script>
+
+    <!-- Other libraries -->
+    <script src="js/modernizr.min.js"></script>
+    <script src="js/underscore-min.js"></script>
+    <script src="js/json2.min.js"></script>
+    <script src="js/jquery.cookie.min.js"></script>
+
+    <!-- Samsok scripts -->
+    <script src="js/samsok/utilities.js"></script>
+    <script src="js/samsok/application.js"></script>
+    <script src="js/samsok/searchcontroller.js"></script>
+    <script src="js/samsok/providerscontroller.js"></script>
+    <script src="js/samsok/parsers.js"></script>
+    <script src="js/samsok/preprocessors.js"></script>
+    <script src="js/samsok/querymodifiers.js"></script>
+    <script src="js/samsok/providers.js"></script>
+    <script src="js/samsok/searcher.js"></script>
+    </body>
+</html>
+
