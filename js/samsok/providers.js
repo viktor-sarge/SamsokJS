@@ -170,7 +170,7 @@ var providers = [
             App.Provider.create({
                 parser: MalmoParser,
                 baseUrl: 'http://malmo.stadsbibliotek.org/',
-                searchUrl: 'http://malmo.stadsbibliotek.org/search~S7*swe/?SUBMIT=Sök+%3E%3E%searchtype=X&searcharg=',
+                searchUrl: 'http://malmo.stadsbibliotek.org/search~S7*swe/?searchtype=X&SORT=D&searcharg=',
                 name: 'Malmö',
                 encoding: 'utf-8'
             }),
