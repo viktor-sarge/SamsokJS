@@ -123,9 +123,9 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: OlaParser,
+                parser: MinabibliotekParser,
                 baseUrl: 'http://bibliotek.boras.se/',
-                searchUrl: 'http://bibliotek.boras.se/search?query=@QUERY@&searchtype=Biblioteket&sort=Relevance&fLibId=00000000-0000-0000-0000-000000000000',
+                searchUrl: 'https://bibliotek.boras.se/search?query=@QUERY@&fMediaId=&fTarget=&fLang=',
                 name: 'Borås',
                 encoding: 'utf-8'
             }),
