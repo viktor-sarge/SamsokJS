@@ -274,7 +274,6 @@ var MinabibliotekParser = function(content, baseurl) {
     }
 
     $('div.catalog-search-result-container > ol.search-result > li').each(function(i, element) {
-        console.log("Matchar 1gng");
         var result = $(this);
         var title = result.find(':header a.work-link').text().trim();
         var author = result.find('span.author-name').text().trim();
