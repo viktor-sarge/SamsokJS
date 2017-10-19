@@ -68,6 +68,14 @@ var providers = [
                 searchUrl: 'https://bibliotek.halmstad.se/web/arena/search?p_auth=g1Ro58aD&p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=',
                 name: 'Halmstad',
                 encoding: 'utf-8'
+            }),
+            App.Provider.create({
+                parser: XsearchParser,
+                baseUrl: '',
+                searchUrl: 'http://libris.kb.se/xsearch?query=@QUERY@%20AND%20bibl:hal&format=json&holdings=true&n=200',
+                name: 'Halmstad Högskolebibliotek',
+                gotoUrl: 'http://libris.kb.se/hitlist?q=@QUERY@+bib%3aumdp&d=libris&m=10&p=1&s=r',
+                encoding: 'utf-8'
             }),        
              App.Provider.create({
                 parser: KohaParser,
