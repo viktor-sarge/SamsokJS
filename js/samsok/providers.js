@@ -65,7 +65,7 @@ var providers = [
                 preprocessor: ArenaPreprocessor,
                 queryModifier: SpacetoPlusQueryModifier, 
                 baseUrl: '',
-                searchUrl: 'https://bibliotek.halmstad.se/web/arena/search?p_auth=g1Ro58aD&p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=',
+                searchUrl: 'https://bibliotek.halmstad.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Halmstad',
                 encoding: 'utf-8'
             }),
