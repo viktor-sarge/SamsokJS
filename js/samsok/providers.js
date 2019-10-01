@@ -54,9 +54,11 @@ var providers = [
         groupName: 'Halland',
         providers: [
             App.Provider.create({
-                parser: LibraParser,
-                baseUrl: 'http://www5.falkenberg.se/opac/opac/',
-                searchUrl: 'http://www5.falkenberg.se/opac/opac/search_result.aspx?TextFritext=',
+                parser: ArenaParser,
+                preprocessor: ArenaPreprocessor,
+                queryModifier: SpacetoPlusQueryModifier,
+                baseUrl: '',
+                searchUrl: 'https://bibliotek.falkenberg.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Falkenberg',
                 encoding: 'utf-8'
             }),        
