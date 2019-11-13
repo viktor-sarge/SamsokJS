@@ -61,11 +61,11 @@ var providers = [
                 searchUrl: 'https://bibliotek.falkenberg.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Falkenberg',
                 encoding: 'utf-8'
-            }),
+            }),        
             App.Provider.create({
                 parser: ArenaParser,
                 preprocessor: ArenaPreprocessor,
-                queryModifier: SpacetoPlusQueryModifier,
+                queryModifier: SpacetoPlusQueryModifier, 
                 baseUrl: '',
                 searchUrl: 'https://bibliotek.halmstad.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Halmstad',
@@ -78,14 +78,14 @@ var providers = [
                 name: 'Halmstad Högskolebibliotek',
                 gotoUrl: 'http://libris.kb.se/hitlist?q=@QUERY@+bib%3aumdp&d=libris&m=10&p=1&s=r',
                 encoding: 'utf-8'
-            }),
-            App.Provider.create({
+            }),        
+             App.Provider.create({
                 parser: KohaParser,
                 baseUrl: 'http://hylte.bibkat.se/',
                 searchUrl: 'http://hylte.bibkat.se/cgi-bin/koha/opac-search.pl?q=@QUERY@&branch_group_limit=',
                 name: 'Hylte',
                 encoding: 'utf-8'
-            }),
+            }),       
             App.Provider.create({
                 parser: ArenaParser,
                 baseUrl: '',
@@ -94,12 +94,13 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: LibraParser,
-                baseUrl: 'http://opac.laholm.axiell.com/opac/',
-                searchUrl: 'http://opac.laholm.axiell.com/opac/search_result.aspx?TextFritext=',
+                parser: ArenaParser,
+				preprocessor: ArenaPreprocessor,
+                baseUrl: '',
+                searchUrl: 'https://biblioteket.laholm.se/web/pub/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
                 name: 'Laholm',
                 encoding: 'utf-8'
-            }),
+            }),            
             App.Provider.create({
                 parser: ArenaParser,
                 baseUrl: 'https://www.varbergsbibliotek.se/web/arena',
@@ -119,7 +120,7 @@ var providers = [
                 name: 'Depåbiblioteket i Umeå',
                 gotoUrl: 'http://libris.kb.se/hitlist?q=@QUERY@+bib%3aumdp&d=libris&m=10&p=1&s=r',
                 encoding: 'utf-8'
-            })
+            })        
         ]
     }),
     App.ProviderGroup.create({
@@ -141,9 +142,9 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
-                preprocessor: ArenaPreprocessor,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
-                searchUrl: 'https://www.falkopingsbibliotek.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=',
+                searchUrl: 'https://www.falkopingsbibliotek.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
                 name: 'Falköping',
                 encoding: 'utf-8'
             }),
@@ -155,7 +156,7 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: MinabibliotekParser,
+                parser: MinabibliotekParser, 
                 baseUrl: 'https://bibliotek.jonkoping.se/',
                 searchUrl: 'https://bibliotek.jonkoping.se/search?query=@QUERY@&fMediaId=&fTarget=',
                 name: 'Jönköping',
@@ -163,17 +164,17 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
-                preprocessor: ArenaPreprocessor,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
-                searchUrl: 'https://bibliotek.kalmar.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=',
+                searchUrl: 'https://bibliotek.kalmar.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Kalmar',
                 encoding: 'utf-8'
             }),
             App.Provider.create({
                 parser: ArenaParser,
-                preprocessor: ArenaPreprocessor,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
-                searchUrl: 'https://bibliotek.karlskrona.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=',
+                searchUrl: 'https://bibliotek.karlskrona.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Karlskrona',
                 encoding: 'utf-8'
             }),
@@ -186,20 +187,20 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
-                preprocessor: ArenaPreprocessor,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
-                searchUrl: 'https://bibliotek.mark.se/web/arena/search?p_auth=pgEphOAC&p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=',
+                searchUrl: 'https://bibliotek.mark.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Mark',
                 encoding: 'utf-8'
             }),
             App.Provider.create({
                 parser: ArenaParser,
-                preprocessor: ArenaPreprocessor,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
-                searchUrl: 'https://snokabibliotek.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=',
+                searchUrl: 'https://snokabibliotek.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
                 name: 'SkåneNO',
                 encoding: 'utf-8'
-            }),
+            }),     
             App.Provider.create({
                 parser: SsbParser,
                 baseUrl: 'https://biblioteket.stockholm.se/',
@@ -216,10 +217,10 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
-                preprocessor: ArenaPreprocessor,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
-                searchUrl: 'https://bibliotek.vskaraborg.se/web/pub/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
-                name: 'Bibliotek Västra Skaraborg',
+				searchUrl: 'https://bibliotek.vskaraborg.se/web/pub/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
+				name: 'Bibliotek Västra Skaraborg',
                 encoding: 'utf-8'
             }),
             App.Provider.create({
@@ -228,15 +229,15 @@ var providers = [
                 searchUrl: 'http://webbsok.mikromarc.se/Mikromarc3/Web/search.aspx?Unit=6469&db=vargarda&SC=FT&SW=@QUERY@&LB=FT&IN=&SU=0&',
                 name: 'Vårgårda',
                 encoding: 'utf-8'
-            }),
+            }),  
             App.Provider.create({
                 parser: ArenaParser,
-                preprocessor: ArenaPreprocessor,
+                preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
-                searchUrl: 'https://bibliotek.vaxjo.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlets&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&p_r_p_687834046_facet_queries=&p_r_p_687834046_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_687834046_search_type=solr&p_r_p_687834046_search_query=',
+                searchUrl: 'https://bibliotek.vaxjo.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Växjö',
                 encoding: 'utf-8'
-            })
+            })  
         ]
     })
 ];
