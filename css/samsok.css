@@ -22,3 +22,7 @@ input.form-control {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
 }
+
+.catalogues-list {
+    padding-inline-start: 10px;
+}

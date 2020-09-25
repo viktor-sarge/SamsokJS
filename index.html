@@ -188,7 +188,7 @@
         {{#each provider in providers}}
             <h5>{{provider.groupName}}</h5>
             {{#each provider in provider.providers}}
-            <ul>
+            <ul class="catalogues-list">
                 {{#view class="checkbox" tagName="li"}}
                     <label {{bind-attr for="view.checkboxView.elementId"}}>
                         {{input type="checkbox" checked=provider.enabled viewName="checkboxView"}}
