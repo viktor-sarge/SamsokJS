@@ -32,3 +32,8 @@ input.form-control {
     font-weight: 500;
     text-transform: none;
 }
+
+header .intro-text {
+    padding-top: 220px;
+    padding-bottom: 220px;
+}
