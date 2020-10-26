@@ -66,14 +66,16 @@
             <header>
                 <div class="container">
                     <div class="intro-text">
-                        <div class="intro-lead-in"></div>
-                        <div class="row">
-                            <div class="col-md-6 col-md-offset-3">
-                                <div class="input-group form-group">
-                                {{input action="doSearch" class="form-control" type="text" value=searchQuery title="Sökruta" placeholder="Sök"}}
-                                <span class="input-group-btn"><button class="btn btn-primary inline" {{action 'doSearch' searchQuery}}>Sök</button></span>
+                        <div class="rh-background">
+                            <div class="intro-lead-in"><h1>Välkommen till Samsök&nbsp;Halland</h1></div>
+                            <div class="row">
+                                <div class="col-md-6 col-md-offset-3">
+                                    <div class="input-group form-group">
+                                    {{input action="doSearch" class="form-control" type="text" value=searchQuery title="Sökruta" placeholder="Sök"}}
+                                    <span class="input-group-btn"><button class="btn btn-primary inline" {{action 'doSearch' searchQuery}}>Sök</button></span>
+                                    </div>
                                 </div>
-                            </div>
+                        </div>
                     </div>
                 </div>
             </header>
