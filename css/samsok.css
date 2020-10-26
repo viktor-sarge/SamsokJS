@@ -59,3 +59,19 @@ header .intro-text {
     margin-top: 2ex;
     margin-bottom: 3ex;
 }
+
+section#searchresult {
+    background: #f5f5f5;
+}
+
+.panel-default>.panel-heading {
+    color: #333;
+    background-color: rgba(34, 34, 34, 0.08);
+    border-color: #ddd;
+    border-bottom: 0;
+}
+
+.panel-default>.panel-heading h2 {
+    font-weight: 500;
+    font-size: 30px;
+}
