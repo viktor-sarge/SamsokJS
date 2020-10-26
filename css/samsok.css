@@ -45,3 +45,7 @@ header .intro-text {
     padding-left: 3em;
     padding-right: 3em;
 }
+
+.rh-background h1 {
+    font-family: "Kaushan Script","Helvetica Neue",Helvetica,Arial,cursive;
+}
