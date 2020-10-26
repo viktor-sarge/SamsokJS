@@ -75,3 +75,7 @@ section#searchresult {
     font-weight: 500;
     font-size: 30px;
 }
+
+#search-results-heading {
+    margin-top: 1em;
+}

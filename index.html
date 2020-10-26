@@ -84,7 +84,6 @@
             <section id="searchresult">
                 <div class="container">
                     <div class="col-md-12 col-lg-8">
-                        <h2 class="section-heading">Sökresultat</h2>
                         {{outlet}}
                     </div>
                     <div class="col-md-12 col-lg-4">
@@ -149,7 +148,7 @@
                 {{/each}}
             </ul>
         {{/if}}
-
+        <h2 class="section-heading" id="search-results-heading">Sökresultat</h2>
         <h3>({{totalHits}} träffar totalt)</h3>
         {{input class="form-control rh-filter" type="text" value=searchFilter title="Filtrera träfflistan" placeholder="Filtrera träfflistan"}}
         <div class="list-group">
