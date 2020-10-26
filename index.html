@@ -61,57 +61,57 @@
     </nav>
 
     <script type="text/x-handlebars">
-
-        <!-- Header -->
-        <header>
-            <div class="container">
-                <div class="intro-text">
-                    <div class="intro-lead-in"></div>
-                    <div class="row">
-                        <div class="col-md-6 col-md-offset-3">
-                            <div class="input-group form-group">
-                            {{input action="doSearch" class="form-control" type="text" value=searchQuery aria-label="Sökruta" title="Sökruta" placeholder="Sök"}}
-                            <span class="input-group-btn"><button class="btn btn-primary inline" {{action 'doSearch' searchQuery}}>Sök</button></span>
+        <main>
+            <!-- Header -->
+            <header>
+                <div class="container">
+                    <div class="intro-text">
+                        <div class="intro-lead-in"></div>
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="input-group form-group">
+                                {{input action="doSearch" class="form-control" type="text" value=searchQuery aria-label="Sökruta" title="Sökruta" placeholder="Sök"}}
+                                <span class="input-group-btn"><button class="btn btn-primary inline" {{action 'doSearch' searchQuery}}>Sök</button></span>
+                                </div>
                             </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Searchresults Section -->
+            <section id="searchresult">
+                <div class="container">
+                    <div class="col-md-12 col-lg-8">
+                        <h2 class="section-heading">Sökresultat</h2>
+                        {{outlet}}
+                    </div>
+                    <div class="col-md-12 col-lg-4">
+                        <!-- Providers Section -->
+                        <section id="providersSection">
+                            {{render "providers"}}
+                        </section>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <h2 class="section-heading">Om Samsök</h2>
                         </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Searchresults Section -->
-        <section id="searchresult">
-            <div class="container">
-                <div class="col-md-12 col-lg-8">
-                    <h2 class="section-heading">Sökresultat</h2>
-                    {{outlet}}
-                </div>
-                <div class="col-md-12 col-lg-4">
-                    <!-- Providers Section -->
-                    <section id="providersSection">
-                        {{render "providers"}}
-                    </section>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Section -->
-        <section id="about">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <h2 class="section-heading">Om Samsök</h2>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 text-center">
+                            <p>Samsök Halland är en tjänst från <a href="http://www.regionhalland.se/regionbibliotek" target="_blank">Kultur i Halland - Regionbibliotek</a> tänkt att fungera som ersättare för Bibliotek24 i fjärrlåearbetet.</p>
+                            <p>Synpunkter kan lämnas till viktor [punkt] sarge [snabela] regionhalland [punkt] se</p>
+                            <p>Källkoden finns på <a href="https://github.com/viktor-sarge/SamsokJS" target="_blank">Viktors Github-konto</a></p>
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <p>Samsök Halland är en tjänst från <a href="http://www.regionhalland.se/regionbibliotek" target="_blank">Kultur i Halland - Regionbibliotek</a> tänkt att fungera som ersättare för Bibliotek24 i fjärrlåearbetet.</p>
-                        <p>Synpunkter kan lämnas till viktor [punkt] sarge [snabela] regionhalland [punkt] se</p>
-                        <p>Källkoden finns på <a href="https://github.com/viktor-sarge/SamsokJS" target="_blank">Viktors Github-konto</a></p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
+            </section>
+        </main>
     </script>
 
     <script type="text/x-handlebars" id="search">
