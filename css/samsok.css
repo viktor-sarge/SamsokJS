@@ -26,3 +26,9 @@ input.form-control {
 .catalogues-list {
     padding-inline-start: 10px;
 }
+
+.btn-primary {
+    color: black;
+    font-weight: 500;
+    text-transform: none;
+}
