@@ -189,16 +189,16 @@
         <h3 class="section-subheading text-muted">Välj här vilka kataloger som skall sökas.</h3>
         {{#each provider in providers}}
             <h4>{{provider.groupName}}</h4>
-            {{#each provider in provider.providers}}
             <ul class="catalogues-list">
-                {{#view class="checkbox" tagName="li"}}
-                    <label {{bind-attr for="view.checkboxView.elementId"}}>
-                        {{input type="checkbox" checked=provider.enabled viewName="checkboxView"}}
-                        {{provider.name}}
-                    </label>
-                {{/view}}
+                {{#each provider in provider.providers}}
+                    {{#view class="checkbox" tagName="li"}}
+                        <label {{bind-attr for="view.checkboxView.elementId"}}>
+                            {{input type="checkbox" checked=provider.enabled viewName="checkboxView"}}
+                            {{provider.name}}
+                        </label>
+                    {{/view}}
+                {{/each}}
             </ul>
-            {{/each}}
         {{/each}}
         <h4>Alla</h4>
         {{#view class="checkbox" tagName="div"}}
