@@ -151,7 +151,7 @@
         {{/if}}
 
         <h3>({{totalHits}} träffar totalt)</h3>
-        {{input class="form-control" type="text" value=searchFilter placeholder="Sök i träfflistan"}}
+        {{input class="form-control" type="text" value=searchFilter placeholder="Filtrera träfflistan"}}
         <div class="list-group">
         {{#each hit in searchHits}}
             {{render "searchHit" hit}}
