@@ -139,13 +139,15 @@
         {{/if}}
         {{#if doneSearchers}}
             <h3>Färdigsökt i:</h3>
-            {{#each item in doneSearchers}}
-                {{#if item.allHitsFetched}}
-                    <li><strong>{{item.provider.name}}:</strong> Alla träffar hämtade (<a {{bind-attr href="item.url"}} target="_blank">totalt {{item.numberOfHits}}</a>)</li>
-                {{else}}
-                    <li><strong>{{item.provider.name}}: <span class="fewHitsWarning">Visar {{item.percent}}%</span></strong> ({{item.numberOfHits}} träffar av <a {{bind-attr href="item.url"}} target="_blank">totalt {{item.totalHits}}</a>)</li>
-                {{/if}}
-            {{/each}}
+            <ul>
+                {{#each item in doneSearchers}}
+                    {{#if item.allHitsFetched}}
+                        <li><strong>{{item.provider.name}}:</strong> Alla träffar hämtade (<a {{bind-attr href="item.url"}} target="_blank">totalt {{item.numberOfHits}}</a>)</li>
+                    {{else}}
+                        <li><strong>{{item.provider.name}}: <span class="fewHitsWarning">Visar {{item.percent}}%</span></strong> ({{item.numberOfHits}} träffar av <a {{bind-attr href="item.url"}} target="_blank">totalt {{item.totalHits}}</a>)</li>
+                    {{/if}}
+                {{/each}}
+            </ul>
         {{/if}}
 
         <h3>({{totalHits}} träffar totalt)</h3>
