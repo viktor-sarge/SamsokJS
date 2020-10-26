@@ -37,3 +37,11 @@ header .intro-text {
     padding-top: 220px;
     padding-bottom: 220px;
 }
+
+.rh-background {
+    background: rgba(34, 34, 34, 0.9);
+    padding-top: 1.5em;
+    padding-bottom: 3em;
+    padding-left: 3em;
+    padding-right: 3em;
+}
