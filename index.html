@@ -186,7 +186,7 @@
         <div class="panel-body">
         <h3 class="section-subheading text-muted">Välj här vilka kataloger som skall sökas.</h3>
         {{#each provider in providers}}
-            <h5>{{provider.groupName}}</h5>
+            <h4>{{provider.groupName}}</h4>
             {{#each provider in provider.providers}}
             <ul class="catalogues-list">
                 {{#view class="checkbox" tagName="li"}}
@@ -198,7 +198,7 @@
             </ul>
             {{/each}}
         {{/each}}
-        <h5>Alla</h5>
+        <h4>Alla</h4>
         {{#view class="checkbox" tagName="div"}}
             <label {{bind-attr for="view.checkboxView.elementId"}}>
                 {{input type="checkbox" checked=allEnabled viewName="checkboxView"}}
