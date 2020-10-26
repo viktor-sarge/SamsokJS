@@ -50,3 +50,7 @@ header .intro-text {
     font-family: "Kaushan Script","Helvetica Neue",Helvetica,Arial,cursive;
     color: #fed136;
 }
+
+.catalogues-list {
+    margin-bottom: 2em;
+}
