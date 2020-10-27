@@ -34,12 +34,12 @@ input.form-control {
 }
 
 header .intro-text {
-    padding-top: 220px;
-    padding-bottom: 220px;
+    padding-top: 300px;
+    padding-bottom: 250px;
 }
 
 .rh-background {
-    background: rgba(34, 34, 34, 0.9);
+    background: rgba(34, 34, 34, 0.95);
     padding-top: 1.5em;
     padding-bottom: 3em;
     padding-left: 3em;
@@ -48,7 +48,7 @@ header .intro-text {
 
 .rh-background h1 {
     font-family: "Kaushan Script","Helvetica Neue",Helvetica,Arial,cursive;
-    color: #fed136;
+    color: #da725d
 }
 
 .catalogues-list {
@@ -78,4 +78,14 @@ section#searchresult {
 
 #search-results-heading {
     margin-top: 1em;
+}
+
+.btn-link:focus {
+    background:rgba(92, 184, 92, 0.2);
+    border-radius: 4em;
+    padding:1ex;
+}
+
+.navbar-default .navbar-brand {
+    color: #da725d;
 }
