@@ -1,258 +1,322 @@
 <!DOCTYPE html>
 <html lang="sv">
-
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Sams&ouml;k Halland</title>
 
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <link href="css/agency.css" rel="stylesheet">
-        <link href="css/samsok.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/bootstrap.min.css" />
+        <link href="css/agency.css" rel="stylesheet" />
+        <link href="css/samsok.css" rel="stylesheet" />
 
-        <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-        <link href="css/montserrat.css" rel="stylesheet" type="text/css">
-        <link href='css/kaushan.css' rel='stylesheet' type='text/css'>
-        <link href='css/droid.css' rel='stylesheet' type='text/css'>
-        <link href='css/roboto-slab.css' rel='stylesheet' type='text/css'>
+        <link
+            href="font-awesome-4.1.0/css/font-awesome.min.css"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <link href="css/montserrat.css" rel="stylesheet" type="text/css" />
+        <link href="css/kaushan.css" rel="stylesheet" type="text/css" />
+        <link href="css/droid.css" rel="stylesheet" type="text/css" />
+        <link href="css/roboto-slab.css" rel="stylesheet" type="text/css" />
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
 
     <body id="page-top" class="index">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-shrink navbar-fixed-top">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header page-scroll">
+                    <button
+                        type="button"
+                        class="navbar-toggle"
+                        data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1"
+                    >
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand page-scroll" href="#page-top"
+                        >Samsök Halland</a
+                    >
+                </div>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-default navbar-shrink navbar-fixed-top">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand page-scroll" href="#page-top">Samsök Halland</a>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div
+                    class="collapse navbar-collapse"
+                    id="bs-example-navbar-collapse-1"
+                >
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+                        <li>
+                            <a class="page-scroll" href="#providersSection"
+                                >Välj kataloger</a
+                            >
+                        </li>
+                        <li>
+                            <a class="page-scroll" href="#about">Om</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
             </div>
+            <!-- /.container-fluid -->
+        </nav>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#providersSection">Välj kataloger</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#about">Om</a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container-fluid -->
-    </nav>
-
-    <script type="text/x-handlebars">
-        <main>
-            <!-- Header -->
-            <header>
-                <div class="container">
-                    <div class="intro-text">
-                        <div class="rh-background">
-                            <div class="intro-lead-in"><h1>Välkommen till Samsök&nbsp;Halland</h1></div>
-                            <div class="row">
-                                <div class="col-md-6 col-md-offset-3">
-                                    <div class="input-group form-group">
-                                    {{input action="doSearch" class="form-control" type="text" value=searchQuery title="Sökruta" placeholder="Skriv din sökning här"}}
-                                    <span class="input-group-btn"><button class="btn btn-primary inline" {{action 'doSearch' searchQuery}}>Sök</button></span>
+        <script type="text/x-handlebars">
+            <main>
+                <!-- Header -->
+                <header>
+                    <div class="container">
+                        <div class="intro-text">
+                            <div class="rh-background">
+                                <div class="intro-lead-in"><h1>Välkommen till Samsök&nbsp;Halland</h1></div>
+                                <div class="row">
+                                    <div class="col-md-6 col-md-offset-3">
+                                        <div class="input-group form-group">
+                                        {{input action="doSearch" class="form-control" type="text" value=searchQuery title="Sökruta" placeholder="Skriv din sökning här"}}
+                                        <span class="input-group-btn"><button class="btn btn-primary inline" {{action 'doSearch' searchQuery}}>Sök</button></span>
+                                        </div>
                                     </div>
-                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </header>
+                </header>
 
-            <!-- Searchresults Section -->
-            <section id="searchresult">
-                <div class="container">
-                    <div class="col-md-12 col-lg-8">
-                        {{outlet}}
-                    </div>
-                    <div class="col-md-12 col-lg-4">
-                        <!-- Providers Section -->
-                        <section id="providersSection">
-                            {{render "providers"}}
-                        </section>
-                    </div>
-                </div>
-            </section>
-
-            <!-- About Section -->
-            <section id="about">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <h2 class="section-heading">Om Samsök</h2>
+                <!-- Searchresults Section -->
+                <section id="searchresult">
+                    <div class="container">
+                        <div class="col-md-12 col-lg-8">
+                            {{outlet}}
+                        </div>
+                        <div class="col-md-12 col-lg-4">
+                            <!-- Providers Section -->
+                            <section id="providersSection">
+                                {{render "providers"}}
+                            </section>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <p>Samsök Halland är en tjänst från <a href="http://www.regionhalland.se/regionbibliotek" target="_blank">Kultur i Halland - Regionbibliotek</a> tänkt att fungera som ersättare för Bibliotek24 i fjärrlåearbetet.</p>
-                            <p>Synpunkter kan lämnas till viktor [punkt] sarge [snabela] regionhalland [punkt] se</p>
-                            <p>Källkoden finns på <a href="https://github.com/viktor-sarge/SamsokJS" target="_blank">Viktors Github-konto</a></p>
+                </section>
+            </main>
+            <footer>
+                <!-- About Section -->
+                <section id="about" style="padding-bottom:0">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h2 class="section-heading">Om Samsök</h2>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p>Samsök Halland är en tjänst från <a href="http://www.regionhalland.se/regionbibliotek" target="_blank">Kultur i Halland - Regionbibliotek</a> tänkt att fungera som ersättare för Bibliotek24 i fjärrlåearbetet.</p>
+                                <p>Synpunkter kan lämnas till viktor [punkt] sarge [snabela] regionhalland [punkt] se</p>
+                                <p>Källkoden finns på <a href="https://github.com/viktor-sarge/SamsokJS" target="_blank">Viktors Github-konto</a></p>
+                            </div>
                         </div>
                     </div>
+                </section>
+                <section>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h2 class="section-heading">Tillgänglighet för Samsök Halland</h2>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p>Region Halland står bakom den här webbplatsen. Vi vill att så många som möjligt ska kunna använda webbplatsen. Det här dokumentet beskriver hur Samsök Halland uppfyller lagen om tillgänglighet till digital offentlig service, eventuella kända tillgänglighetsproblem och hur du kan rapportera brister till oss så att vi kan åtgärda dem.</p>
+
+                                <h3>Hur tillgänglig är webbplatsen?</h3>
+                                <p>Vi har inga kända brister i tillgängligheten för den här webbplatsen.</p>
+
+                                <h3>Vad kan du göra om du inte kan använda delar av webbplatsen?</h3>
+                                <p>Om du behöver innehåll från Samsök Halland som inte är tillgängligt för dig, men som är undantaget från lagens tillämpningsområde enligt beskrivning nedan, kan du meddela oss.</p>
+
+                                <p>Du kan också kontakta oss på följande sätt:</p>
+                                <ul>
+                                    <li>skicka e-post till <a href="mailto:regionen@regionhalland.se">regionen@regionhalland.se</a></li>
+                                    <li>ring <a href="tel:035-134800">035-13 48 00</a></li>
+                                </ul>
+
+                                <h3>Rapportera brister i webbplatsens tillgänglighet</h3>
+                                <p>Vi strävar hela tiden efter att förbättra webbplatsens tillgänglighet. Om du upptäcker problem som inte är beskrivna på den här sidan, eller om du anser att vi inte uppfyller lagens krav, meddela oss så att vi får veta att problemet finns.</p>
+
+                                <h3>Tillsyn</h3>
+                                <p>Myndigheten för digital förvaltning har ansvaret för tillsyn över lagen om tillgänglighet till digital offentlig service. Om du inte är nöjd med hur vi hanterar ditt påpekande om bristande webbtillgänglighet eller din begäran om tillgängliggörande av innehåll kan du anmäla till Myndigheten för digital förvaltning.</p>
+
+                                <h3>Teknisk information om webbplatsens tillgänglighet</h3>
+                                <p>Den här webbplatsen är helt förenlig med lagen om tillgänglighet till digital offentlig service.</p>
+
+                                <h3>Innehåll som inte är tillgängligt</h3>
+                                Det innehåll som beskrivs nedan är på ett eller annat sätt inte helt tillgängligt.
+
+                                <h3>Oskäligt betungande anpassning</h3>
+                                <p>Region Halland åberopar undantag för oskäligt betungande anpassning enligt 12 § lagen om tillgänglighet till digital offentlig service för nedanstående innehåll.</p>
+
+                                <p>Sök- och filtreringsfälten skulle kunna ha en aria-label för att göra deras syften tydligare, men det är tyvärr inte möjligt med den version av teknikstacken som Samsök använder.</p>
+
+                                <h3>Hur vi testat webbplatsen</h3>
+                                <p>Vi har gjort en självskattning (intern testning) av Samsök Halland.</p>
+
+                                <p>Senaste bedömningen gjordes den 29 mars 2021.</p>
+
+                                <p>Redogörelsen uppdaterades senast den 29 mars 2021.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </footer>
+        </script>
+
+        <script type="text/x-handlebars" id="search">
+            <h2>Söker efter: {{query}}</h2>
+
+            <div class="progress">
+                <div {{bind-attr aria-valuenow="progress"}} {{bind-attr style="progressStyle"}} {{bind-attr class="progressClass"}} role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <span class="sr-only">{{progress}}% Complete</span>
                 </div>
-            </section>
-        </main>
-    </script>
-
-    <script type="text/x-handlebars" id="search">
-        <h2>Söker efter: {{query}}</h2>
-
-        <div class="progress">
-            <div {{bind-attr aria-valuenow="progress"}} {{bind-attr style="progressStyle"}} {{bind-attr class="progressClass"}} role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                <span class="sr-only">{{progress}}% Complete</span>
             </div>
-        </div>
 
-        {{#if remainingSearchers}}
-            <h4>Söker igenom:</h4>
-            {{#each item in remainingSearchers}}
-                <li>{{item.provider.name}}</li>
-            {{/each}}
-        {{/if}}
-        {{#if failedSearchers}}
-            <h4>Misslyckades med att söka i:</h4>
-            {{#each item in failedSearchers}}
-                <li>{{item.provider.name}} (<a {{action 'retryFailed' item}}>försök igen</a>)</li>
-            {{/each}}
-        {{/if}}
-        {{#if doneSearchers}}
-            <h3>Färdigsökt i:</h3>
-            <ul>
-                {{#each item in doneSearchers}}
-                    {{#if item.allHitsFetched}}
-                        <li><strong>{{item.provider.name}}:</strong> Alla träffar hämtade (<a {{bind-attr href="item.url"}} target="_blank">totalt {{item.numberOfHits}}</a>)</li>
-                    {{else}}
-                        <li><strong>{{item.provider.name}}: <span class="fewHitsWarning">Visar {{item.percent}}%</span></strong> ({{item.numberOfHits}} träffar av <a {{bind-attr href="item.url"}} target="_blank">totalt {{item.totalHits}}</a>)</li>
-                    {{/if}}
+            {{#if remainingSearchers}}
+                <h4>Söker igenom:</h4>
+                {{#each item in remainingSearchers}}
+                    <li>{{item.provider.name}}</li>
                 {{/each}}
-            </ul>
-        {{/if}}
-        <h2 class="section-heading" id="search-results-heading">Sökresultat</h2>
-        <h3>({{totalHits}} träffar totalt)</h3>
-        {{input class="form-control rh-filter" type="text" value=searchFilter title="Filtrera träfflistan" placeholder="Filtrera träfflistan"}}
-        <div class="list-group">
-        {{#each hit in searchHits}}
-            {{render "searchHit" hit}}
-        {{/each}}
-        </div>
-
-        <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
-    </script>
-    
-    <script type="text/x-handlebars" id="searchHit">
-        <a {{bind-attr href="model.url"}} class="list-group-item" target="_blank">
-        <div class="row col-sm-12">
-            <h4 class="list-group-item-heading">{{model.title}}</h4>
-        </div>
-        <div class="row">
-            <div class="col-sm-10 vcenter">
-                
-                <p class="list-group-item-text">
-                <div class="row"><div class="col-md-12">{{model.author}}</div></div>
-                <div class="row"><div class="col-md-12">{{model.year}}</div></div>
-                <div class="row">
-                    <div class="col-sm-8">{{model.type}}</div>
-                    <div class="col-sm-4 text-right"><small>{{model.location}}</small></div>
-                </div>
-                </p>
-            </div><!--
-            --><div class="col-sm-2 text-center vcenter">
-                <button {{action 'openLibris'}} type="button" class="btn btn-link" aria-label="Libris">
-                    <img src="img/libris_leaf.gif" alt="">
-                </button>
+            {{/if}}
+            {{#if failedSearchers}}
+                <h4>Misslyckades med att söka i:</h4>
+                {{#each item in failedSearchers}}
+                    <li>{{item.provider.name}} (<a {{action 'retryFailed' item}}>försök igen</a>)</li>
+                {{/each}}
+            {{/if}}
+            {{#if doneSearchers}}
+                <h3>Färdigsökt i:</h3>
+                <ul>
+                    {{#each item in doneSearchers}}
+                        {{#if item.allHitsFetched}}
+                            <li><strong>{{item.provider.name}}:</strong> Alla träffar hämtade (<a {{bind-attr href="item.url"}} target="_blank">totalt {{item.numberOfHits}}</a>)</li>
+                        {{else}}
+                            <li><strong>{{item.provider.name}}: <span class="fewHitsWarning">Visar {{item.percent}}%</span></strong> ({{item.numberOfHits}} träffar av <a {{bind-attr href="item.url"}} target="_blank">totalt {{item.totalHits}}</a>)</li>
+                        {{/if}}
+                    {{/each}}
+                </ul>
+            {{/if}}
+            <h2 class="section-heading" id="search-results-heading">Sökresultat</h2>
+            <h3>({{totalHits}} träffar totalt)</h3>
+            {{input class="form-control rh-filter" type="text" value=searchFilter title="Filtrera träfflistan" placeholder="Filtrera träfflistan"}}
+            <div class="list-group">
+            {{#each hit in searchHits}}
+                {{render "searchHit" hit}}
+            {{/each}}
             </div>
-        </div>
-        </a>
-    </script>
 
-    <script type="text/x-handlebars" id="providers">
-        <div class="panel panel-default">
-        <div class="panel-heading"><h2 class="section-heading">Kataloger</h2></div>
-        <div class="panel-body">
-        <h3 class="section-subheading text-muted">Välj här vilka kataloger som skall sökas.</h3>
-        {{#each provider in providers}}
-            <h4>{{provider.groupName}}</h4>
-            <ul class="catalogues-list">
-                {{#each provider in provider.providers}}
-                    {{#view class="checkbox" tagName="li"}}
-                        <label {{bind-attr for="view.checkboxView.elementId"}}>
-                            {{input type="checkbox" checked=provider.enabled viewName="checkboxView"}}
-                            {{provider.name}}
-                        </label>
-                    {{/view}}
-                {{/each}}
-            </ul>
-        {{/each}}
-        <h4>Alla</h4>
-        {{#view class="checkbox" tagName="div"}}
-            <label {{bind-attr for="view.checkboxView.elementId"}}>
-                {{input type="checkbox" checked=allEnabled viewName="checkboxView"}}
-                Markera/avmarkera alla
-            </label>
-        {{/view}}
-        <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
-        </div>
-        </div>
-    </script>
+            <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
+        </script>
 
-    <!-- Cheerio -->
-    <script src="js/cheerio.browserified.min.js"></script>
+        <script type="text/x-handlebars" id="searchHit">
+            <a {{bind-attr href="model.url"}} class="list-group-item" target="_blank">
+            <div class="row col-sm-12">
+                <h4 class="list-group-item-heading">{{model.title}}</h4>
+            </div>
+            <div class="row">
+                <div class="col-sm-10 vcenter">
 
-    <!-- jQuery -->
-    <script src="js/jquery.min.js"></script>
+                    <p class="list-group-item-text">
+                    <div class="row"><div class="col-md-12">{{model.author}}</div></div>
+                    <div class="row"><div class="col-md-12">{{model.year}}</div></div>
+                    <div class="row">
+                        <div class="col-sm-8">{{model.type}}</div>
+                        <div class="col-sm-4 text-right"><small>{{model.location}}</small></div>
+                    </div>
+                    </p>
+                </div><!--
+                --><div class="col-sm-2 text-center vcenter">
+                    <button {{action 'openLibris'}} type="button" class="btn btn-link" aria-label="Libris">
+                        <img src="img/libris_leaf.gif" alt="">
+                    </button>
+                </div>
+            </div>
+            </a>
+        </script>
 
-    <!-- Handlebars and Ember -->
-    <script src="js/handlebars.min.js"></script>
-    <script src="js/ember.min.js"></script>
-    <script src="js/ember-data.min.js"></script>
+        <script type="text/x-handlebars" id="providers">
+            <div class="panel panel-default">
+            <div class="panel-heading"><h2 class="section-heading">Kataloger</h2></div>
+            <div class="panel-body">
+            <h3 class="section-subheading text-muted">Välj här vilka kataloger som skall sökas.</h3>
+            {{#each provider in providers}}
+                <h4>{{provider.groupName}}</h4>
+                <ul class="catalogues-list">
+                    {{#each provider in provider.providers}}
+                        {{#view class="checkbox" tagName="li"}}
+                            <label {{bind-attr for="view.checkboxView.elementId"}}>
+                                {{input type="checkbox" checked=provider.enabled viewName="checkboxView"}}
+                                {{provider.name}}
+                            </label>
+                        {{/view}}
+                    {{/each}}
+                </ul>
+            {{/each}}
+            <h4>Alla</h4>
+            {{#view class="checkbox" tagName="div"}}
+                <label {{bind-attr for="view.checkboxView.elementId"}}>
+                    {{input type="checkbox" checked=allEnabled viewName="checkboxView"}}
+                    Markera/avmarkera alla
+                </label>
+            {{/view}}
+            <a class="page-scroll" href="#page-top">Tillbaks till toppen</a>
+            </div>
+            </div>
+        </script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
+        <!-- Cheerio -->
+        <script src="js/cheerio.browserified.min.js"></script>
 
-    <!-- Plugin JavaScript -->
-    <script src="js/jquery.easing.min.js"></script>
-    <script src="js/theme/classie.js"></script>
+        <!-- jQuery -->
+        <script src="js/jquery.min.js"></script>
 
-    <!-- Custom Theme JavaScript -->
-    <script src="js/theme/agency.js"></script>
+        <!-- Handlebars and Ember -->
+        <script src="js/handlebars.min.js"></script>
+        <script src="js/ember.min.js"></script>
+        <script src="js/ember-data.min.js"></script>
 
-    <!-- Other libraries -->
-    <script src="js/modernizr.min.js"></script>
-    <script src="js/underscore-min.js"></script>
-    <script src="js/json2.min.js"></script>
-    <script src="js/jquery.cookie.min.js"></script>
+        <!-- Bootstrap Core JavaScript -->
+        <script src="js/bootstrap.min.js"></script>
 
-    <!-- Samsok scripts -->
-    <script src="js/samsok/utilities.js"></script>
-    <script src="js/samsok/application.js"></script>
-    <script src="js/samsok/searchcontroller.js"></script>
-    <script src="js/samsok/providerscontroller.js"></script>
-    <script src="js/samsok/parsers.js"></script>
-    <script src="js/samsok/preprocessors.js"></script>
-    <script src="js/samsok/querymodifiers.js"></script>
-    <script src="js/samsok/providers.js"></script>
-    <script src="js/samsok/searcher.js"></script>
+        <!-- Plugin JavaScript -->
+        <script src="js/jquery.easing.min.js"></script>
+        <script src="js/theme/classie.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="js/theme/agency.js"></script>
+
+        <!-- Other libraries -->
+        <script src="js/modernizr.min.js"></script>
+        <script src="js/underscore-min.js"></script>
+        <script src="js/json2.min.js"></script>
+        <script src="js/jquery.cookie.min.js"></script>
+
+        <!-- Samsok scripts -->
+        <script src="js/samsok/utilities.js"></script>
+        <script src="js/samsok/application.js"></script>
+        <script src="js/samsok/searchcontroller.js"></script>
+        <script src="js/samsok/providerscontroller.js"></script>
+        <script src="js/samsok/parsers.js"></script>
+        <script src="js/samsok/preprocessors.js"></script>
+        <script src="js/samsok/querymodifiers.js"></script>
+        <script src="js/samsok/providers.js"></script>
+        <script src="js/samsok/searcher.js"></script>
     </body>
 </html>
-
