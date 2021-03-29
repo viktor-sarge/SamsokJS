@@ -47,8 +47,8 @@ header .intro-text {
 }
 
 .rh-background h1 {
-    font-family: "Kaushan Script","Helvetica Neue",Helvetica,Arial,cursive;
-    color: #da725d
+    font-family: 'Kaushan Script', 'Helvetica Neue', Helvetica, Arial, cursive;
+    color: #da725d;
 }
 
 .catalogues-list {
@@ -64,14 +64,14 @@ section#searchresult {
     background: #f5f5f5;
 }
 
-.panel-default>.panel-heading {
+.panel-default > .panel-heading {
     color: #333;
     background-color: rgba(34, 34, 34, 0.08);
     border-color: #ddd;
     border-bottom: 0;
 }
 
-.panel-default>.panel-heading h2 {
+.panel-default > .panel-heading h2 {
     font-weight: 500;
     font-size: 30px;
 }
@@ -81,11 +81,17 @@ section#searchresult {
 }
 
 .btn-link:focus {
-    background:rgba(92, 184, 92, 0.2);
+    background: rgba(92, 184, 92, 0.2);
     border-radius: 4em;
-    padding:1ex;
+    padding: 1ex;
 }
 
 .navbar-default .navbar-brand {
     color: #da725d;
+}
+
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: black;
+    background-color: #fec503;
 }
