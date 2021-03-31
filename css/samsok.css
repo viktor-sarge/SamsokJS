@@ -22,3 +22,87 @@ input.form-control {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
 }
+
+.catalogues-list {
+    padding-inline-start: 10px;
+}
+
+.btn-primary {
+    color: black;
+    font-weight: 500;
+    text-transform: none;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    color: black;
+    font-weight: 500;
+    text-transform: none;
+}
+
+header .intro-text {
+    padding-top: 300px;
+    padding-bottom: 250px;
+}
+
+.rh-background {
+    background: rgba(34, 34, 34, 0.95);
+    padding-top: 1.5em;
+    padding-bottom: 3em;
+    padding-left: 3em;
+    padding-right: 3em;
+}
+
+.rh-background h1 {
+    font-family: 'Kaushan Script', 'Helvetica Neue', Helvetica, Arial, cursive;
+    color: #da725d;
+}
+
+.catalogues-list {
+    margin-bottom: 2em;
+}
+
+.rh-filter {
+    margin-top: 2ex;
+    margin-bottom: 3ex;
+}
+
+section#searchresult {
+    background: #f5f5f5;
+}
+
+.panel-default > .panel-heading {
+    color: #333;
+    background-color: rgba(34, 34, 34, 0.08);
+    border-color: #ddd;
+    border-bottom: 0;
+}
+
+.panel-default > .panel-heading h2 {
+    font-weight: 500;
+    font-size: 30px;
+}
+
+#search-results-heading {
+    margin-top: 1em;
+}
+
+.btn-link:focus {
+    background: rgba(92, 184, 92, 0.2);
+    border-radius: 4em;
+    padding: 1ex;
+}
+
+.navbar-default .navbar-brand {
+    color: #da725d;
+}
+
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: black;
+    background-color: #fec503;
+}
+
+a {
+    color: #3274a9;
+}
