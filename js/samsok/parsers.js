@@ -234,18 +234,21 @@ var KohaParser = function(content, baseurl) {
         }
     }
 
-    $('td.bibliocol').each(function(i, element) {
-        var result = $(this);
-        var title = result.find('a.title').text().trim();
-        var author = result.find('span.author').text().trim();
-        var type = result.find('span.results_summary.type').text().trim();
-        var publisher = result.find('span.results_summary.publisher').text().trim();
+    // Special case - many libraries go directly to the result if there's only one hit.
+    if ($("h2.title").text().trim() != "") {
+        totalHits = 1;
+        var author = $("span[property='författare '] span[property='name']").text().trim();
+        var title = $("h2[class='title']").text().split('/')[0].trim();
+        var type = $("img[class='materialtype mt_icon_BK']").attr('alt');
         var year = "";
-        if (publisher.length >= 4 && !isNaN(publisher.substring(publisher.length - 4, publisher.length))) {
-            year = publisher.substring(publisher.length - 4, publisher.length);
+        var recordText = $("div[class='record']").text();
+        console.log(recordText);
+        var yearRegex = /Tillverkare:\s+(\d+)/g;
+        var yearMatch  = yearRegex.exec(recordText);
+        if (yearMatch) {
+            year = yearMatch[1];
         }
-        var url = baseurl + result.find('a.title').attr('href');
-
+        var url = baseurl + $("a[href*=show_catalogue]").attr("href");
         hits.push(
             {
                 title: title,
@@ -255,7 +258,30 @@ var KohaParser = function(content, baseurl) {
                 url: url
             }
         );
-    });
+    } else {
+        $('td.bibliocol').each(function(i, element) {
+            var result = $(this);
+            var title = result.find('a.title').text().trim();
+            var author = result.find('span.author').text().trim();
+            var type = result.find('span.results_summary.type').text().trim();
+            var publisher = result.find('span.results_summary.publisher').text().trim();
+            var year = "";
+            if (publisher.length >= 4 && !isNaN(publisher.substring(publisher.length - 4, publisher.length))) {
+                year = publisher.substring(publisher.length - 4, publisher.length);
+            }
+            var url = baseurl + result.find('a.title').attr('href');
+
+            hits.push(
+                {
+                    title: title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: url
+                }
+            );
+        });
+    }
 
     return {
         totalHits: totalHits,
