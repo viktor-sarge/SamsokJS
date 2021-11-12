@@ -111,7 +111,7 @@ App.Searcher = Ember.Object.extend({
                         if (e.hits.length === 1) {
                             outerThis.set('oneHit', true);
                         }
-                        if (e.hits.length >= e.totalHits) {
+                        if (e.totalHits > 0 && e.hits.length >= e.totalHits) {
                             outerThis.set('allHitsFetched', true)
                         }
                         if (e.totalHits == 0) {

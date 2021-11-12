@@ -468,7 +468,7 @@ ArenaParser = function(content, baseurl, searchurl) {
     var hits = [],
         $ = cheerio.load(content);
 
-    var totalHits = "0";
+    var totalHits = "okänt";
 
     // Special case for a single hit
     if ($('div.arena-detail-title').length > 0) {
