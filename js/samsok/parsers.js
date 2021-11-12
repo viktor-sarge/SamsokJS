@@ -225,9 +225,9 @@ var KohaParser = function(content, baseurl) {
         $ = cheerio.load(content);
 
     var totalHits = "0";
-    var totalHitsSpan = $('p#numresults');
+    var totalHitsSpan = $('#numresults');
     if (totalHitsSpan.length > 0) {
-        var hitsRegex = / (\d+) /g;
+        var hitsRegex = / (\d+) result/g;
         var match = hitsRegex.exec(totalHitsSpan);
         if (match) {
             totalHits = match[1];
