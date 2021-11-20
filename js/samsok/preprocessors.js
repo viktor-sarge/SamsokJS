@@ -5,18 +5,21 @@
 
 // Many Arena libraries will use a Javascript redirect to go directly to the book page if there's only one hit.
 // This preprocessor will detect and follow that redirect.
-var ArenaPreprocessor = function(provider, content, func) {
-    var regex = /jQuery\(function\(a\)\{a\(document\)\.ready\(function\(\)\{location\.replace\("(.*?)"\)\}\)\}\)/g;
+var ArenaPreprocessor = function(provider, content, func, cookies) {
+    var regex = /jQuery\(function\(.*?\)\{.*?\(document\)\.ready\(function\(\)\{location\.replace\("(.*?)"\)\}\)\}\)/g;
     var match = regex.exec(content);
     if (match) {
+        var newUrl = encodeURI(decodeURIComponent(match[1].replace(/\\x/g, '%')));
         $.getJSON(proxyBaseUrl + "?url=" +
-                encodeURIComponent(match[1]) +
+                encodeURIComponent(newUrl) +
                 "&encoding=" + provider.get('encoding') +
+                "&cookies=" + cookies +
                 "&callback=?"
         ).done(function(data) {
             if (!data.content) {
                 throw "Error getting page";
             }
+            
             func(data.content, match[1]);
         });
     } else {
