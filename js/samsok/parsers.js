@@ -242,13 +242,13 @@ var KohaParser = function(content, baseurl) {
         var type = $("img[class='materialtype mt_icon_BK']").attr('alt');
         var year = "";
         var recordText = $("div[class='record']").text();
-        console.log(recordText);
         var yearRegex = /Tillverkare:\s+(\d+)/g;
         var yearMatch  = yearRegex.exec(recordText);
         if (yearMatch) {
             year = yearMatch[1];
         }
-        var url = baseurl + $("a[href*=show_catalogue]").attr("href");
+        var view_link = $("a[href*=show_catalogue]").attr("href") || $("a#ISBDview").attr("href");
+        var url = baseurl + view_link;
         hits.push(
             {
                 title: title,
