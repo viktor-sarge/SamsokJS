@@ -20,7 +20,7 @@ var ArenaPreprocessor = function(provider, content, func, cookies) {
                 throw "Error getting page";
             }
             
-            func(data.content, match[1]);
+            func(data.content, newUrl);
         });
     } else {
         func(content);
