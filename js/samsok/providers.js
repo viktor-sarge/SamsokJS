@@ -127,13 +127,6 @@ var providers = [
         groupName: 'Andra regioner',
         providers: [
             App.Provider.create({
-                parser: MicroMarcParser,
-                baseUrl: 'http://webbsok.mikromarc.se/Mikromarc3/web/',
-                searchUrl: 'http://webbsok.mikromarc.se/Mikromarc3/web/search.aspx?Unit=6471&db=bollebygd-fb&SC=FT&SW=@QUERY@&LB=FT&IN=&SU=19116&',
-                name: 'Bollebygd',
-                encoding: 'utf-8'
-            }),
-            App.Provider.create({
                 parser: MinabibliotekParser,
                 baseUrl: 'http://bibliotek.boras.se/',
                 searchUrl: 'https://bibliotek.boras.se/search?query=@QUERY@&fMediaId=&fTarget=&fLang=',
