@@ -97,7 +97,7 @@ var providers = [
                 parser: ArenaParser,
 				preprocessor: ArenaPreprocessor,
                 baseUrl: '',
-                searchUrl: 'https://biblioteket.laholm.se/web/pub/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
+                searchUrl: 'https://bibliotek.laholm.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
                 name: 'Laholm',
                 encoding: 'utf-8'
             }),            
@@ -149,9 +149,9 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: MinabibliotekParser, 
-                baseUrl: 'https://bibliotek.jonkoping.se/',
-                searchUrl: 'https://bibliotek.jonkoping.se/search?query=@QUERY@&fMediaId=&fTarget=',
+                parser: ArenaParser, 
+                baseUrl: '',
+                searchUrl: 'https://bibliotek.jonkoping.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Jönköping',
                 encoding: 'utf-8'
             }),
