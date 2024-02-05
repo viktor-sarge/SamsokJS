@@ -493,17 +493,20 @@ ArenaParser = function(content, baseurl, searchurl) {
             }
         );
     } else {
-        totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
+        var totalRegex = /<h2 class="feedbackPanelINFO">.*?(\d+).*?<\/h2>/g;
         var totalmatch = totalRegex.exec(content);
+
         if (totalmatch) {
-            totalHits = totalmatch[1];
+            // Check for 'alternativa' in the content and ignore if present
+            if (totalmatch[0].indexOf('alternativa') === -1) {
+                totalHits = totalmatch[1];
+            }
         } else {
-            var totalRegex = /<span class="feedbackPanelINFO">.*?(\d+).*?<\/span>/g;
+            totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
             totalmatch = totalRegex.exec(content);
+
             if (totalmatch) {
-                // Växjö displays alternative search result hits - we don't want that!
-                if (totalmatch[0].indexOf('alternativa') == -1)
-                    totalHits = totalmatch[1];
+                totalHits = totalmatch[1];
             }
         }
 
