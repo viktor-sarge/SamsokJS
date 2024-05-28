@@ -127,13 +127,6 @@ var providers = [
         groupName: 'Andra regioner',
         providers: [
             App.Provider.create({
-                parser: MinabibliotekParser,
-                baseUrl: 'https://knallebiblioteken.se/',
-                searchUrl: 'https://knallebiblioteken.se/search?query=@QUERY@&fMediaId=&fTarget=&fLang=',
-                name: 'Borås',
-                encoding: 'utf-8'
-            }),
-            App.Provider.create({
                 parser: ArenaParser,
                 preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
@@ -172,18 +165,17 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
+                parser: ArenaParser,
+                baseUrl: '',
+                searchUrl: 'https://knallebiblioteken.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescendinghttps://knallebiblioteken.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
+                name: 'Knallebiblioteken',
+                encoding: 'utf-8'
+            }),
+            App.Provider.create({
                 parser: MalmoParser,
                 baseUrl: 'http://malmo.stadsbibliotek.org/',
                 searchUrl: 'http://malmo.stadsbibliotek.org/search~S7*swe/?searchtype=X&SORT=D&searcharg=',
                 name: 'Malmö',
-                encoding: 'utf-8'
-            }),
-            App.Provider.create({
-                parser: ArenaParser,
-                preprocessor: ArenaPreprocessor, 
-                baseUrl: '',
-                searchUrl: 'https://bibliotek.mark.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
-                name: 'Mark',
                 encoding: 'utf-8'
             }),
             App.Provider.create({
