@@ -128,8 +128,8 @@ var providers = [
         providers: [
             App.Provider.create({
                 parser: MinabibliotekParser,
-                baseUrl: 'http://bibliotek.boras.se/',
-                searchUrl: 'https://bibliotek.boras.se/search?query=@QUERY@&fMediaId=&fTarget=&fLang=',
+                baseUrl: 'https://knallebiblioteken.se/',
+                searchUrl: 'https://knallebiblioteken.se/search?query=@QUERY@&fMediaId=&fTarget=&fLang=',
                 name: 'Borås',
                 encoding: 'utf-8'
             }),
