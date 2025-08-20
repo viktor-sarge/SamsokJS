@@ -29,12 +29,150 @@ var XsearchParser = function(content, baseurl) {
 };
 
 var SsbParser = function(content, baseurl) {
-    var hits = [],
-        $ = cheerio.load(content);
+    var hits = [];
+    var totalHits = "0";
 
-    var totalHits = $('div#results-filter p.total em').eq(2).text().trim();
-    if (!totalHits)
-        totalHits = "0";
+    // Check if we have GraphQL JSON data (direct API response)
+    try {
+        var data = JSON.parse(content);
+        if (data && data.data && data.data.searchWithFilter) {
+            var searchData = data.data.searchWithFilter;
+            totalHits = searchData.totalHits ? searchData.totalHits.toString() : "0";
+            
+            console.log("Stockholm parser: Processing GraphQL response with " + totalHits + " total results");
+            
+            // Process all media containers (Books, E-books, Audio books, etc.)
+            if (searchData.groupedMedia && Array.isArray(searchData.groupedMedia)) {
+                searchData.groupedMedia.forEach(function(container) {
+                    if (container.mediaList && Array.isArray(container.mediaList)) {
+                        container.mediaList.forEach(function(item) {
+                            if (!item.title) return;
+                            
+                            // Extract publication year from publishedDate
+                            var year = "";
+                            if (item.publishedDate) {
+                                var yearMatch = item.publishedDate.match(/\d{4}/);
+                                if (yearMatch) {
+                                    year = yearMatch[0];
+                                }
+                            }
+                            
+                            // Clean up author name
+                            var author = item.author || "";
+                            if (author) {
+                                // Remove common suffixes like "John Ronald Reuel Tolkien" -> "John Ronald Reuel Tolkien"
+                                author = author.replace(/\s+$/, ''); // trim trailing spaces
+                            }
+                            
+                            // Use mediaTypeDisplay for type
+                            var type = item.mediaTypeDisplay || "";
+                            
+                            // Create URL to the item page
+                            var itemUrl = baseurl + 'titel/' + item.key;
+                            
+                            hits.push({
+                                title: item.title,
+                                author: author,
+                                type: type,
+                                year: year,
+                                url: itemUrl
+                            });
+                        });
+                    }
+                });
+            }
+            
+            return {
+                totalHits: totalHits,
+                hits: hits
+            };
+        }
+    } catch (e) {
+        // Not JSON data, continue to HTML parsing
+    }
+
+    // Check if this is the new Next.js system and extract embedded data
+    if (content.indexOf('__NEXT_DATA__') !== -1) {
+        console.log("Stockholm parser: Next.js application detected, extracting embedded data");
+        
+        try {
+            // Extract the Next.js data from the script tag
+            var nextDataMatch = content.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/);
+            if (nextDataMatch) {
+                var nextData = JSON.parse(nextDataMatch[1]);
+                
+                // Navigate to the search results in the Next.js data structure
+                if (nextData && nextData.props && nextData.props.pageProps && nextData.props.pageProps.searchResults) {
+                    var searchResults = nextData.props.pageProps.searchResults;
+                    
+                    if (searchResults.totalHits !== undefined) {
+                        totalHits = searchResults.totalHits.toString();
+                        console.log("Stockholm parser: Found " + totalHits + " results in Next.js data");
+                        
+                        // Process the search results
+                        if (searchResults.groupedMedia && Array.isArray(searchResults.groupedMedia)) {
+                            searchResults.groupedMedia.forEach(function(container) {
+                                if (container.mediaList && Array.isArray(container.mediaList)) {
+                                    container.mediaList.forEach(function(item) {
+                                        if (!item.title) return;
+                                        
+                                        // Extract publication year from publishedDate
+                                        var year = "";
+                                        if (item.publishedDate) {
+                                            var yearMatch = item.publishedDate.match(/\d{4}/);
+                                            if (yearMatch) {
+                                                year = yearMatch[0];
+                                            }
+                                        }
+                                        
+                                        // Clean up author name
+                                        var author = item.author || "";
+                                        if (author) {
+                                            author = author.replace(/\s+$/, ''); // trim trailing spaces
+                                        }
+                                        
+                                        // Use mediaTypeDisplay for type
+                                        var type = item.mediaTypeDisplay || "";
+                                        
+                                        // Create URL to the item page
+                                        var itemUrl = baseurl + 'titel/' + item.key;
+                                        
+                                        hits.push({
+                                            title: item.title,
+                                            author: author,
+                                            type: type,
+                                            year: year,
+                                            url: itemUrl
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                        
+                        return {
+                            totalHits: totalHits,
+                            hits: hits
+                        };
+                    }
+                }
+            }
+        } catch (e) {
+            console.log("Stockholm parser: Error extracting Next.js data:", e.message);
+        }
+        
+        // If we can't extract data from Next.js, return empty results
+        console.log("Stockholm parser: Could not extract search data from Next.js page");
+        return {
+            totalHits: "0",
+            hits: []
+        };
+    }
+
+    // Legacy parser code for old system
+    var $ = cheerio.load(content);
+    var legacyTotalHits = $('div#results-filter p.total em').eq(2).text().trim();
+    if (!legacyTotalHits)
+        legacyTotalHits = "0";
 
     $('ol.results-icon div.row-fluid').filter(isNumeric).each(function(i, element) {
         var result = $(this);
@@ -55,7 +193,7 @@ var SsbParser = function(content, baseurl) {
     });
 
     return {
-        totalHits: totalHits,
+        totalHits: legacyTotalHits,
         hits: hits
     };
 };

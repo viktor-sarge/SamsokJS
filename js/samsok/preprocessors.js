@@ -538,3 +538,83 @@ var MalmoPreprocessor = function(provider, content, func, cookies, searchUrl) {
         }
     });
 };
+
+// Stockholm uses a GraphQL API for search
+var StockholmPreprocessor = function(provider, content, func, cookies, searchUrl) {
+    // Extract the search query from the original searchUrl
+    var queryMatch = searchUrl.match(/text=([^&]+)/);
+    if (!queryMatch) {
+        func("");
+        return;
+    }
+    
+    var searchQuery = decodeURIComponent(queryMatch[1]);
+    console.log("Stockholm preprocessor: Making GraphQL API call via enhanced proxy for query: " + searchQuery);
+    
+    // Prepare the GraphQL query
+    var apiUrl = 'https://biblioteket.stockholm.se/graphql/';
+    var graphqlQuery = {
+        "query": "fragment media on Media { __typename id key title author availableInFormat mediaType mediaTypeDisplay mediaSubTypeDisplay image language targetGroup publisher publishedDate holdingIds } fragment mediaContainer on MediaContainer { __typename mediaTypeEnum name numFound mediaList { ...media } } fragment availableFilterGroupContainer on AvailableFilterGroup { __typename name filters { ...filter } } fragment filter on Filter { __typename name count } query searchWithFilter($filterQuery: SearchWithFilterInput!) { searchWithFilter(filterQuery: $filterQuery) { start totalHits groupedMedia { ...mediaContainer } availableFilterGroups { ...availableFilterGroupContainer } } }",
+        "variables": {
+            "filterQuery": {
+                "query": searchQuery,
+                "rows": 40
+            },
+            "__operation": "search"
+        }
+    };
+    
+    // Custom headers for the GraphQL request
+    var customHeaders = {
+        'Accept': '*/*',
+        'Accept-Language': 'sv,en-US;q=0.9,en;q=0.8',
+        'Origin': 'https://biblioteket.stockholm.se',
+        'Referer': 'https://biblioteket.stockholm.se/sok?text=' + encodeURIComponent(searchQuery)
+    };
+    
+    // Ensure proxyBaseUrl is available
+    if (typeof proxyBaseUrl === 'undefined') {
+        if (typeof window !== 'undefined' && window.proxyBaseUrl) {
+            var proxyBaseUrl = window.proxyBaseUrl;
+        } else {
+            var proxyBaseUrl = (location.protocol == 'https:' ? 'https:' : 'http:') + "//samsokproxy.appspot.com/crossdomain";
+        }
+    }
+    
+    // Make the GraphQL request through the enhanced proxy using POST
+    var proxyUrl = proxyBaseUrl + "?url=" + encodeURIComponent(apiUrl) + 
+                   "&method=POST" +
+                   "&contentType=" + encodeURIComponent("application/json") +
+                   "&postData=" + encodeURIComponent(JSON.stringify(graphqlQuery)) +
+                   "&headers=" + encodeURIComponent(JSON.stringify(customHeaders)) +
+                   "&encoding=utf-8" +
+                   "&callback=?";
+    
+    $.getJSON(proxyUrl).done(function(data) {
+        if (!data.content) {
+            console.log("Stockholm GraphQL call via proxy failed: no content");
+            func("");
+            return;
+        }
+        
+        try {
+            var apiResponse = JSON.parse(data.content);
+            if (apiResponse && apiResponse.data && apiResponse.data.searchWithFilter) {
+                console.log("Stockholm GraphQL call via proxy successful, found " + apiResponse.data.searchWithFilter.totalHits + " results");
+                // Pass the JSON response as a string to the parser
+                func(JSON.stringify(apiResponse));
+            } else {
+                console.log("Stockholm GraphQL call via proxy returned unexpected format");
+                console.log("Response:", JSON.stringify(apiResponse, null, 2));
+                func("");
+            }
+        } catch (e) {
+            console.log("Stockholm GraphQL call via proxy: Error parsing response - " + e.message);
+            console.log("Raw content:", data.content.substring(0, 500));
+            func("");
+        }
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("Stockholm GraphQL call via proxy failed: " + textStatus + " " + errorThrown);
+        func("");
+    });
+};

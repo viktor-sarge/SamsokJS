@@ -189,13 +189,6 @@ var providers = [
                 encoding: 'utf-8'
             }),     
             App.Provider.create({
-                parser: SsbParser,
-                baseUrl: 'https://biblioteket.stockholm.se/',
-                searchUrl: 'http://biblioteket.stockholm.se/sok?freetext=',
-                name: 'Stockholms Stadsbibliotek',
-                encoding: 'utf-8'
-            }),
-            App.Provider.create({
                 parser: MinabibliotekParser,
                 baseUrl: 'http://www.minabibliotek.se/',
                 searchUrl: 'https://www.minabibliotek.se/search?query=@QUERY@&fMediaId=&fTarget=',
@@ -357,8 +350,9 @@ var providers = [
             }),
             App.Provider.create({
                 parser: SsbParser,
+                preprocessor: StockholmPreprocessor,
                 baseUrl: 'https://biblioteket.stockholm.se/',
-                searchUrl: 'https://biblioteket.stockholm.se/sok?text=',
+                searchUrl: 'https://biblioteket.stockholm.se/sok?text=@QUERY@',
                 name: 'Stockholms stadsbibliotek',
                 encoding: 'utf-8'
             }),
