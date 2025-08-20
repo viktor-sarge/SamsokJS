@@ -486,3 +486,55 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
     // If not a BotStopper page, pass through the content
     func(content);
 };
+
+// Malmö uses a modern API that requires POST requests with specific headers
+var MalmoPreprocessor = function(provider, content, func, cookies, searchUrl) {
+    // Extract the search query from the original searchUrl
+    var queryMatch = searchUrl.match(/query=([^&]+)/);
+    if (!queryMatch) {
+        func("");
+        return;
+    }
+    
+    var searchQuery = decodeURIComponent(queryMatch[1]);
+    console.log("Malmö preprocessor: Making API call for query: " + searchQuery);
+    
+    // Prepare the API request data
+    var apiUrl = 'https://eu.iiivega.com/api/search-result/search/format-groups';
+    var postData = {
+        "searchText": searchQuery,
+        "sorting": "relevance", 
+        "sortOrder": "asc",
+        "searchType": "everything",
+        "pageNum": 0,
+        "pageSize": 40,
+        "resourceType": "FormatGroup"
+    };
+    
+    // Make the API request using jQuery AJAX
+    $.ajax({
+        url: apiUrl,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(postData),
+        headers: {
+            'accept': 'application/json, text/plain, */*',
+            'accept-language': 'sv,en-US;q=0.9,en;q=0.8',
+            'api-version': '2',
+            'iii-customer-domain': 'malmo.eu.iiivega.com',
+            'iii-host-domain': 'malin.malmo.se',
+            'origin': 'https://malin.malmo.se',
+            'referer': 'https://malin.malmo.se/',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+        },
+        success: function(data) {
+            console.log("Malmö API call successful, found " + data.totalResults + " results");
+            // Pass the JSON response as a string to the parser
+            func(JSON.stringify(data));
+        },
+        error: function(xhr, status, error) {
+            console.log("Malmö API call failed: " + status + " " + error);
+            func("");
+        }
+    });
+};

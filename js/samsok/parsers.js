@@ -100,74 +100,80 @@ var GotlibParser = function(content, baseurl) {
 };
 
 var MalmoParser = function(content, baseurl, searchurl) {
-    var hits = [],
-        $ = cheerio.load(content);
-
+    var hits = [];
     var totalHits = "0";
-    // Special case - if there's only one hit, it goes directly to the hit
-    if (content && $('table.browseScreen').length == 0) {
-        totalHits = "1";
-        var title = $("td.bibInfoLabel:contains('Titel')").next("td.bibInfoData").text();
-        if (title.lastIndexOf('/') > -1) {
-            title = title.substr(0, title.lastIndexOf('/') + 1);
-        }
-        var author = $("td.bibInfoLabel:contains('Namn')").next("td.bibInfoData a").text();
-        var type = $("td.media img").attr("alt");
-        var year = "";
-        var yearRegExp = /, (\d{4})/g;
-        var match = yearRegExp.exec($("td.bibInfoLabel:contains('Utgivning')").next("td.bibInfoData").text());
-        if (match) {
-            year = match[1];
-        }
-
-        hits.push({
-                title: title,
-                author: author,
-                type: type,
-                year: year,
-                url: searchurl
-        });
-    } else {
-        var totalHitsSpan = $('td.browseHeaderData');
-        if (totalHitsSpan.length > 0) {
-            var hitsRegex = /\d+-\d+ .*? (\d+)/g;
-            var match = hitsRegex.exec(totalHitsSpan);
-            if (match) {
-                totalHits = match[1];
-            }
-        }
-
-        $('tr.briefCitRow').each(function(i, element) {
-            var result = $(this);
-            var titletags = $('span.briefcitTitle').parent().find('a');
-            if (titletags.length > 0) {
-                var title = titletags.eq(0).text().trim();
-                var author = result.find('span.briefcitTitle').text().trim();
-                var type = result.find('span.briefcitMedia > img').eq(0).attr('alt');
-                var year = result.find('table tr td').eq(5).text().trim();
-                if (year.length >= 4) {
-                    year = year.substr(year.length - 4, year.length);
-                    if (isNaN(year)) {
-                        year = "";
-                    }
+    
+    // Check if we have JSON data (from MalmoPreprocessor)
+    try {
+        var data = JSON.parse(content);
+        if (data && data.data && Array.isArray(data.data)) {
+            totalHits = data.totalResults ? data.totalResults.toString() : data.data.length.toString();
+            
+            console.log("Malmö parser: Processing " + data.data.length + " results from JSON API");
+            
+            data.data.forEach(function(item) {
+                if (!item.title) return;
+                
+                // Extract author from primaryAgent
+                var author = "";
+                if (item.primaryAgent && item.primaryAgent.label) {
+                    author = item.primaryAgent.label;
+                    // Clean up author format (remove years and extra info)
+                    author = author.replace(/, \d{4}-\d{4}\.?$/, '');
+                    author = author.replace(/, \d{4}-\.?$/, '');
+                    author = author.replace(/\([^)]+\)/, '').trim();
                 }
-                var url = baseurl + titletags.eq(0).attr('href');
-
-                hits.push(
-                    {
-                        title: title,
-                        author: author,
-                        type: type,
-                        year: year,
-                        url: url
-                    }
-                );
-            }
-        });
+                
+                // Get publication year
+                var year = item.publicationDate || "";
+                if (year && year.indexOf('-') !== -1) {
+                    // Handle date ranges like "2002-2009"
+                    year = year.split('-')[0];
+                }
+                
+                // Determine material type from available formats
+                var type = "";
+                if (item.materialTabs && item.materialTabs.length > 0) {
+                    var types = item.materialTabs.map(function(tab) {
+                        return tab.name;
+                    });
+                    type = types.join(', ');
+                }
+                
+                // Create URL to the item page (correct format)
+                var itemUrl = baseurl + 'search/card?id=' + item.id + '&entityType=' + item.entityType;
+                
+                hits.push({
+                    title: item.title,
+                    author: author,
+                    type: type,
+                    year: year,
+                    url: itemUrl
+                });
+            });
+            
+            return {
+                totalHits: totalHits,
+                hits: hits
+            };
+        }
+    } catch (e) {
+        console.log("Malmö parser: Error parsing JSON data:", e.message);
     }
-
+    
+    // Fallback: Check if this is the Angular SPA HTML
+    if (content && (content.indexOf('bc-app') !== -1 || content.indexOf('Loading...') !== -1)) {
+        console.log("Malmö parser: Angular SPA detected - preprocessor should handle this");
+        return {
+            totalHits: "0", 
+            hits: []
+        };
+    }
+    
+    // Default fallback
+    console.log("Malmö parser: Unknown content format");
     return {
-        totalHits: totalHits,
+        totalHits: "0",
         hits: hits
     };
 };

@@ -174,8 +174,9 @@ var providers = [
             }),
             App.Provider.create({
                 parser: MalmoParser,
-                baseUrl: 'http://malmo.stadsbibliotek.org/',
-                searchUrl: 'http://malmo.stadsbibliotek.org/search~S7*swe/?searchtype=X&SORT=D&searcharg=',
+                preprocessor: MalmoPreprocessor,
+                baseUrl: 'https://malin.malmo.se/',
+                searchUrl: 'https://malin.malmo.se/search?query=@QUERY@&searchType=everything&pageSize=40',
                 name: 'Malmö',
                 encoding: 'utf-8'
             }),
@@ -363,8 +364,9 @@ var providers = [
             }),
             App.Provider.create({
                 parser: MalmoParser,
-                baseUrl: 'http://malmo.stadsbibliotek.org/',
-                searchUrl: 'http://malmo.stadsbibliotek.org/search~S7*swe/?searchtype=X&SORT=D&searcharg=',
+                preprocessor: MalmoPreprocessor,
+                baseUrl: 'https://malin.malmo.se/',
+                searchUrl: 'https://malin.malmo.se/search?query=@QUERY@&searchType=everything&pageSize=40',
                 name: 'Malmö',
                 encoding: 'utf-8'
             }),
