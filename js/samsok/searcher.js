@@ -133,7 +133,7 @@ App.Searcher = Ember.Object.extend({
 
             var preprocessor = outerThis.get('provider').get('preprocessor');
             if (preprocessor) {
-                preprocessor(outerThis.get('provider'), data.content, runWorker, data.cookies);
+                preprocessor(outerThis.get('provider'), data.content, runWorker, data.cookies, searchUrl);
             } else {
                 runWorker(data.content);
             }
