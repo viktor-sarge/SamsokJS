@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ce89e4f9-5f9a-4055-93f0-f660a95ec597" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/samsok/preprocessors.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/samsok/preprocessors.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/samsok/providers.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/samsok/providers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/samsok/searcher.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/samsok/searcher.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +138,7 @@
       <updated>1569940336457</updated>
       <workItem from="1569940341990" duration="991000" />
       <workItem from="1571298369090" duration="562000" />
-      <workItem from="1755626411300" duration="6994000" />
+      <workItem from="1755626411300" duration="7656000" />
     </task>
     <servers />
   </component>

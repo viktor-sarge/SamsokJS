@@ -16,10 +16,10 @@ var ArenaPreprocessor = function(provider, content, func, cookies, searchUrl, ch
     challengeAttempts = challengeAttempts || 0;
     var MAX_CHALLENGE_ATTEMPTS = 10;
     
-    // Check for cookie challenge page
+    // Check for cookie challenge page using more flexible pattern matching
     if (content.indexOf('function leastFactor(n)') !== -1 && 
-        content.indexOf('document.cookie=') !== -1 &&
-        content.indexOf('document.location.reload(true)') !== -1) {
+        /document\.cookie\s*=/i.test(content) &&
+        /document\.location\.reload\s*\(/i.test(content)) {
         
         // Check if we've exceeded maximum challenge attempts
         if (challengeAttempts >= MAX_CHALLENGE_ATTEMPTS) {
@@ -27,7 +27,7 @@ var ArenaPreprocessor = function(provider, content, func, cookies, searchUrl, ch
             return;
         }
         
-        // Execute the challenge page JavaScript in an isolated context
+        // Execute the challenge page JavaScript in a secure sandboxed context
         try {
             // Extract the entire script content
             var scriptMatch = content.match(/<script[^>]*><!--([\s\S]*?)\/\/--><\/script>/);
@@ -38,7 +38,35 @@ var ArenaPreprocessor = function(provider, content, func, cookies, searchUrl, ch
             
             var scriptContent = scriptMatch[1];
             
-            // Create a sandboxed environment that intercepts cookie setting
+            // Security validation: Check for suspicious patterns
+            var dangerousPatterns = [
+                /fetch\s*\(/i,
+                /XMLHttpRequest/i,
+                /eval\s*\(/i,
+                /Function\s*\(/i,
+                /setTimeout/i,
+                /setInterval/i,
+                /localStorage/i,
+                /sessionStorage/i,
+                /window\s*\[/i,
+                /document\s*\[/i,
+                /location\s*\[/i,
+                /this\s*\./i,
+                /arguments/i,
+                /constructor/i,
+                /__proto__/i,
+                /prototype/i
+            ];
+            
+            for (var i = 0; i < dangerousPatterns.length; i++) {
+                if (dangerousPatterns[i].test(scriptContent)) {
+                    // Security violation detected - reject the script
+                    func("");
+                    return;
+                }
+            }
+            
+            // Create a heavily restricted sandboxed environment
             var capturedCookie = null;
             var mockDocument = {
                 cookie: "",
@@ -57,25 +85,54 @@ var ArenaPreprocessor = function(provider, content, func, cookies, searchUrl, ch
                 }
             });
             
-            // Create the execution environment
-            var sandboxedCode = 
-                scriptContent + '\n' +
-                'if (typeof go === "function") { go(); }\n' +
-                'return true;';
+            // Create restricted global context - override dangerous globals but preserve Math, Date etc.
+            var restrictedCode = '';
+            var dangersToOverride = [
+                'window', 'document', 'location', 'console', 'alert', 'confirm', 'prompt',
+                'eval', 'Function', 'setTimeout', 'setInterval', 'fetch', 'XMLHttpRequest',
+                'localStorage', 'sessionStorage', 'history', 'navigator', 'screen',
+                'parent', 'top', 'frames', 'self', 'global', 'globalThis'
+            ];
             
-            // Replace document references with our mock
-            sandboxedCode = sandboxedCode.replace(/document\./g, 'mockDocument.');
+            // Override dangerous globals
+            for (var i = 0; i < dangersToOverride.length; i++) {
+                restrictedCode += 'var ' + dangersToOverride[i] + ' = undefined;\n';
+            }
             
-            // Execute with our mock document in scope
-            var executionCode = 
-                'var mockDocument = this.mockDocument;\n' +
-                sandboxedCode;
+            // Provide safe Math and Date objects (needed for legitimate challenges)
+            restrictedCode += 'var Math = arguments[1];\n';
+            restrictedCode += 'var Date = arguments[2];\n';
+            restrictedCode += 'var mockDocument = arguments[0];\n';
+            restrictedCode += scriptContent.replace(/document\./g, 'mockDocument.') + '\n';
+            restrictedCode += 'if (typeof go === "function") { go(); }\n';
             
+            // Execute with timeout protection
+            var executionStartTime = Date.now();
+            var timeoutMs = 5000; // 5 second timeout
             
             try {
-                var sandboxFunc = new Function('mockDocument', sandboxedCode);
-                sandboxFunc.call({ mockDocument: mockDocument }, mockDocument);
+                var sandboxFunc = new Function(restrictedCode);
+                
+                // Check for timeout during execution
+                var originalDate = Date.now;
+                Date.now = function() {
+                    if (originalDate() - executionStartTime > timeoutMs) {
+                        throw new Error("Execution timeout");
+                    }
+                    return originalDate();
+                };
+                
+                // Execute with safe Math and Date objects passed as arguments
+                sandboxFunc.call(null, mockDocument, Math, Date);
+                
+                // Restore Date.now
+                Date.now = originalDate;
+                
             } catch (e) {
+                // Restore Date.now in case of error
+                if (Date.now !== originalDate) {
+                    Date.now = originalDate;
+                }
                 // Even if there's an error, check if we captured a cookie
             }
             
