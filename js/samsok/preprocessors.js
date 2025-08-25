@@ -235,7 +235,7 @@ var BlockPhrasePreprocessorGenerator = function(phrase) {
 // Koha libraries may use BotStopper which requires solving a Proof-of-Work challenge
 var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, challengeAttempts) {
     challengeAttempts = challengeAttempts || 0;
-    var MAX_CHALLENGE_ATTEMPTS = 3;
+    var MAX_CHALLENGE_ATTEMPTS = 10;
     
     // Check for Koha fast_challenge page (bot detection type)
     if (content.indexOf('koha_fast_challenge') !== -1 && 
@@ -248,8 +248,8 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
         // We can bypass this by directly setting the required cookie
         
         // Set the KOHA_INIT cookie that the challenge would set
-        // Important: Don't include SameSite=Lax as the proxy doesn't handle it well
-        var challengeCookie = 'KOHA_INIT=1';
+        // Use the complete cookie format that matches the challenge JavaScript exactly
+        var challengeCookie = 'KOHA_INIT=1; path=/; SameSite=Lax; Secure';
         
         // The proxy can handle cookies in two formats:
         // 1. Base64-encoded pickled format (what it returns from responses)  
@@ -262,7 +262,7 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
         
         console.log("Setting KOHA_INIT cookie and retrying...");
         
-        // Retry immediately with the KOHA_INIT cookie
+        // Retry with the KOHA_INIT cookie
         if (typeof proxyBaseUrl === 'undefined') {
             if (typeof window !== 'undefined' && window.proxyBaseUrl) {
                 var proxyBaseUrl = window.proxyBaseUrl;
