@@ -88,6 +88,7 @@ var providers = [
             }),       
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor,
                 baseUrl: '',
                 searchUrl: 'https://bibliotek.kungsbacka.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Kungsbacka',
@@ -103,6 +104,7 @@ var providers = [
             }),            
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor,
                 baseUrl: 'https://bibliotek.varberg.se/web/arena',
                 searchUrl: 'https://bibliotek.varberg.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
                 name: 'Varberg',
@@ -142,7 +144,8 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: ArenaParser, 
+                parser: ArenaParser,
+                preprocessor: ArenaPreprocessor,
                 baseUrl: '',
                 searchUrl: 'https://bibliotek.jonkoping.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending',
                 name: 'Jönköping',
@@ -166,6 +169,7 @@ var providers = [
             }),
             App.Provider.create({
                 parser: ArenaParser,
+                preprocessor: ArenaPreprocessor,
                 baseUrl: '',
                 searchUrl: 'https://knallebiblioteken.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescendinghttps://knallebiblioteken.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
                 name: 'Knallebiblioteken',
