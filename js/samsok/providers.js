@@ -207,13 +207,6 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: MicroMarcParser,
-                baseUrl: 'http://webbsok.mikromarc.se/Mikromarc3/web/',
-                searchUrl: 'http://webbsok.mikromarc.se/Mikromarc3/Web/search.aspx?Unit=6469&db=vargarda&SC=FT&SW=@QUERY@&LB=FT&IN=&SU=0&',
-                name: 'Vårgårda',
-                encoding: 'utf-8'
-            }),  
-            App.Provider.create({
                 parser: ArenaParser,
                 preprocessor: ArenaPreprocessor, 
                 baseUrl: '',
