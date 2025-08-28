@@ -333,10 +333,12 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
             console.log("BotStopper challenge detected for " + provider.get('name'));
             console.log("Challenge: " + challenge + ", Difficulty: " + difficulty + ", Algorithm: " + algorithm);
             
-            // Check if browser supports WebCrypto API for SHA-256
+            // SHA-256 function - use WebCrypto if available, fallback otherwise
+            var sha256;
             if (typeof crypto !== 'undefined' && crypto.subtle && crypto.subtle.digest) {
                 // Use browser's native SHA-256
-                var sha256 = async function(message) {
+                console.log("Using WebCrypto API for SHA-256");
+                sha256 = async function(message) {
                     var msgBuffer = new TextEncoder().encode(message);
                     var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
                     var hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -345,136 +347,143 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
                     }).join('');
                     return hashHex;
                 };
-                
-                // Solve the BotStopper challenge asynchronously
-                var solveChallenge = async function() {
-                    var maxAttempts = 500000; // Higher limit for real SHA-256
-                    
-                    for (var nonce = 0; nonce < maxAttempts; nonce++) {
-                        var attempt = challenge + nonce;
-                        var hash = await sha256(attempt);
-                        var hashBytes = [];
-                        
-                        // Convert hex string to byte array
-                        for (var i = 0; i < hash.length; i += 2) {
-                            hashBytes.push(parseInt(hash.substr(i, 2), 16));
-                        }
-                        
-                        // Check if hash meets difficulty requirement
-                        // For "fast" algorithm, check nibbles (half-bytes)
-                        var valid = true;
-                        for (var h = 0; h < difficulty; h++) {
-                            var byteIndex = Math.floor(h / 2);
-                            var nibbleIndex = h % 2;
-                            var nibbleValue = (hashBytes[byteIndex] >> (nibbleIndex === 0 ? 4 : 0)) & 0x0F;
-                            
-                            if (nibbleValue !== 0) {
-                                valid = false;
-                                break;
-                            }
-                        }
-                        
-                        if (valid) {
-                            console.log("Found valid hash: " + hash + " with nonce: " + nonce);
-                            return { nonce: nonce, hash: hash };
-                        }
-                        
-                        // Log progress every 10000 attempts
-                        if (nonce % 10000 === 0) {
-                            console.log("BotStopper solving progress: " + nonce + " attempts");
-                        }
-                    }
-                    
-                    return null;
+            } else if (typeof SHA256Fallback !== 'undefined') {
+                // Use fallback implementation
+                console.log("Using SHA-256 fallback implementation");
+                sha256 = function(message) {
+                    return SHA256Fallback.digest(message);
                 };
-                
-                // Execute the async solver
-                solveChallenge().then(function(solution) {
-                    if (!solution) {
-                        console.log("Could not solve BotStopper challenge");
-                        func("");
-                        return;
-                    }
-                    
-                    console.log("BotStopper challenge solved with nonce: " + solution.nonce);
-                    
-                    // BotStopper submits the solution via a redirect to pass-challenge endpoint
-                    // We need to get the redirect URL with the solution
-                    var baseUrl = provider.get('baseUrl') || '';
-                    if (baseUrl && !baseUrl.endsWith('/')) {
-                        baseUrl += '/';
-                    }
-                    
-                    // Construct the pass-challenge URL as BotStopper does
-                    var passChallengePath = '.within.website/x/cmd/anubis/api/pass-challenge';
-                    var passChallengeUrl = baseUrl + passChallengePath + 
-                        '?response=' + encodeURIComponent(solution.hash) +
-                        '&nonce=' + solution.nonce +
-                        '&redir=' + encodeURIComponent(searchUrl || provider.get('searchUrl')) +
-                        '&elapsedTime=1000'; // Fake elapsed time
-                    
-                    // Request the pass-challenge URL to get the cookie
-                    if (typeof proxyBaseUrl === 'undefined') {
-                        if (typeof window !== 'undefined' && window.proxyBaseUrl) {
-                            var proxyBaseUrl = window.proxyBaseUrl;
-                        } else {
-                            var proxyBaseUrl = (location.protocol == 'https:' ? 'https:' : 'http:') + "//samsokproxy.appspot.com/crossdomain";
-                        }
-                    }
-                    
-                    $.getJSON(proxyBaseUrl + "?url=" +
-                            encodeURIComponent(passChallengeUrl) +
-                            "&encoding=" + provider.get('encoding') +
-                            "&cookies=" + encodeURIComponent(cookies || '') +
-                            "&callback=?"
-                    ).done(function(passData) {
-                        // The pass-challenge endpoint should set a cookie and redirect
-                        // Use the cookies from the response
-                        var newCookies = passData.cookies || cookies;
-                        
-                        // Now retry the original search URL with the new cookies
-                        var retryUrl = searchUrl || provider.get('searchUrl');
-                        
-                        $.getJSON(proxyBaseUrl + "?url=" +
-                                encodeURIComponent(retryUrl) +
-                                "&encoding=" + provider.get('encoding') +
-                                "&cookies=" + encodeURIComponent(newCookies) +
-                                "&callback=?"
-                        ).done(function(data) {
-                            if (!data.content) {
-                                func("");
-                                return;
-                            }
-                            
-                            // Check if we still get a BotStopper challenge
-                            if (data.content.indexOf('BotStopper') !== -1 && 
-                                data.content.indexOf('anubis_challenge') !== -1) {
-                                // Try again with incremented attempts
-                                KohaPreprocessor(provider, data.content, func, newCookies, retryUrl, challengeAttempts + 1);
-                                return;
-                            }
-                            
-                            // Success! Pass the content to the parser
-                            func(data.content);
-                        }).fail(function() {
-                            func("");
-                        });
-                    }).fail(function() {
-                        console.log("Failed to submit BotStopper solution");
-                        func("");
-                    });
-                }).catch(function(error) {
-                    console.error("Error solving BotStopper challenge:", error);
-                    func("");
-                });
-                
-                return; // Exit early since we're handling this asynchronously
             } else {
-                // Fallback: Browser doesn't support WebCrypto API
-                console.log("Browser doesn't support WebCrypto API for SHA-256");
+                console.log("No SHA-256 implementation available");
                 func("");
                 return;
             }
+            
+            // Proceed with SHA-256 available (either native or fallback)
+            
+            // Solve the BotStopper challenge asynchronously
+            var solveChallenge = async function() {
+                var maxAttempts = 500000; // Higher limit for real SHA-256
+                
+                for (var nonce = 0; nonce < maxAttempts; nonce++) {
+                    var attempt = challenge + nonce;
+                    var hash = await sha256(attempt);
+                    var hashBytes = [];
+                    
+                    // Convert hex string to byte array
+                    for (var i = 0; i < hash.length; i += 2) {
+                        hashBytes.push(parseInt(hash.substr(i, 2), 16));
+                    }
+                    
+                    // Check if hash meets difficulty requirement
+                    // For "fast" algorithm, check nibbles (half-bytes)
+                    var valid = true;
+                    for (var h = 0; h < difficulty; h++) {
+                        var byteIndex = Math.floor(h / 2);
+                        var nibbleIndex = h % 2;
+                        var nibbleValue = (hashBytes[byteIndex] >> (nibbleIndex === 0 ? 4 : 0)) & 0x0F;
+                        
+                        if (nibbleValue !== 0) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    
+                    if (valid) {
+                        console.log("Found valid hash: " + hash + " with nonce: " + nonce);
+                        return { nonce: nonce, hash: hash };
+                    }
+                    
+                    // Log progress every 10000 attempts
+                    if (nonce % 10000 === 0) {
+                        console.log("BotStopper solving progress: " + nonce + " attempts");
+                    }
+                }
+                
+                return null;
+            };
+            
+            // Execute the async solver
+            solveChallenge().then(function(solution) {
+                if (!solution) {
+                    console.log("Could not solve BotStopper challenge");
+                    func("");
+                    return;
+                }
+                
+                console.log("BotStopper challenge solved with nonce: " + solution.nonce);
+                
+                // BotStopper submits the solution via a redirect to pass-challenge endpoint
+                // We need to get the redirect URL with the solution
+                var baseUrl = provider.get('baseUrl') || '';
+                if (baseUrl && !baseUrl.endsWith('/')) {
+                    baseUrl += '/';
+                }
+                
+                // Construct the pass-challenge URL as BotStopper does
+                var passChallengePath = '.within.website/x/cmd/anubis/api/pass-challenge';
+                var passChallengeUrl = baseUrl + passChallengePath + 
+                    '?response=' + encodeURIComponent(solution.hash) +
+                    '&nonce=' + solution.nonce +
+                    '&redir=' + encodeURIComponent(searchUrl || provider.get('searchUrl')) +
+                    '&elapsedTime=1000'; // Fake elapsed time
+                
+                // Request the pass-challenge URL to get the cookie
+                if (typeof proxyBaseUrl === 'undefined') {
+                    if (typeof window !== 'undefined' && window.proxyBaseUrl) {
+                        var proxyBaseUrl = window.proxyBaseUrl;
+                    } else {
+                        var proxyBaseUrl = (location.protocol == 'https:' ? 'https:' : 'http:') + "//samsokproxy.appspot.com/crossdomain";
+                    }
+                }
+                
+                $.getJSON(proxyBaseUrl + "?url=" +
+                        encodeURIComponent(passChallengeUrl) +
+                        "&encoding=" + provider.get('encoding') +
+                        "&cookies=" + encodeURIComponent(cookies || '') +
+                        "&callback=?"
+                ).done(function(passData) {
+                    // The pass-challenge endpoint should set a cookie and redirect
+                    // Use the cookies from the response
+                    var newCookies = passData.cookies || cookies;
+                    
+                    // Now retry the original search URL with the new cookies
+                    var retryUrl = searchUrl || provider.get('searchUrl');
+                    
+                    $.getJSON(proxyBaseUrl + "?url=" +
+                            encodeURIComponent(retryUrl) +
+                            "&encoding=" + provider.get('encoding') +
+                            "&cookies=" + encodeURIComponent(newCookies) +
+                            "&callback=?"
+                    ).done(function(data) {
+                        if (!data.content) {
+                            func("");
+                            return;
+                        }
+                        
+                        // Check if we still get a BotStopper challenge
+                        if (data.content.indexOf('BotStopper') !== -1 && 
+                            data.content.indexOf('anubis_challenge') !== -1) {
+                            // Try again with incremented attempts
+                            KohaPreprocessor(provider, data.content, func, newCookies, retryUrl, challengeAttempts + 1);
+                            return;
+                        }
+                        
+                        // Success! Pass the content to the parser
+                        func(data.content);
+                    }).fail(function() {
+                        func("");
+                    });
+                }).fail(function() {
+                    console.log("Failed to submit BotStopper solution");
+                    func("");
+                });
+            }).catch(function(error) {
+                console.error("Error solving BotStopper challenge:", error);
+                func("");
+            });
+            
+            return; // Exit early since we're handling this asynchronously
             
         } catch (e) {
             console.error("Failed to handle BotStopper challenge:", e);
