@@ -15,3 +15,19 @@ if(typeof String.prototype.trimLeft !== 'function') {
 function isNumeric(x) {
     return !isNaN(parseFloat(x)) && isFinite(x)
 }
+
+window.SamsokUtilities = window.SamsokUtilities || {};
+
+SamsokUtilities.buildGotlibProxyUrl = function(url) {
+    if (!url) {
+        return url;
+    }
+
+    var proxyBase = (location.protocol === 'https:' ? 'https:' : 'http:') + '//samsokproxy.appspot.com/gotlib/proxy?url=';
+
+    if (url.indexOf('samsokproxy.appspot.com/gotlib/proxy') >= 0) {
+        return url;
+    }
+
+    return proxyBase + encodeURIComponent(url);
+};

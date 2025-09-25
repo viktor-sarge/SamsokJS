@@ -64,18 +64,24 @@ App.Searcher = Ember.Object.extend({
     oneHit: false,
     allHitsFetched: false,
     percent: null,
+    resolvedUrl: null,
 
     numberOfHits: function() {
         return this.get('searchHits').length;
     }.property('searchHits'),
 
     url: function() {
-        return this.get('provider').getGotoUrl(this.get('query'));
-    }.property(),
+        var targetUrl = this.get('resolvedUrl') || this.get('provider').getGotoUrl(this.get('query'));
+        if (this.get('provider').get('name') === 'Göteborg') {
+            return SamsokUtilities.buildGotlibProxyUrl(targetUrl);
+        }
+        return targetUrl;
+    }.property('resolvedUrl', 'query'),
 
     search: function() {
         this.set('isFailed', false);
         this.set('isDone', false);
+        this.set('resolvedUrl', null);
 
         var outerThis = this;
 
@@ -100,11 +106,16 @@ App.Searcher = Ember.Object.extend({
                 else
                     s = searchUrl;
 
+                outerThis.set('resolvedUrl', s);
+
                 spawnWorker(outerThis.get('provider').get('parser'), content, outerThis.get('provider').get('baseUrl'), s,
                     function(e) {
                         var location = outerThis.get('provider').get('name');
                         e.hits.forEach(function(hit) {
                             hit['location'] = location;
+                            if (location === 'Göteborg') {
+                                hit['url'] = SamsokUtilities.buildGotlibProxyUrl(hit['url']);
+                            }
                         });
                         outerThis.set('totalHits', e.totalHits);
                         outerThis.set('searchHits', e.hits);
@@ -135,7 +146,11 @@ App.Searcher = Ember.Object.extend({
             if (preprocessor) {
                 preprocessor(outerThis.get('provider'), data.content, runWorker, data.cookies, searchUrl);
             } else {
-                runWorker(data.content);
+                var resolvedSearchUrl = searchUrl;
+                if (data.status && data.status.resolved_url) {
+                    resolvedSearchUrl = data.status.resolved_url;
+                }
+                runWorker(data.content, resolvedSearchUrl);
             }
         });
     }
