@@ -138,8 +138,8 @@ var providers = [
             }),
             App.Provider.create({
                 parser: GotlibParser,
-                baseUrl: 'http://encore.gotlib.goteborg.se/',
-                searchUrl: 'http://encore.gotlib.goteborg.se/iii/encore/search/C__S@QUERY@__Orightresult__U1?lang=swe&suite=pearl',
+                baseUrl: 'https://encore.gotlib.goteborg.se/',
+                searchUrl: 'https://encore.gotlib.goteborg.se/iii/encore/search/C__S@QUERY@__Orightresult__U1?lang=swe&suite=pearl',
                 name: 'Göteborg',
                 encoding: 'utf-8'
             }),
@@ -278,8 +278,8 @@ var providers = [
             }),
             App.Provider.create({
                 parser: GotlibParser,
-                baseUrl: 'http://encore.gotlib.goteborg.se/',
-                searchUrl: 'http://encore.gotlib.goteborg.se/iii/encore/search/C__S@QUERY@__Orightresult__U?lang=swe&suite=pearl',
+                baseUrl: 'https://encore.gotlib.goteborg.se/',
+                searchUrl: 'https://encore.gotlib.goteborg.se/iii/encore/search/C__S@QUERY@__Orightresult__U?lang=swe&suite=pearl',
                 name: 'Göteborg',
                 encoding: 'utf-8'
             }),
