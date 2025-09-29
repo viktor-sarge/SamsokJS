@@ -16,7 +16,17 @@ function isNumeric(x) {
     return !isNaN(parseFloat(x)) && isFinite(x)
 }
 
-window.SamsokUtilities = window.SamsokUtilities || {};
+// `window` is not available inside web workers, so fall back to whichever
+// global-like object we can find without ever touching an undefined binding.
+var _global = (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof self !== 'undefined' && self) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    {};
+
+_global.SamsokUtilities = _global.SamsokUtilities || {};
+
+var SamsokUtilities = _global.SamsokUtilities;
 
 SamsokUtilities.buildGotlibProxyUrl = function(url) {
     if (!url) {
