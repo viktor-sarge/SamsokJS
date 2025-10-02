@@ -379,20 +379,41 @@ var KohaParser = function(content, baseurl) {
     }
 
     // Special case - many libraries go directly to the result if there's only one hit.
-    if ($("h2.title").text().trim() != "") {
-        totalHits = 1;
-        var author = $("span[property='författare '] span[property='name']").text().trim();
-        var title = $("h2[class='title']").text().split('/')[0].trim();
-        var type = $("img[class='materialtype mt_icon_BK']").attr('alt');
-        var year = "";
-        var recordText = $("div[class='record']").text();
-        var yearRegex = /Tillverkare:\s+(\d+)/g;
-        var yearMatch  = yearRegex.exec(recordText);
-        if (yearMatch) {
-            year = yearMatch[1];
+    var singleTitleElement = $("h1.title, h2.title").first();
+    if (singleTitleElement.length > 0 && singleTitleElement.text().trim() !== "") {
+        totalHits = "1";
+
+        var titleNode = singleTitleElement.clone();
+        titleNode.find('span.title_resp_stmt').remove();
+        var title = titleNode.text().split('/')[0].trim();
+
+        var authorList = $("span.results_summary.author").first().find('ul.resource_list li');
+        var author = authorList.map(function() {
+            var text = $(this).text().trim();
+            return text.replace(/\s*\[[^\]]*\]\s*$/, '');
+        }).get().join('; ');
+        if (!author) {
+            author = $("span[property='author'] span[property='name']").map(function() {
+                return $(this).text().trim();
+            }).get().join('; ');
         }
+
+        var type = $("span.results_summary.type img.materialtype").attr('alt');
+        if (!type) {
+            type = $("span.results_summary.type").text().trim();
+        }
+
+        var year = $("span.rda264_date").first().text().trim();
+        if (!year) {
+            var recordText = $("div.record").text();
+            var yearMatch = /(\d{4})/.exec(recordText);
+            if (yearMatch) {
+                year = yearMatch[1];
+            }
+        }
+
         var view_link = $("a[href*=show_catalogue]").attr("href") || $("a#ISBDview").attr("href");
-        var url = baseurl + view_link;
+        var url = view_link ? baseurl.replace(/\/$/, '') + view_link : baseurl;
         hits.push(
             {
                 title: title,
@@ -618,11 +639,19 @@ ArenaParser = function(content, baseurl, searchurl) {
     if ($('div.arena-detail-title').length > 0) {
         totalHits = "1";
 
-        var title = $("div.arena-detail-title span").eq(1).text().trim();
+        var titleSpan = $("div.arena-detail-title span").filter(function() {
+            var cls = $(this).attr('class') || '';
+            return cls.indexOf('arena-result-item-number') === -1 && cls.indexOf('mediaclass-label') === -1;
+        }).last();
+        var title = titleSpan.length > 0 ? titleSpan.text().trim() : $("div.arena-detail-title").text().trim();
         var author = $("div.arena-detail-author span.arena-value").text().trim();
         var type = $("div.arena-detail-media span.arena-value").text().trim();
         var year = $("div.arena-detail-year span.arena-value").text().trim();
-        var url = $("a.arena-linktopage").attr("href");
+
+        var url = $("link[rel='canonical']").attr("href") || $("a.arena-linktopage").attr("href");
+        if (url && baseurl && url.indexOf('http') !== 0) {
+            url = baseurl.replace(/\/$/, '') + url;
+        }
         if (!url) {
             url = searchurl;
         }
@@ -637,6 +666,14 @@ ArenaParser = function(content, baseurl, searchurl) {
             }
         );
     } else {
+        var feedbackText = $('div.arena-feedback').text().trim().toLowerCase();
+        if (feedbackText.indexOf('gav inga träffar') !== -1 || feedbackText.indexOf('gav 0 träffar') !== -1) {
+            return {
+                totalHits: "0",
+                hits: []
+            };
+        }
+
         var totalRegex = /<h2 class="feedbackPanelINFO">.*?(\d+).*?<\/h2>/g;
         var totalmatch = totalRegex.exec(content);
 

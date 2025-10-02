@@ -6,6 +6,18 @@
 // Many Arena libraries will use a Javascript redirect to go directly to the book page if there's only one hit.
 // This preprocessor will detect and follow that redirect.
 // It also handles cookie challenge pages that require JavaScript execution.
+
+var resolveProxyBaseUrl = function() {
+    if (typeof proxyBaseUrl !== 'undefined' && proxyBaseUrl) {
+        return proxyBaseUrl;
+    }
+    if (typeof window !== 'undefined' && window.proxyBaseUrl) {
+        return window.proxyBaseUrl;
+    }
+    var protocol = (typeof location !== 'undefined' && location && location.protocol === 'https:') ? 'https:' : 'http:';
+    return protocol + "//samsokproxy.appspot.com/crossdomain";
+};
+
 var ArenaPreprocessor = function(provider, content, func, cookies, searchUrl, challengeAttempts) {
     // For backwards compatibility, searchUrl may not be provided
     if (!searchUrl) {
@@ -160,14 +172,7 @@ var ArenaPreprocessor = function(provider, content, func, cookies, searchUrl, ch
                 return;
             }
             
-            // Ensure proxyBaseUrl is available (it's defined in searcher.js but may not be global)
-            if (typeof proxyBaseUrl === 'undefined') {
-                if (typeof window !== 'undefined' && window.proxyBaseUrl) {
-                    var proxyBaseUrl = window.proxyBaseUrl;
-                } else {
-                    var proxyBaseUrl = (location.protocol == 'https:' ? 'https:' : 'http:') + "//samsokproxy.appspot.com/crossdomain";
-                }
-            }
+            var proxyBaseUrl = resolveProxyBaseUrl();
             
             $.getJSON(proxyBaseUrl + "?url=" +
                     encodeURIComponent(retryUrl) +
@@ -204,6 +209,7 @@ var ArenaPreprocessor = function(provider, content, func, cookies, searchUrl, ch
     var match = regex.exec(content);
     if (match) {
         var newUrl = encodeURI(decodeURIComponent(match[1].replace(/\\x/g, '%')));
+        var proxyBaseUrl = resolveProxyBaseUrl();
         $.getJSON(proxyBaseUrl + "?url=" +
                 encodeURIComponent(newUrl) +
                 "&encoding=" + provider.get('encoding') +
@@ -262,14 +268,7 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
         
         console.log("Setting KOHA_INIT cookie and retrying...");
         
-        // Retry with the KOHA_INIT cookie
-        if (typeof proxyBaseUrl === 'undefined') {
-            if (typeof window !== 'undefined' && window.proxyBaseUrl) {
-                var proxyBaseUrl = window.proxyBaseUrl;
-            } else {
-                var proxyBaseUrl = (location.protocol == 'https:' ? 'https:' : 'http:') + "//samsokproxy.appspot.com/crossdomain";
-            }
-        }
+        var proxyBaseUrl = resolveProxyBaseUrl();
         
         var retryUrl = searchUrl || provider.get('searchUrl');
         
@@ -429,13 +428,7 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
                     '&elapsedTime=1000'; // Fake elapsed time
                 
                 // Request the pass-challenge URL to get the cookie
-                if (typeof proxyBaseUrl === 'undefined') {
-                    if (typeof window !== 'undefined' && window.proxyBaseUrl) {
-                        var proxyBaseUrl = window.proxyBaseUrl;
-                    } else {
-                        var proxyBaseUrl = (location.protocol == 'https:' ? 'https:' : 'http:') + "//samsokproxy.appspot.com/crossdomain";
-                    }
-                }
+                var proxyBaseUrl = resolveProxyBaseUrl();
                 
                 $.getJSON(proxyBaseUrl + "?url=" +
                         encodeURIComponent(passChallengeUrl) +
@@ -581,14 +574,8 @@ var StockholmPreprocessor = function(provider, content, func, cookies, searchUrl
         'Referer': 'https://biblioteket.stockholm.se/sok?text=' + encodeURIComponent(searchQuery)
     };
     
-    // Ensure proxyBaseUrl is available
-    if (typeof proxyBaseUrl === 'undefined') {
-        if (typeof window !== 'undefined' && window.proxyBaseUrl) {
-            var proxyBaseUrl = window.proxyBaseUrl;
-        } else {
-            var proxyBaseUrl = (location.protocol == 'https:' ? 'https:' : 'http:') + "//samsokproxy.appspot.com/crossdomain";
-        }
-    }
+    // Ensure proxy base URL is available
+    var proxyBaseUrl = resolveProxyBaseUrl();
     
     // Make the GraphQL request through the enhanced proxy using POST
     var proxyUrl = proxyBaseUrl + "?url=" + encodeURIComponent(apiUrl) + 
