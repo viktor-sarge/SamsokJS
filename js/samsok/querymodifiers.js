@@ -8,5 +8,5 @@ var DefaultQueryModifier = function(query) {
 
 // This replaces space with + and encodes the rest
 var SpacetoPlusQueryModifier = function(query) {
-    return query.replace(/ /g, '+');
+    return encodeURIComponent(query).replace(/%20/g, '+');
 };
