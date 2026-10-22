@@ -15,6 +15,7 @@ App.Provider = Ember.Object.extend({
     enabled: false,
     preprocessor: null,
     queryModifier: DefaultQueryModifier,
+    fetchSearchPage: true,
 
     init: function() {
         this.set('enabled', isProviderEnabled(this.get('name')));
@@ -137,9 +138,11 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: GotlibParser,
-                baseUrl: 'https://encore.gotlib.goteborg.se/',
-                searchUrl: 'https://encore.gotlib.goteborg.se/iii/encore/search/C__S@QUERY@__Orightresult__U1?lang=swe&suite=pearl',
+                parser: VegaParser,
+                preprocessor: GoteborgPreprocessor,
+                fetchSearchPage: false,
+                baseUrl: 'https://bibliotek.goteborg.se/',
+                searchUrl: 'https://bibliotek.goteborg.se/search?query=@QUERY@&searchType=everything&pageSize=40',
                 name: 'Göteborg',
                 encoding: 'utf-8'
             }),
@@ -176,8 +179,9 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: MalmoParser,
+                parser: VegaParser,
                 preprocessor: MalmoPreprocessor,
+                fetchSearchPage: false,
                 baseUrl: 'https://malin.malmo.se/',
                 searchUrl: 'https://malin.malmo.se/search?query=@QUERY@&searchType=everything&pageSize=40',
                 name: 'Malmö',
@@ -277,9 +281,11 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: GotlibParser,
-                baseUrl: 'https://encore.gotlib.goteborg.se/',
-                searchUrl: 'https://encore.gotlib.goteborg.se/iii/encore/search/C__S@QUERY@__Orightresult__U?lang=swe&suite=pearl',
+                parser: VegaParser,
+                preprocessor: GoteborgPreprocessor,
+                fetchSearchPage: false,
+                baseUrl: 'https://bibliotek.goteborg.se/',
+                searchUrl: 'https://bibliotek.goteborg.se/search?query=@QUERY@&searchType=everything&pageSize=40',
                 name: 'Göteborg',
                 encoding: 'utf-8'
             }),
@@ -353,8 +359,9 @@ var providers = [
                 encoding: 'utf-8'
             }),
             App.Provider.create({
-                parser: MalmoParser,
+                parser: VegaParser,
                 preprocessor: MalmoPreprocessor,
+                fetchSearchPage: false,
                 baseUrl: 'https://malin.malmo.se/',
                 searchUrl: 'https://malin.malmo.se/search?query=@QUERY@&searchType=everything&pageSize=40',
                 name: 'Malmö',

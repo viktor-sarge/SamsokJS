@@ -71,11 +71,7 @@ App.Searcher = Ember.Object.extend({
     }.property('searchHits'),
 
     url: function() {
-        var targetUrl = this.get('resolvedUrl') || this.get('provider').getGotoUrl(this.get('query'));
-        if (this.get('provider').get('name') === 'Göteborg') {
-            return SamsokUtilities.buildGotlibProxyUrl(targetUrl);
-        }
-        return targetUrl;
+        return this.get('resolvedUrl') || this.get('provider').getGotoUrl(this.get('query'));
     }.property('resolvedUrl', 'query'),
 
     search: function() {
@@ -86,6 +82,53 @@ App.Searcher = Ember.Object.extend({
         var outerThis = this;
 
         var searchUrl = this.get('provider').getSearchUrl(this.get('query'));
+
+        var runWorker = function(content, newSearchUrl) {
+            var s;
+            if (newSearchUrl)
+                s = newSearchUrl;
+            else
+                s = searchUrl;
+
+            outerThis.set('resolvedUrl', s);
+
+            spawnWorker(outerThis.get('provider').get('parser'), content, outerThis.get('provider').get('baseUrl'), s,
+                function(e) {
+                    var location = outerThis.get('provider').get('name');
+                    e.hits.forEach(function(hit) {
+                        hit['location'] = location;
+                    });
+                    outerThis.set('totalHits', e.totalHits);
+                    outerThis.set('searchHits', e.hits);
+                    if (e.hits.length === 1) {
+                        outerThis.set('oneHit', true);
+                    }
+                    if (e.totalHits > 0 && e.hits.length >= e.totalHits) {
+                        outerThis.set('allHitsFetched', true)
+                    }
+                    if (e.totalHits == 0) {
+                        outerThis.set('percent', 100);
+                    } else {
+                        outerThis.set('percent', Math.floor((e.hits.length / e.totalHits) * 100));
+                        if (outerThis.get('percent') == 0) {
+                            outerThis.set('percent', ((e.hits.length / e.totalHits) * 100).toFixed(2));
+                        }
+                    }
+                    outerThis.set('isFailed', false);
+                    outerThis.set('isDone', true);
+                }, function(e) {
+                    outerThis.set('isFailed', true);
+                    outerThis.set('isDone', true);
+                }
+            );
+        };
+
+        // Providers searching through an API from their preprocessor have no use for the search page
+        if (!this.get('provider').get('fetchSearchPage')) {
+            this.get('provider').get('preprocessor')(this.get('provider'), '', runWorker, null, searchUrl);
+            return;
+        }
+
         var proxyUrl = proxyBaseUrl + "?url=" +
             encodeURIComponent(searchUrl) +
             "&encoding=" + this.get('provider').get('encoding') +
@@ -98,49 +141,6 @@ App.Searcher = Ember.Object.extend({
                 outerThis.set('isDone', true);
                 return;
             }
-
-            var runWorker = function(content, newSearchUrl) {
-                var s;
-                if (newSearchUrl)
-                    s = newSearchUrl;
-                else
-                    s = searchUrl;
-
-                outerThis.set('resolvedUrl', s);
-
-                spawnWorker(outerThis.get('provider').get('parser'), content, outerThis.get('provider').get('baseUrl'), s,
-                    function(e) {
-                        var location = outerThis.get('provider').get('name');
-                        e.hits.forEach(function(hit) {
-                            hit['location'] = location;
-                            if (location === 'Göteborg') {
-                                hit['url'] = SamsokUtilities.buildGotlibProxyUrl(hit['url']);
-                            }
-                        });
-                        outerThis.set('totalHits', e.totalHits);
-                        outerThis.set('searchHits', e.hits);
-                        if (e.hits.length === 1) {
-                            outerThis.set('oneHit', true);
-                        }
-                        if (e.totalHits > 0 && e.hits.length >= e.totalHits) {
-                            outerThis.set('allHitsFetched', true)
-                        }
-                        if (e.totalHits == 0) {
-                            outerThis.set('percent', 100);
-                        } else {
-                            outerThis.set('percent', Math.floor((e.hits.length / e.totalHits) * 100));
-                            if (outerThis.get('percent') == 0) {
-                                outerThis.set('percent', ((e.hits.length / e.totalHits) * 100).toFixed(2));
-                            }
-                        }
-                        outerThis.set('isFailed', false);
-                        outerThis.set('isDone', true);
-                    }, function(e) {
-                        outerThis.set('isFailed', true);
-                        outerThis.set('isDone', true);
-                    }
-                );
-            };
 
             var preprocessor = outerThis.get('provider').get('preprocessor');
             if (preprocessor) {

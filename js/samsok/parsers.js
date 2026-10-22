@@ -198,56 +198,17 @@ var SsbParser = function(content, baseurl) {
     };
 };
 
-var GotlibParser = function(content, baseurl) {
-    var hits = [],
-        $ = cheerio.load(content);
-
-    var totalHits = "0";
-    var totalHitsSpan = $('span.noResultsHideMessage');
-    if (totalHitsSpan.length > 0) {
-        var hitsRegex = /\d+ - \d+ .*? (\d+)/g;
-        var match = hitsRegex.exec(totalHitsSpan);
-        if (match) {
-            totalHits = match[1];
-        }
-    }
-
-
-    $('div[class=dpBibTitle]').each(function(i, element) {
-        var result = $(this);
-        var title = result.find('span.title a').text().trim();
-        var author = result.find('div.dpBibAuthor a').text().trim();
-        var type = result.find('span.itemMediaDescription').text().trim();
-        var year = result.find('span.itemMediaYear').text().trim();
-        var url = baseurl + result.find('span.title a').attr("href");
-        hits.push(
-            {
-                title: title,
-                author: author,
-                type: type,
-                year: year,
-                url: url
-            }
-        );
-    });
-
-    return {
-        totalHits: totalHits,
-        hits: hits
-    };
-};
-
-var MalmoParser = function(content, baseurl, searchurl) {
+var VegaParser = function(content, baseurl, searchurl) {
     var hits = [];
     var totalHits = "0";
-    
-    // Check if we have JSON data (from MalmoPreprocessor)
+
+    // Check if we have JSON data (from a Vega preprocessor)
     try {
         var data = JSON.parse(content);
         if (data && data.data && Array.isArray(data.data)) {
             totalHits = data.totalResults ? data.totalResults.toString() : data.data.length.toString();
-            
-            console.log("Malmö parser: Processing " + data.data.length + " results from JSON API");
+
+            console.log("Vega parser: Processing " + data.data.length + " results from JSON API");
             
             data.data.forEach(function(item) {
                 if (!item.title) return;
@@ -296,20 +257,20 @@ var MalmoParser = function(content, baseurl, searchurl) {
             };
         }
     } catch (e) {
-        console.log("Malmö parser: Error parsing JSON data:", e.message);
+        console.log("Vega parser: Error parsing JSON data:", e.message);
     }
-    
+
     // Fallback: Check if this is the Angular SPA HTML
     if (content && (content.indexOf('bc-app') !== -1 || content.indexOf('Loading...') !== -1)) {
-        console.log("Malmö parser: Angular SPA detected - preprocessor should handle this");
+        console.log("Vega parser: Angular SPA detected - preprocessor should handle this");
         return {
-            totalHits: "0", 
+            totalHits: "0",
             hits: []
         };
     }
-    
+
     // Default fallback
-    console.log("Malmö parser: Unknown content format");
+    console.log("Vega parser: Unknown content format");
     return {
         totalHits: "0",
         hits: hits
@@ -427,14 +388,31 @@ var KohaParser = function(content, baseurl) {
         $('td.bibliocol').each(function(i, element) {
             var result = $(this);
             var title = result.find('a.title').text().trim();
-            var author = result.find('span.author').text().trim();
-            var type = result.find('span.results_summary.type').text().trim();
-            var publisher = result.find('span.results_summary.publisher').text().trim();
+
+            // Koha 23.11 moved author, material type and year into new elements, older versions use the fallbacks
+            var author = result.find('ul.author li').map(function() {
+                return $(this).text().trim().replace(/\s*\[[^\]]*\]\s*$/, '');
+            }).get().join('; ');
+            if (!author) {
+                author = result.find('span.author').text().trim();
+            }
+
+            var typeNode = result.find('.results_material_type').first().clone();
+            typeNode.find('.label').remove();
+            var type = typeNode.text().trim();
+            if (!type) {
+                type = result.find('span.results_summary.type').text().trim();
+            }
+
             var year = "";
-            if (publisher.length >= 4 && !isNaN(publisher.substring(publisher.length - 4, publisher.length))) {
+            var rdaDateMatch = /\d{4}/.exec(result.find('span.rda264_date').first().text());
+            var publisher = result.find('span.results_summary.publisher').text().trim();
+            if (rdaDateMatch) {
+                year = rdaDateMatch[0];
+            } else if (publisher.length >= 4 && !isNaN(publisher.substring(publisher.length - 4, publisher.length))) {
                 year = publisher.substring(publisher.length - 4, publisher.length);
             }
-            var url = baseurl + result.find('a.title').attr('href');
+            var url = baseurl.replace(/\/$/, '') + result.find('a.title').attr('href');
 
             hits.push(
                 {

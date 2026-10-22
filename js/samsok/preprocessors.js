@@ -238,6 +238,51 @@ var BlockPhrasePreprocessorGenerator = function(phrase) {
     };
 };
 
+// BotStopper's "metarefresh" challenge has no proof of work, it only requires waiting before visiting the
+// pass-challenge URL. The URL is built from the challenge data rather than read from the page, since
+// BotStopper randomly sends it either in a meta tag or in a Refresh response header.
+var passAnubisMetaRefreshChallenge = function(provider, content, challengeData, func, cookies, searchUrl, challengeAttempts) {
+    var basePrefixMatch = content.match(/<script id="anubis_base_prefix"[^>]*>([\s\S]*?)<\/script>/);
+    var basePrefix = basePrefixMatch ? JSON.parse(basePrefixMatch[1]) : '';
+
+    var retryUrl = searchUrl || provider.get('searchUrl');
+    var urlParts = retryUrl.match(/^(https?:\/\/[^\/]+)(.*)$/);
+    var passChallengeUrl = urlParts[1] + basePrefix + '/.within.website/x/cmd/anubis/api/pass-challenge' +
+        '?challenge=' + encodeURIComponent(challengeData.challenge.randomData) +
+        '&id=' + encodeURIComponent(challengeData.challenge.id) +
+        '&redir=' + encodeURIComponent(urlParts[2] || '/');
+
+    // Passing earlier than the refresh delay is rejected with "insufficient time"
+    var refreshDelayMs = (challengeData.rules.difficulty + 1) * 1000;
+
+    console.log("BotStopper metarefresh challenge detected for " + provider.get('name') + ", waiting " + refreshDelayMs + " ms");
+
+    setTimeout(function() {
+        // The pickled cookies hold the verification cookie set along with the challenge, and let the proxy
+        // keep the auth cookie it gets while following the redirect back to the search page
+        $.getJSON(resolveProxyBaseUrl() + "?url=" +
+                encodeURIComponent(passChallengeUrl) +
+                "&encoding=" + provider.get('encoding') +
+                "&cookies=" + encodeURIComponent(cookies || '') +
+                "&callback=?"
+        ).done(function(data) {
+            if (!data.content) {
+                func("");
+                return;
+            }
+
+            if (data.content.indexOf('anubis_challenge') !== -1) {
+                KohaPreprocessor(provider, data.content, func, data.cookies, retryUrl, challengeAttempts + 1);
+                return;
+            }
+
+            func(data.content);
+        }).fail(function() {
+            func("");
+        });
+    }, refreshDelayMs);
+};
+
 // Koha libraries may use BotStopper which requires solving a Proof-of-Work challenge
 var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, challengeAttempts) {
     challengeAttempts = challengeAttempts || 0;
@@ -305,9 +350,7 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
     }
     
     // Check if this is a BotStopper challenge page (Anubis type)
-    if (content.indexOf('BotStopper') !== -1 && 
-        content.indexOf('anubis_challenge') !== -1 &&
-        content.indexOf('Ensuring the security of your connection') !== -1) {
+    if (content.indexOf('anubis_challenge') !== -1) {
         
         // Check if we've exceeded maximum challenge attempts
         if (challengeAttempts >= MAX_CHALLENGE_ATTEMPTS) {
@@ -325,10 +368,18 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
         
         try {
             var challengeData = JSON.parse(challengeMatch[1]);
-            var challenge = challengeData.challenge;
             var difficulty = challengeData.rules.difficulty;
             var algorithm = challengeData.rules.algorithm;
-            
+
+            if (algorithm === 'metarefresh') {
+                passAnubisMetaRefreshChallenge(provider, content, challengeData, func, cookies, searchUrl, challengeAttempts);
+                return;
+            }
+
+            // Since BotStopper 1.20 the challenge is an object and the proof of work is done over its randomData
+            var challenge = typeof challengeData.challenge === 'string' ? challengeData.challenge : challengeData.challenge.randomData;
+            var challengeId = challengeData.challenge.id;
+
             console.log("BotStopper challenge detected for " + provider.get('name'));
             console.log("Challenge: " + challenge + ", Difficulty: " + difficulty + ", Algorithm: " + algorithm);
             
@@ -423,6 +474,7 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
                 var passChallengePath = '.within.website/x/cmd/anubis/api/pass-challenge';
                 var passChallengeUrl = baseUrl + passChallengePath + 
                     '?response=' + encodeURIComponent(solution.hash) +
+                    (challengeId ? '&id=' + encodeURIComponent(challengeId) : '') +
                     '&nonce=' + solution.nonce +
                     '&redir=' + encodeURIComponent(searchUrl || provider.get('searchUrl')) +
                     '&elapsedTime=1000'; // Fake elapsed time
@@ -489,57 +541,64 @@ var KohaPreprocessor = function(provider, content, func, cookies, searchUrl, cha
     func(content);
 };
 
-// Malmö uses a modern API that requires POST requests with specific headers
-var MalmoPreprocessor = function(provider, content, func, cookies, searchUrl) {
-    // Extract the search query from the original searchUrl
-    var queryMatch = searchUrl.match(/query=([^&]+)/);
-    if (!queryMatch) {
-        func("");
-        return;
-    }
-    
-    var searchQuery = decodeURIComponent(queryMatch[1]);
-    console.log("Malmö preprocessor: Making API call for query: " + searchQuery);
-    
-    // Prepare the API request data
-    var apiUrl = 'https://eu.iiivega.com/api/search-result/search/format-groups';
-    var postData = {
-        "searchText": searchQuery,
-        "sorting": "relevance", 
-        "sortOrder": "asc",
-        "searchType": "everything",
-        "pageNum": 0,
-        "pageSize": 40,
-        "resourceType": "FormatGroup"
-    };
-    
-    // Make the API request using jQuery AJAX
-    $.ajax({
-        url: apiUrl,
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(postData),
-        headers: {
-            'accept': 'application/json, text/plain, */*',
-            'accept-language': 'sv,en-US;q=0.9,en;q=0.8',
-            'api-version': '2',
-            'iii-customer-domain': 'malmo.eu.iiivega.com',
-            'iii-host-domain': 'malin.malmo.se',
-            'origin': 'https://malin.malmo.se',
-            'referer': 'https://malin.malmo.se/',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-        },
-        success: function(data) {
-            console.log("Malmö API call successful, found " + data.totalResults + " results");
-            // Pass the JSON response as a string to the parser
-            func(JSON.stringify(data));
-        },
-        error: function(xhr, status, error) {
-            console.log("Malmö API call failed: " + status + " " + error);
+// Vega Discover catalogues search through a shared API that requires POST requests with specific headers.
+// The API allows cross-origin requests, so it's called directly instead of through the proxy.
+// The customer domain identifies the library, and can be found in the iii-customer-domain request header
+// sent by the library's own catalogue.
+var VegaPreprocessorGenerator = function(customerDomain) {
+    return function(provider, content, func, cookies, searchUrl) {
+        // Extract the search query from the original searchUrl
+        var queryMatch = searchUrl.match(/query=([^&]+)/);
+        if (!queryMatch) {
             func("");
+            return;
         }
-    });
+
+        var searchQuery = decodeURIComponent(queryMatch[1]);
+        var hostDomain = searchUrl.match(/^https?:\/\/([^\/]+)/)[1];
+        console.log("Vega preprocessor: Making API call to " + customerDomain + " for query: " + searchQuery);
+
+        // Prepare the API request data
+        var apiUrl = 'https://eu.iiivega.com/api/search-result/search/format-groups';
+        var postData = {
+            "searchText": searchQuery,
+            "sorting": "relevance",
+            "sortOrder": "asc",
+            "searchType": "everything",
+            "pageNum": 0,
+            "pageSize": 40,
+            "resourceType": "FormatGroup"
+        };
+
+        // Make the API request using jQuery AJAX
+        $.ajax({
+            url: apiUrl,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(postData),
+            headers: {
+                'accept': 'application/json, text/plain, */*',
+                'accept-language': 'sv,en-US;q=0.9,en;q=0.8',
+                'api-version': '2',
+                'iii-customer-domain': customerDomain,
+                'iii-host-domain': hostDomain
+            },
+            success: function(data) {
+                console.log("Vega API call to " + customerDomain + " successful, found " + data.totalResults + " results");
+                // Pass the JSON response as a string to the parser
+                func(JSON.stringify(data));
+            },
+            error: function(xhr, status, error) {
+                console.log("Vega API call to " + customerDomain + " failed: " + status + " " + error);
+                func("");
+            }
+        });
+    };
 };
+
+var MalmoPreprocessor = VegaPreprocessorGenerator('malmo.eu.iiivega.com');
+
+var GoteborgPreprocessor = VegaPreprocessorGenerator('gsb.eu.iiivega.com');
 
 // Stockholm uses a GraphQL API for search
 var StockholmPreprocessor = function(provider, content, func, cookies, searchUrl) {
