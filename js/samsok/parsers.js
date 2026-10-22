@@ -432,43 +432,35 @@ var KohaParser = function(content, baseurl) {
     };
 };
 
+// Mina bibliotek searches through Axiell's federated search API, which answers with a server-sent
+// event stream where the catalogue results are the JSON data of the "search" event
 var MinabibliotekParser = function(content, baseurl) {
-    var hits = [],
-        $ = cheerio.load(content);
-
+    var hits = [];
     var totalHits = "0";
-    var totalHitsSpan = $('span.result-count').first().text().trim();
-    if (totalHitsSpan.length > 0) {
-        totalHits = totalHitsSpan;
-    }
 
-    $('div.catalog-search-result-container > ol.search-result > li').each(function(i, element) {
-        var result = $(this);
-        var title = result.find(':header a.work-link').text().trim();
-        var author = result.find('span.author-name').text().trim();
-        if (author.toLowerCase().indexOf("av:") == 0) {
-            author = author.substr("av:".length, author.length).trim();
-        }
+    var searchEventMatch = /event:search\r?\ndata:(.*)/.exec(content);
+    if (searchEventMatch) {
+        var data = JSON.parse(searchEventMatch[1]);
+        totalHits = String(data.totalHits);
 
-        var typesArray = [];
-        result.find('ul.media-types li a span').each(function(i, t) {
-            typesArray.push($(t).text().trim());
+        data.hits.forEach(function(hit) {
+            var entity = hit.entity;
+            var creator = entity.creator || {};
+            var authors = creator.author || creator.creator || [];
+
+            hits.push(
+                {
+                    title: entity.name,
+                    author: authors.map(function(author) {
+                        return author.value;
+                    }).join('; '),
+                    type: entity.mediaClass || '',
+                    year: entity.publicationYear ? entity.publicationYear[0] : '',
+                    url: baseurl + 'search#/entity/catalogue/' + entity.id
+                }
+            );
         });
-        var type = typesArray.join(' / ');
-
-        var year = result.find('span.published-name').text().trim();
-        var url = baseurl + result.find(':header a.work-link').attr('href');
-
-        hits.push(
-            {
-                title: title,
-                author: author,
-                type: type,
-                year: year,
-                url: url
-            }
-        );
-    });
+    }
 
     return {
         totalHits: totalHits,
@@ -652,21 +644,24 @@ ArenaParser = function(content, baseurl, searchurl) {
             };
         }
 
-        var totalRegex = /<h2 class="feedbackPanelINFO">.*?(\d+).*?<\/h2>/g;
-        var totalmatch = totalRegex.exec(content);
-
-        if (totalmatch) {
-            // Check for 'alternativa' in the content and ignore if present
-            if (totalmatch[0].indexOf('alternativa') === -1) {
-                totalHits = totalmatch[1];
+        // The total is in a message like 'Din sökning på "x" gav 304 träffar', which depending on the
+        // Arena version is in an h2 or a span. Messages about alternative searches are ignored.
+        $('.feedbackPanelINFO').each(function() {
+            var feedback = $(this).text();
+            var feedbackMatch = /gav (\d+) träff/.exec(feedback);
+            if (feedbackMatch && totalHits === "okänt" && feedback.indexOf('alternativa') === -1) {
+                totalHits = feedbackMatch[1];
             }
-        } else {
-            totalRegex = /<span.*?">\d+-\d+ .*? (\d+)<\/span>/g;
-            totalmatch = totalRegex.exec(content);
+        });
 
-            if (totalmatch) {
-                totalHits = totalmatch[1];
-            }
+        // Otherwise use the paging info, like "1-10 av 450"
+        if (totalHits === "okänt") {
+            $('span').each(function() {
+                var rangeMatch = /^\s*\d+-\d+ (?:av|of) (\d+)\s*$/.exec($(this).text());
+                if (rangeMatch && totalHits === "okänt") {
+                    totalHits = rangeMatch[1];
+                }
+            });
         }
 
         $('div.arena-record-details').each(function(i, element) {

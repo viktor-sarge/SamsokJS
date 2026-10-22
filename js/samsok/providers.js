@@ -76,7 +76,7 @@ var providers = [
                 baseUrl: '',
                 searchUrl: 'http://libris.kb.se/xsearch?query=@QUERY@%20AND%20bibl:hal&format=json&holdings=true&n=200',
                 name: 'Halmstad Högskolebibliotek',
-                gotoUrl: 'http://libris.kb.se/hitlist?q=@QUERY@+bib%3aumdp&d=libris&m=10&p=1&s=r',
+                gotoUrl: 'http://libris.kb.se/hitlist?q=@QUERY@+bib%3ahal&d=libris&m=10&p=1&s=r',
                 encoding: 'utf-8'
             }),        
              App.Provider.create({
@@ -174,7 +174,7 @@ var providers = [
                 parser: ArenaParser,
                 preprocessor: ArenaPreprocessor,
                 baseUrl: '',
-                searchUrl: 'https://knallebiblioteken.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescendinghttps://knallebiblioteken.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
+                searchUrl: 'https://knallebiblioteken.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=',
                 name: 'Knallebiblioteken',
                 encoding: 'utf-8'
             }),
@@ -197,8 +197,9 @@ var providers = [
             }),     
             App.Provider.create({
                 parser: MinabibliotekParser,
-                baseUrl: 'http://www.minabibliotek.se/',
-                searchUrl: 'https://www.minabibliotek.se/search?query=@QUERY@&fMediaId=&fTarget=',
+                baseUrl: 'https://minabibliotek.se/',
+                searchUrl: 'https://minabibliotek.se/federated-search/customers/umea/search?sourceId=catalogue&source=catalogue&size=40&facetSize=0&start=0&fuzzy=true&sort=score+desc&q=@QUERY@',
+                gotoUrl: 'https://minabibliotek.se/search#/?q=@QUERY@&fuzzy=true&source=catalogue',
                 name: 'Umeå - Mina bibliotek',
                 encoding: 'utf-8'
             }),
@@ -369,8 +370,9 @@ var providers = [
             }),
             App.Provider.create({
                 parser: MinabibliotekParser,
-                baseUrl: 'http://www.minabibliotek.se/',
-                searchUrl: 'https://www.minabibliotek.se/search?query=@QUERY@&fMediaId=&fTarget=',
+                baseUrl: 'https://minabibliotek.se/',
+                searchUrl: 'https://minabibliotek.se/federated-search/customers/umea/search?sourceId=catalogue&source=catalogue&size=40&facetSize=0&start=0&fuzzy=true&sort=score+desc&q=@QUERY@',
+                gotoUrl: 'https://minabibliotek.se/search#/?q=@QUERY@&fuzzy=true&source=catalogue',
                 name: 'Mina bibliotek',
                 encoding: 'utf-8'
             })

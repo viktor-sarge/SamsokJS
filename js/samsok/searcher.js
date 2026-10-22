@@ -71,6 +71,10 @@ App.Searcher = Ember.Object.extend({
     }.property('searchHits'),
 
     url: function() {
+        // Providers with a gotoUrl search through an API, so their resolved search URL isn't a page to show
+        if (this.get('provider').get('gotoUrl')) {
+            return this.get('provider').getGotoUrl(this.get('query'));
+        }
         return this.get('resolvedUrl') || this.get('provider').getGotoUrl(this.get('query'));
     }.property('resolvedUrl', 'query'),
 
@@ -84,6 +88,13 @@ App.Searcher = Ember.Object.extend({
         var searchUrl = this.get('provider').getSearchUrl(this.get('query'));
 
         var runWorker = function(content, newSearchUrl) {
+            // Preprocessors pass on empty content when they couldn't get the search results
+            if (!content) {
+                outerThis.set('isFailed', true);
+                outerThis.set('isDone', true);
+                return;
+            }
+
             var s;
             if (newSearchUrl)
                 s = newSearchUrl;
