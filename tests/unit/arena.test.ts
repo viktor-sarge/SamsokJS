@@ -11,8 +11,20 @@ if (!source || source.adapter !== 'arena') throw new Error('Expected Arena sourc
 const url = 'https://nova.halmstad.se/search?q=book';
 const fixture = readFileSync(new URL('../fixtures/arena-results.html', import.meta.url), 'utf8');
 const cookie = readFileSync(new URL('../fixtures/arena-cookie.html', import.meta.url), 'utf8');
+const alternatives = readFileSync(new URL('../fixtures/arena-alternatives.html', import.meta.url), 'utf8');
 
 describe('Arena parsing', () => {
+  it('returns zero exact matches instead of exposing alternative-spelling records', () => {
+    for (const content of [
+      alternatives, alternatives.replace('inga träffar', '0 träffar'),
+      alternatives.replace('gav inga träffar', 'returned no results'),
+      alternatives.replace('href="/results/alternative"', 'href="javascript:invalid"'),
+    ]) {
+      expect(inspectArena(content, source, url)).toEqual({
+        kind: 'results', result: { totalHits: 0, hits: [], catalogueUrl: url },
+      });
+    }
+  });
   it('extracts metadata and totals while ignoring alternative searches', () => {
     expect(inspectArena(fixture, source, url)).toEqual({
       kind: 'results', result: { totalHits: 1234, catalogueUrl: url, hits: [{
@@ -53,7 +65,9 @@ describe('Arena parsing', () => {
     expect(() => inspectArena('<h1>Maintenance</h1>', source, url)).toThrow('okänt');
     expect(() => inspectArena(fixture.replace('href="/web/arena/results?p_r_p_arena_urn%3Aarena_member_id=123"', ''), source, url)).toThrow('ofullständig');
     expect(() => inspectArena(fixture.replace('/web/arena/results?p_r_p_arena_urn%3Aarena_member_id=123', 'javascript:alert(1)'), source, url)).toThrow('ogiltig');
-    expect(() => inspectArena(fixture.replace('1 234', '0'), source, url)).toThrow();
+    expect(inspectArena(fixture.replace('1 234', '0'), source, url))
+      .toMatchObject({ kind: 'results', result: { totalHits: 0, hits: [] } });
+    expect(() => inspectArena(fixture.replace('1 234', '1') + fixture, source, url)).toThrow();
     expect(() => inspectArena('x'.repeat(2_000_001), source, url)).toThrow('för stort');
   });
 });

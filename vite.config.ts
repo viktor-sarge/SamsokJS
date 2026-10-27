@@ -15,6 +15,10 @@ const instance = resolveInstance(
   JSON.parse(readFileSync(instancePath, 'utf8')),
   JSON.parse(readFileSync(resolve(root, 'config', 'sources.json'), 'utf8')),
 );
+const buildInfo = {
+  version: JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')).version as string,
+  builtAt: new Date().toISOString(),
+};
 if (instance.id !== id) {
   throw new Error(`Instance ID "${instance.id}" must match its filename "${id}.json"`);
 }
@@ -38,6 +42,7 @@ export default defineConfig({
       load(source) {
         if (source !== '\0samsok-instance') return;
         return `import ${JSON.stringify(normalizePath(themePath))};
+export const buildInfo = ${JSON.stringify(buildInfo)};
 export default ${JSON.stringify(instance)};`;
       },
       transformIndexHtml(html) {

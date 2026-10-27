@@ -4,6 +4,7 @@ import type { Instance, Source } from '../../../config/schema';
 import type { SearchResult } from './types';
 import { requestContent } from './transport';
 import { queryUrl } from './urls';
+import type { DiagnosticTrace } from './diagnostics';
 
 const optionalText = z.union([z.string(), z.array(z.string())]).nullish()
   .transform((value) => Array.isArray(value) ? value.join('; ') : value ?? undefined);
@@ -59,7 +60,9 @@ export async function searchXsearch(
   query: string,
   proxy: Instance['proxy'],
   signal: AbortSignal,
+  trace?: DiagnosticTrace,
 ): Promise<SearchResult> {
-  const content = await requestContent(queryUrl(source.searchUrl, query), source.encoding, proxy, signal);
-  return parseXsearch(content, source, query);
+  const content = await requestContent(queryUrl(source.searchUrl, query), source.encoding, proxy, signal, trace);
+  const parse = () => parseXsearch(content, source, query);
+  return trace ? trace.parse(parse) : parse();
 }

@@ -107,6 +107,23 @@ test('reports known no-hit pages without hiding unexpected maintenance pages', a
   await expect(page.getByText('Arena returnerade ett okänt eller ofullständigt söksvar.', { exact: false })).toBeVisible();
 });
 
+test('reports zero exact matches after a cookie challenge when Arena returns spelling alternatives', async ({ page }) => {
+  const alternatives = readFileSync(new URL('../fixtures/arena-alternatives.html', import.meta.url), 'utf8');
+  let attempts = 0;
+  await page.route(proxyPattern, async (route) => {
+    attempts++;
+    await reply(route, attempts === 1 ? cookie : alternatives);
+  });
+  await page.goto('./#/search?query=nyaga');
+  await expect(page.getByText('Inga träffar hittades.', { exact: true })).toBeVisible();
+  await expect(page.locator('.source-status')).toContainText('Halmstad 0 hämtade av 0 träffar.');
+  await expect(page.locator('.source-error')).toHaveCount(0);
+  await expect(page.locator('.result-card')).toHaveCount(0);
+  await expect(page.locator('.source-status a')).toHaveAttribute('href',
+    'https://nova.halmstad.se/search?p_r_p_arena_urn%3Aarena_search_query=nyaga');
+  expect(attempts).toBe(2);
+});
+
 test('treats the dedicated zero-hit panel as empty without fetching deferred suggestions', async ({ page }) => {
   let requests = 0;
   await page.route(proxyPattern, async (route) => {

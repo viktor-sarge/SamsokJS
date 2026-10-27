@@ -1,17 +1,20 @@
 import type { Instance, Source } from '../../../config/schema';
 import { searchSource } from './adapters';
 import type { SearchResult } from './types';
+import { DiagnosticTrace } from './diagnostics';
+import type { FailureDiagnostics } from './diagnostics';
 
 export type SourceState =
   | { source: Source; status: 'loading' }
   | { source: Source; status: 'success'; result: SearchResult }
-  | { source: Source; status: 'error'; error: string };
+  | { source: Source; status: 'error'; error: string; diagnostics: FailureDiagnostics };
 
 interface SearchRun {
   controller: AbortController;
   query: string;
   states: SourceState[];
   emit: (states: SourceState[]) => void;
+  attempts: Map<string, number>;
 }
 
 export class SearchSession {
@@ -29,6 +32,7 @@ export class SearchSession {
       controller: new AbortController(),
       query,
       emit,
+      attempts: new Map(),
       states: query ? sources.map((source): SourceState => {
         const result = this.cache.get(this.key(source, query));
         return result ? { source, status: 'success', result } : { source, status: 'loading' };
@@ -69,8 +73,11 @@ export class SearchSession {
   }
 
   private async perform(run: SearchRun, source: Source): Promise<void> {
+    const attempt = (run.attempts.get(source.id) ?? 0) + 1;
+    run.attempts.set(source.id, attempt);
+    const trace = new DiagnosticTrace();
     try {
-      const result = await this.search(source, run.query, this.proxy, run.controller.signal);
+      const result = await this.search(source, run.query, this.proxy, run.controller.signal, trace);
       if (run.controller.signal.aborted) return;
       const key = this.key(source, run.query);
       this.cache.delete(key);
@@ -84,6 +91,7 @@ export class SearchSession {
         source,
         status: 'error',
         error: error instanceof Error ? error.message : 'Ett okänt sökfel inträffade.',
+        diagnostics: trace.failure(attempt),
       });
     }
   }

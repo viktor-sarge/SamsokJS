@@ -91,8 +91,11 @@ export function inspectArena(content: string, source: ArenaSource, pageUrl: stri
     }] } };
   }
   const feedback = clean('div.arena-feedback');
-  const empty = /gav\s+(?:inga|0)\s+träffar|(?:returned|found)\s+(?:no|0)\s+(?:hits|results)/i.test(feedback) ||
-    $('div.arena-zero-list').length > 0;
+  const noExactMatches = /gav\s+(?:inga|0)\s+träffar|(?:returned|found)\s+(?:no|0)\s+(?:hits|results)/i.test(feedback);
+  if (noExactMatches) {
+    return { kind: 'results', result: { totalHits: 0, hits: [], catalogueUrl: pageUrl } };
+  }
+  const empty = $('div.arena-zero-list').length > 0;
   let totalHits: number | null = empty ? 0 : null;
   $('.feedbackPanelINFO').each((_, node) => {
     const message = $(node).text();

@@ -3,6 +3,7 @@ import type { Instance, Source } from '../../../config/schema';
 import type { SearchResult } from './types';
 import { requestContent } from './transport';
 import { queryUrl } from './urls';
+import type { DiagnosticTrace } from './diagnostics';
 
 type MinaSource = Extract<Source, { adapter: 'mina-bibliotek' }>;
 const authorsSchema = z.array(z.object({ value: z.string() }));
@@ -45,7 +46,9 @@ export function parseMinaBibliotek(content: string, source: MinaSource, query: s
 
 export async function searchMinaBibliotek(
   source: MinaSource, query: string, proxy: Instance['proxy'], signal: AbortSignal,
+  trace?: DiagnosticTrace,
 ): Promise<SearchResult> {
-  const content = await requestContent(queryUrl(source.searchUrl, query), source.encoding, proxy, signal);
-  return parseMinaBibliotek(content, source, query);
+  const content = await requestContent(queryUrl(source.searchUrl, query), source.encoding, proxy, signal, trace);
+  const parse = () => parseMinaBibliotek(content, source, query);
+  return trace ? trace.parse(parse) : parse();
 }

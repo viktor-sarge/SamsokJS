@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { Source } from '../../../config/schema';
 import type { SearchResult } from './types';
 import { queryUrl } from './urls';
+import type { DiagnosticTrace } from './diagnostics';
 
 export type VegaSource = Extract<Source, { adapter: 'vega' }>;
 
@@ -49,9 +50,12 @@ export async function searchVega(
   query: string,
   timeoutMs: number,
   signal: AbortSignal,
+  trace?: DiagnosticTrace,
 ): Promise<SearchResult> {
   const deadline = AbortSignal.timeout(timeoutMs);
   const requestSignal = AbortSignal.any([signal, deadline]);
+  const finish = trace?.start('vega-request', { method: 'POST' });
+  let requestFinished = false;
   try {
     const response = await fetch(source.apiUrl, {
       method: 'POST',
@@ -77,6 +81,8 @@ export async function searchVega(
       }),
     });
     if (!response.ok) {
+      finish?.('http-error', { httpStatus: response.status });
+      requestFinished = true;
       throw new Error(`Vega returnerade HTTP ${response.status}. Försök igen eller öppna katalogen.`);
     }
     let data: unknown;
@@ -84,10 +90,16 @@ export async function searchVega(
       data = await response.json();
     } catch (error) {
       if (requestSignal.aborted) throw error;
+      finish?.('invalid-json', { httpStatus: response.status });
+      requestFinished = true;
       throw new Error('Vega returnerade inte giltig JSON.');
     }
-    return parseVega(data, source, query);
+    finish?.('ok', { httpStatus: response.status });
+    requestFinished = true;
+    const parse = () => parseVega(data, source, query);
+    return trace ? trace.parse(parse) : parse();
   } catch (error) {
+    if (!requestFinished) finish?.(signal.aborted ? 'aborted' : deadline.aborted ? 'timeout' : 'network-error');
     if (signal.aborted) throw signal.reason;
     if (deadline.aborted) throw new Error('Katalogen svarade inte i tid. Försök igen.');
     if (error instanceof TypeError) {

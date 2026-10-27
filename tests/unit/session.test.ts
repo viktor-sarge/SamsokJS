@@ -89,4 +89,22 @@ describe('search coordination', () => {
     session.start('book-0', [instance.sources[0]], vi.fn());
     expect(search).toHaveBeenCalledTimes(34);
   });
+
+  it('captures independent diagnostics for each retry without retaining failed attempts across queries', async () => {
+    const search = vi.fn<typeof import('../../modern/src/search/adapters').searchSource>()
+      .mockImplementation(async (_source, _query, _proxy, _signal, trace) => {
+        trace?.start('proxy-request')('network-error');
+        throw new Error('Network failed');
+      });
+    const session = new SearchSession(instance.proxy, search);
+    let states: SourceState[] = [];
+    session.start('book', [instance.sources[0]], (next) => { states = next; });
+    await vi.waitFor(() => expect(states[0]).toMatchObject({ status: 'error', diagnostics: { attempt: 1 } }));
+    session.retry(instance.sources[0].id);
+    await vi.waitFor(() => expect(states[0]).toMatchObject({
+      status: 'error', diagnostics: { attempt: 2, events: [{ stage: 'proxy-request', outcome: 'network-error' }] },
+    }));
+    session.start('different', [instance.sources[0]], (next) => { states = next; });
+    await vi.waitFor(() => expect(states[0]).toMatchObject({ status: 'error', diagnostics: { attempt: 1 } }));
+  });
 });

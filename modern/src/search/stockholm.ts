@@ -3,6 +3,7 @@ import type { Instance, Source } from '../../../config/schema';
 import type { SearchResult } from './types';
 import { requestPage } from './transport';
 import { queryUrl } from './urls';
+import type { DiagnosticTrace } from './diagnostics';
 
 type StockholmSource = Extract<Source, { adapter: 'stockholm' }>;
 
@@ -46,9 +47,11 @@ export function parseStockholm(data: unknown, source: StockholmSource, query: st
 
 export async function searchStockholm(
   source: StockholmSource, query: string, proxy: Instance['proxy'], signal: AbortSignal,
+  trace?: DiagnosticTrace,
 ): Promise<SearchResult> {
   const catalogueUrl = queryUrl(source.catalogueUrl, query);
   const response = await requestPage(source.apiUrl, 'utf-8', proxy, signal, {
+    trace,
     post: {
       data: {
         query: 'query searchWithFilter($filterQuery: SearchWithFilterInput!) { searchWithFilter(filterQuery: $filterQuery) { totalHits groupedMedia { mediaList { key title author mediaTypeDisplay publishedDate } } } }',
@@ -57,8 +60,11 @@ export async function searchStockholm(
       headers: { Accept: '*/*', Origin: new URL(catalogueUrl).origin, Referer: catalogueUrl },
     },
   });
-  let data: unknown;
-  try { data = JSON.parse(response.content); }
-  catch { throw new Error('Stockholm returnerade inte giltig JSON.'); }
-  return parseStockholm(data, source, query);
+  const parse = () => {
+    let data: unknown;
+    try { data = JSON.parse(response.content); }
+    catch { throw new Error('Stockholm returnerade inte giltig JSON.'); }
+    return parseStockholm(data, source, query);
+  };
+  return trace ? trace.parse(parse) : parse();
 }

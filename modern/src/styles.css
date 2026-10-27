@@ -64,6 +64,10 @@ progress { width: 100%; accent-color: var(--color-primary); height: 0.6rem; disp
 .source-status { padding-left: 1.2rem; font-size: 0.9rem; }
 .source-status li { margin-block: 0.75rem; }
 .source-error { color: var(--color-error); }
+.diagnostic-report { color: var(--color-text); margin-top: 0.75rem; }
+.diagnostic-report summary { cursor: pointer; color: var(--color-primary); font-weight: 600; padding-block: 0.5rem; }
+.diagnostic-report textarea { display: block; width: 100%; max-width: 100%; margin-top: 0.5rem; padding: 0.75rem; font: 0.85rem monospace; color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); }
+.diagnostic-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
 .secondary { background: var(--color-surface); color: var(--color-primary); padding: 0.4rem 0.75rem; }
 .secondary:hover:not(:disabled) { background: var(--color-tint); }
 .result-filter { margin-block: 2rem 1.5rem; }

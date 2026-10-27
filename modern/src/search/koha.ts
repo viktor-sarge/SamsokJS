@@ -4,8 +4,9 @@ import type { KohaJob, KohaReply } from './koha.worker';
 import { requestPage } from './transport';
 import { queryUrl } from './urls';
 import type { SearchResult } from './types';
+import type { DiagnosticTrace } from './diagnostics';
 
-function runWorker(job: KohaJob, signal: AbortSignal): Promise<Exclude<KohaReply, { kind: 'error' }>> {
+function executeWorker(job: KohaJob, signal: AbortSignal): Promise<Exclude<KohaReply, { kind: 'error' }>> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) { reject(signal.reason); return; }
     const worker = new Worker(new URL('./koha.worker.ts', import.meta.url), { type: 'module' });
@@ -26,6 +27,13 @@ function runWorker(job: KohaJob, signal: AbortSignal): Promise<Exclude<KohaReply
   });
 }
 
+function runWorker(job: KohaJob, signal: AbortSignal, trace?: DiagnosticTrace) {
+  const work = () => executeWorker(job, signal);
+  return trace ? trace.run(job.kind === 'parse' ? 'worker-parse' : 'challenge-solve', work,
+    job.kind === 'solve' ? { algorithm: job.challenge.rules.algorithm } : {},
+    (reply) => reply.kind === 'page' ? { pageKind: reply.page.kind } : {}) : work();
+}
+
 export function waitForChallenge(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) { reject(signal.reason); return; }
@@ -37,6 +45,7 @@ export function waitForChallenge(ms: number, signal: AbortSignal): Promise<void>
 
 export async function searchKoha(
   source: KohaSource, query: string, proxy: Instance['proxy'], signal: AbortSignal,
+  trace?: DiagnosticTrace,
 ): Promise<SearchResult> {
   const deadline = AbortSignal.timeout(proxy.timeoutMs);
   const active = AbortSignal.any([signal, deadline]);
@@ -46,7 +55,7 @@ export async function searchKoha(
   let cookieRetried = false;
   try {
     for (let attempt = 0; attempt < 4; attempt++) {
-      const page = await requestPage(target, source.encoding, proxy, active, { cookies, allowHttpErrors: true });
+      const page = await requestPage(target, source.encoding, proxy, active, { cookies, allowHttpErrors: true, trace });
       cookies = page.cookies || cookies;
       const pageUrl = page.status?.resolved_url || target;
       if (new URL(pageUrl).origin !== new URL(searchUrl).origin) {
@@ -61,7 +70,7 @@ export async function searchKoha(
         target = searchUrl;
         continue;
       }
-      const parsed = await runWorker({ kind: 'parse', content: page.content, source, pageUrl }, active);
+      const parsed = await runWorker({ kind: 'parse', content: page.content, source, pageUrl }, active, trace);
       if (parsed.kind !== 'page') throw new Error('Oväntat svar från Koha-bearbetningen.');
       if (parsed.page.kind === 'results') {
         const status = page.status?.http_code;
@@ -83,11 +92,13 @@ export async function searchKoha(
       pass.searchParams.set('id', challenge.challenge.id);
       const started = performance.now();
       if (challenge.rules.algorithm === 'metarefresh') {
-        await waitForChallenge((challenge.rules.difficulty + 1) * 1000, active);
+        const wait = () => waitForChallenge((challenge.rules.difficulty + 1) * 1000, active);
+        if (trace) await trace.run('challenge-wait', wait, { algorithm: 'metarefresh' });
+        else await wait();
         pass.searchParams.set('challenge', challenge.challenge.randomData);
         pass.searchParams.set('redir', new URL(searchUrl).pathname + new URL(searchUrl).search);
       } else {
-        const solution = await runWorker({ kind: 'solve', challenge }, active);
+        const solution = await runWorker({ kind: 'solve', challenge }, active, trace);
         if (solution.kind !== 'solution') throw new Error('Oväntat svar från Anubis-bearbetningen.');
         pass.searchParams.set('response', solution.hash);
         pass.searchParams.set('nonce', String(solution.nonce));

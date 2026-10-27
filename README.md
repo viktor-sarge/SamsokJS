@@ -249,6 +249,10 @@ current search and never persisted in browser storage.
 
 Zero-hit panels can defer alternative suggestions to an upstream script.
 Those suggestions are not fetched or executed; the original query has no hits.
+When Arena explicitly reports no matches for the original query but includes
+records and totals for alternative spellings (as Halmstad does), Samsök reports
+zero exact matches and does not include those alternative records. Visitors can
+follow the catalogue link to explore its spelling suggestions.
 
 ### Stockholm GraphQL
 
@@ -396,6 +400,52 @@ not the new app's npm dependencies. The original bundle was generated with
 minified, with a manual workaround for
 [cheerio issue 549](https://github.com/cheeriojs/cheerio/issues/549) in the
 2014 version. Those historical build notes apply only to the legacy app.
+
+## Reporting catalogue problems
+
+When a source fails, expand **Felsökningsrapport: [library]** beneath its error.
+The librarian can inspect the report and choose **Kopiera rapport** or
+**Ladda ner rapport**, then send it through the organisation's normal support
+channel. If clipboard access is blocked (for example on a non-secure origin),
+download the JSON file or select and copy the report text manually. Export errors
+are shown explicitly. Download confirmation means the browser was asked to save
+the file, not that the app can verify where it was saved.
+
+Search queries are **omitted by default**. Check **Ta med sökfrågan i rapporten**
+only if needed to reproduce the problem and safe to share. Review the preview
+before sending. Retrying or starting a new failure resets this consent.
+Librarians should also describe what they were trying to do and whether retrying
+or opening the catalogue directly worked.
+
+The versioned JSON report includes:
+
+- App version, build timestamp, instance ID, and deployment origin/path.
+- Browser user agent, language, and browser-reported online/offline state
+  (not a connectivity test).
+- Source ID/name/adapter, configured endpoint origins/paths and parameter
+  **names**, tenant/page-size/encoding settings where relevant, and proxy deadline.
+- Failure message, UTC start/end timestamps, elapsed milliseconds, and retry
+  attempt number for that source in the current search run.
+- Ordered request/parser/worker/challenge stages, HTTP methods, offsets/durations, outcomes,
+  HTTP status when available, response character counts for proxy responses,
+  recognized page kinds, and supported challenge algorithm names.
+
+Reports never capture catalogue response bodies, result titles, raw request URLs,
+POST bodies/headers, cookies, challenge IDs/proofs, error stacks, or browser storage.
+Page query strings/fragments and configured URL parameter values are excluded;
+error-message URLs and the current search query are redacted. Explicit query opt-in
+adds only a separate `query` field, not raw network payloads. Treat the remaining
+deployment/browser details as support information and share only with trusted staff.
+
+No analytics, uploads, new backend, or persistent diagnostic storage is used.
+Diagnostics are bounded to 40 events per attempt and retained only with the
+current failed source state. Retrying replaces the old failure; save a report
+first if needed. Cancelled/obsolete searches are not reported as failures.
+HTTP and proxy/network errors are distinguished from parser/worker errors, but
+browser CORS/network failures cannot reliably reveal the upstream HTTP status.
+The build timestamp identifies the deployed build even while the package version
+has not changed. Developers should request the JSON report and reproduce using
+the reported adapter/configuration, not ask librarians to share cookies or raw pages.
 
 ## Validation
 

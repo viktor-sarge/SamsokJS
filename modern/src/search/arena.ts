@@ -4,6 +4,7 @@ import type { ArenaJob, ArenaReply } from './arena.worker';
 import { requestPage } from './transport';
 import { queryUrl } from './urls';
 import type { SearchResult } from './types';
+import type { DiagnosticTrace } from './diagnostics';
 
 export function arenaQueryUrl(source: ArenaSource, query: string): string {
   const encoded = encodeURIComponent(query);
@@ -30,6 +31,7 @@ function parsePage(job: ArenaJob, signal: AbortSignal): Promise<ArenaPage> {
 
 export async function searchArena(
   source: ArenaSource, query: string, proxy: Instance['proxy'], signal: AbortSignal,
+  trace?: DiagnosticTrace,
 ): Promise<SearchResult> {
   const deadline = AbortSignal.timeout(proxy.timeoutMs);
   const active = AbortSignal.any([signal, deadline]);
@@ -38,12 +40,13 @@ export async function searchArena(
   let cookies: string | undefined;
   try {
     for (let attempt = 0; attempt < 6; attempt++) {
-      const response = await requestPage(target, source.encoding, proxy, active, { cookies, allowHttpErrors: true });
+      const response = await requestPage(target, source.encoding, proxy, active, { cookies, allowHttpErrors: true, trace });
       const pageUrl = response.status?.resolved_url || target;
       if (new URL(pageUrl).origin !== new URL(searchUrl).origin) {
         throw new Error('Arena omdirigerade till en annan webbplats. Öppna katalogen direkt.');
       }
-      const page = await parsePage({ content: response.content, source, pageUrl }, active);
+      const parse = () => parsePage({ content: response.content, source, pageUrl }, active);
+      const page = trace ? await trace.run('worker-parse', parse, {}, (page) => ({ pageKind: page.kind })) : await parse();
       if (page.kind === 'cookie') {
         cookies = page.cookie;
         target = pageUrl;

@@ -8,6 +8,7 @@ import { queryUrl } from './search/urls';
 import { loadSelection, saveSelection } from './preferences';
 import { readQuery, searchHash } from './location';
 import { groupByAuthor, groupHits } from './search/grouping';
+import { DiagnosticReport } from './DiagnosticReport';
 
 function librisUrl(hit: SearchHit): string {
   const url = new URL('https://libris.kb.se/hitlist');
@@ -143,6 +144,8 @@ export default function App() {
                           <p>{state.error}</p>
                           <button className="secondary" onClick={() => session.retry(state.source.id)}
                             aria-label={`Försök igen: ${state.source.name}`}>Försök igen</button>
+                          <DiagnosticReport key={`${state.source.id}:${state.diagnostics.startedAt}:${state.diagnostics.attempt}`}
+                            state={state} query={query} />
                         </div>
                       )}
                       {state.status === 'success' && (
