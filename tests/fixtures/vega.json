@@ -1,0 +1,24 @@
+{
+  "totalResults": 7,
+  "page": 0,
+  "data": [
+    {
+      "id": "example-winter",
+      "entityType": "FormatGroup",
+      "title": "Vinterboken",
+      "primaryAgent": { "label": "Exempel, Anna (författare), 1950-2020." },
+      "publicationDate": "2002-2009",
+      "materialTabs": [
+        { "name": "Book" },
+        { "name": "E-book" }
+      ]
+    },
+    {
+      "id": "example-alphabet",
+      "entityType": "FormatGroup",
+      "title": "Alfabetet",
+      "publicationDate": "2019",
+      "materialTabs": [{ "name": "Book" }]
+    }
+  ]
+}

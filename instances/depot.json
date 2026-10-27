@@ -1,0 +1,26 @@
+{
+  "id": "depot",
+  "locale": "sv",
+  "branding": {
+    "title": "Samsök Depå",
+    "subtitle": "Fler berättelser att upptäcka."
+  },
+  "proxy": {
+    "url": "https://samsokproxy.appspot.com/crossdomain",
+    "protocol": "legacy-jsonp",
+    "timeoutMs": 30000
+  },
+  "sourceGroups": [
+    {
+      "id": "depot",
+      "label": "Depåbibliotek",
+      "sources": ["umea-depot"]
+    }
+  ],
+  "defaultSelectedSources": ["umea-depot"],
+  "theme": "depot",
+  "content": {
+    "intro": "Upptäck böcker från Depåbiblioteket i Umeå.",
+    "about": "En exempelinstans med egen form och eget katalogurval. Sökningen går via Libris och visar de träffar som hämtats från katalogen."
+  }
+}

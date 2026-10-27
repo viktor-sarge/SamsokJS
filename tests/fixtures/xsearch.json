@@ -1,0 +1,21 @@
+{
+  "xsearch": {
+    "records": "3",
+    "list": [
+      {
+        "title": "Vinterboken",
+        "creator": "Anna Exempel",
+        "date": "2020",
+        "type": "Bok",
+        "identifier": "https://libris.kb.se/bib/example-winter"
+      },
+      {
+        "title": "Alfabetet",
+        "creator": "Bo Exempel",
+        "date": "2019",
+        "type": "Bok",
+        "identifier": "https://libris.kb.se/bib/example-alphabet"
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+:root {
+  --color-primary: #81351d;
+  --color-primary-hover: #642612;
+  --color-on-primary: #ffffff;
+  --color-background: #faf5eb;
+  --color-surface: #fffdf8;
+  --color-text: #382d23;
+  --color-muted: #675748;
+  --color-border: #cdbba6;
+  --color-tint: #f0e3ce;
+  --color-error: #a1222d;
+  --font-body: system-ui, sans-serif;
+  --font-heading: Georgia, serif;
+  --radius-panel: 0.2rem;
+  --content-width: 70rem;
+}

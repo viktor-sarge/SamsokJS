@@ -1,0 +1,46 @@
+{
+  "falkenberg": {
+    "name": "Falkenberg",
+    "adapter": "koha",
+    "searchUrl": "https://bibliotekskatalog.falkenberg.se/cgi-bin/koha/opac-search.pl?q=@QUERY@",
+    "catalogueUrl": "https://bibliotekskatalog.falkenberg.se/cgi-bin/koha/opac-search.pl?q=@QUERY@",
+    "encoding": "utf-8"
+  },
+  "hylte": {
+    "name": "Hylte",
+    "adapter": "koha",
+    "searchUrl": "https://hylte.bibkat.se/cgi-bin/koha/opac-search.pl?q=@QUERY@&branch_group_limit=",
+    "catalogueUrl": "https://hylte.bibkat.se/cgi-bin/koha/opac-search.pl?q=@QUERY@&branch_group_limit=",
+    "encoding": "utf-8"
+  },
+  "goteborg": {
+    "name": "Göteborg",
+    "adapter": "vega",
+    "apiUrl": "https://eu.iiivega.com/api/search-result/search/format-groups",
+    "customerDomain": "gsb.eu.iiivega.com",
+    "catalogueUrl": "https://bibliotek.goteborg.se/search?query=@QUERY@&searchType=everything&pageSize=40",
+    "pageSize": 40
+  },
+  "malmo": {
+    "name": "Malmö",
+    "adapter": "vega",
+    "apiUrl": "https://eu.iiivega.com/api/search-result/search/format-groups",
+    "customerDomain": "malmo.eu.iiivega.com",
+    "catalogueUrl": "https://malin.malmo.se/search?query=@QUERY@&searchType=everything&pageSize=40",
+    "pageSize": 40
+  },
+  "halmstad-university": {
+    "name": "Halmstad Högskolebibliotek",
+    "adapter": "libris-xsearch",
+    "searchUrl": "https://libris.kb.se/xsearch?query=@QUERY@%20AND%20bibl:hal&format=json&holdings=true&n=200",
+    "catalogueUrl": "https://libris.kb.se/hitlist?q=@QUERY@+bib%3ahal&d=libris&m=10&p=1&s=r",
+    "encoding": "utf-8"
+  },
+  "umea-depot": {
+    "name": "Depåbiblioteket i Umeå",
+    "adapter": "libris-xsearch",
+    "searchUrl": "https://libris.kb.se/xsearch?query=@QUERY@%20AND%20bibl:umdp&format=json&holdings=true&n=200",
+    "catalogueUrl": "https://libris.kb.se/hitlist?q=@QUERY@+bib%3aumdp&d=libris&m=10&p=1&s=r",
+    "encoding": "utf-8"
+  }
+}

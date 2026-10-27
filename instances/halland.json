@@ -1,0 +1,36 @@
+{
+  "id": "halland",
+  "locale": "sv",
+  "branding": {
+    "title": "Samsök Halland",
+    "subtitle": "Biblioteken, tillsammans."
+  },
+  "proxy": {
+    "url": "https://samsokproxy.appspot.com/crossdomain",
+    "protocol": "legacy-jsonp",
+    "timeoutMs": 30000
+  },
+  "sourceGroups": [
+    {
+      "id": "halland",
+      "label": "Halland",
+      "sources": ["halmstad-university", "falkenberg", "hylte"]
+    },
+    {
+      "id": "lanecentral",
+      "label": "Lånecentralen",
+      "sources": ["umea-depot"]
+    },
+    {
+      "id": "andra-regioner",
+      "label": "Andra regioner",
+      "sources": ["goteborg", "malmo"]
+    }
+  ],
+  "defaultSelectedSources": ["halmstad-university", "umea-depot"],
+  "theme": "halland",
+  "content": {
+    "intro": "En sökning. Flera bibliotek. Hitta nästa bok i våra anslutna kataloger.",
+    "about": "Detta är en förhandsversion av nya Samsök. Här kan du söka i Halmstad Högskolebibliotek och Depåbiblioteket i Umeå via Libris, i Falkenberg och Hylte via Koha samt i Göteborg och Malmö via Vega. Välj kataloger för att lägga till fler i sökningen. Övriga kataloger finns kvar i den tidigare versionen."
+  }
+}
