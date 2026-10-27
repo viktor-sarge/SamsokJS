@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import instance, { buildInfo } from 'virtual:samsok-instance';
-import type { SourceState } from './search/session';
-import { diagnosticReport } from './search/diagnostics';
+import type { SourceState } from '../session';
+import { diagnosticReport } from '../diagnostics';
 
 export function DiagnosticReport({ state, query }: {
   state: Extract<SourceState, { status: 'error' }>;

@@ -1,7 +1,7 @@
 import { load } from 'cheerio/slim';
-import { httpUrlSchema } from '../../../config/schema';
-import type { Source } from '../../../config/schema';
-import type { SearchResult } from './types';
+import { httpUrlSchema } from '../../../../../config/schema';
+import type { Source } from '../../../../../config/schema';
+import type { SearchResult } from '../../types';
 
 export type ArenaSource = Extract<Source, { adapter: 'arena' }>;
 export type ArenaPage =

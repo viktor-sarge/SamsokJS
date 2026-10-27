@@ -1,10 +1,10 @@
-import type { Instance } from '../../../config/schema';
+import type { Instance } from '../../../../../config/schema';
 import type { ArenaSource, ArenaPage } from './arena-parser';
-import type { ArenaJob, ArenaReply } from './arena.worker';
-import { requestPage } from './transport';
-import { queryUrl } from './urls';
-import type { SearchResult } from './types';
-import type { DiagnosticTrace } from './diagnostics';
+import type { ArenaJob, ArenaReply } from './arena.worker.ts';
+import { requestPage } from '../../transport';
+import { queryUrl } from '../../urls';
+import type { SearchResult } from '../../types';
+import type { DiagnosticTrace } from '../../diagnostics';
 
 export function arenaQueryUrl(source: ArenaSource, query: string): string {
   const encoded = encodeURIComponent(query);

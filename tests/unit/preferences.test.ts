@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { favoriteNameKey, loadFavorites, saveFavorites } from '../../modern/src/preferences';
+import { favoriteNameKey, loadFavorites, saveFavorites } from '../../modern/src/catalogues/preferences';
 import { resolveInstance } from '../../config/schema';
 import halland from '../../instances/halland.json';
 import depot from '../../instances/depot.json';

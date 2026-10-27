@@ -4,8 +4,8 @@ import { resolveInstance } from '../../config/schema';
 import halland from '../../instances/halland.json';
 import registry from '../../config/sources.json';
 import stockholmFixture from '../fixtures/stockholm.json';
-import { parseStockholm } from '../../modern/src/search/stockholm';
-import { parseMinaBibliotek } from '../../modern/src/search/mina-bibliotek';
+import { parseStockholm } from '../../modern/src/search/adapters/stockholm';
+import { parseMinaBibliotek } from '../../modern/src/search/adapters/mina-bibliotek';
 
 const sources = resolveInstance(halland, registry).sources;
 const stockholm = sources.find((source) => source.id === 'stockholm');

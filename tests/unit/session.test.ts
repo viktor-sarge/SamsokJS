@@ -91,7 +91,7 @@ describe('search coordination', () => {
   });
 
   it('captures independent diagnostics for each retry without retaining failed attempts across queries', async () => {
-    const search = vi.fn<typeof import('../../modern/src/search/adapters').searchSource>()
+    const search = vi.fn<typeof import('../../modern/src/search/search-source').searchSource>()
       .mockImplementation(async (_source, _query, _proxy, _signal, trace) => {
         trace?.start('proxy-request')('network-error');
         throw new Error('Network failed');

@@ -1,10 +1,10 @@
-import type { Instance } from '../../../config/schema';
+import type { Instance } from '../../../../../config/schema';
 import type { KohaSource } from './koha-parser';
-import type { KohaJob, KohaReply } from './koha.worker';
-import { requestPage } from './transport';
-import { queryUrl } from './urls';
-import type { SearchResult } from './types';
-import type { DiagnosticTrace } from './diagnostics';
+import type { KohaJob, KohaReply } from './koha.worker.ts';
+import { requestPage } from '../../transport';
+import { queryUrl } from '../../urls';
+import type { SearchResult } from '../../types';
+import type { DiagnosticTrace } from '../../diagnostics';
 
 function executeWorker(job: KohaJob, signal: AbortSignal): Promise<Exclude<KohaReply, { kind: 'error' }>> {
   return new Promise((resolve, reject) => {

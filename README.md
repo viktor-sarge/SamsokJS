@@ -371,23 +371,96 @@ For deeper overrides, append rules targeting `.site-header`, `.brand`, `.hero`,
 `url(...)`; Vite fingerprints and includes those assets. There is no dedicated
 logo configuration field yet; the header currently uses the configured title.
 
-Core responsive styles live in [modern/src/styles.css](modern/src/styles.css).
+Core responsive styles live in [modern/src/app/styles.css](modern/src/app/styles.css).
 Keep branding/editorial text in instance JSON rather than hardcoding it in React.
 Check color contrast, focus visibility, keyboard navigation, and mobile layouts
 when creating a skin. The preview does not claim formal accessibility compliance.
 
+## Code organisation and call flow
+
+The React application lives in `modern/`; the original Ember app remains in
+`js/samsok/` and is not part of the Vite build.
+
+```text
+modern/src/
+  main.tsx                    React entry point
+  app/
+    App.tsx                   Page composition, query and selection wiring
+    location.ts               Search hash URL handling
+    styles.css                Shared layout and component styles
+  catalogues/
+    SourceFavorites.tsx       Named source selections and controls
+    preferences.ts            Local-storage selections and favorites
+  components/
+    BackToTop.tsx             General page navigation control
+  search/
+    session.ts                Concurrency, cancellation, cache, retries, states
+    search-source.ts          Dispatch to the configured catalogue adapter
+    types.ts                  Shared SearchHit and SearchResult contracts
+    urls.ts                   Shared query URL construction
+    transport.ts              External proxy requests and JSONP lifecycle
+    diagnostics.ts            Per-attempt traces and privacy-safe reports
+    grouping.ts               Author/title/format/year grouping
+    components/
+      SearchCoverage.tsx      Per-source and overall retrieval coverage
+      DiagnosticReport.tsx    Local diagnostic preview and export
+    adapters/
+      xsearch.ts              Libris proxy JSON search and parsing
+      vega.ts                 Direct CORS API search and parsing
+      stockholm.ts            GraphQL through the proxy
+      mina-bibliotek.ts       SSE through the proxy
+      arena/
+        arena.ts              Request/challenge/redirect orchestration
+        arena.worker.ts       Worker message boundary
+        arena-parser.ts       HTML parsing and bounded cookie solver
+      koha/
+        koha.ts               Request/challenge/redirect orchestration
+        koha.worker.ts        Worker message boundary
+        koha-parser.ts        HTML parsing and bounded challenge solvers
+```
+
+### Following a search
+
+1. [main.tsx](modern/src/main.tsx) loads the app and shared styles.
+   The build's `virtual:samsok-instance` module supplies validated instance
+   configuration and imports the selected theme from `modern/themes/`.
+2. [App.tsx](modern/src/app/App.tsx) reads the query from the hash URL and the
+   selected source IDs from [preferences.ts](modern/src/catalogues/preferences.ts).
+   Applying a favorite uses the same selection-change path as the checkboxes.
+3. [SearchSession](modern/src/search/session.ts) cancels obsolete work, reuses
+   cached results, and queues uncached sources with at most four concurrent
+   searches. A failed-source retry starts a new attempt for that source.
+4. [searchSource](modern/src/search/search-source.ts) dispatches by adapter type.
+   Adapters use [transport.ts](modern/src/search/transport.ts) for the external
+   proxy, except Vega, which makes direct CORS requests.
+5. Arena and Koha pass HTML/challenge work to their colocated module workers;
+   the other adapters parse their structured responses directly. All adapters
+   return the same `SearchResult` shape. Catalogue scripts are never executed.
+6. Results return through the session's state callback to the app.
+   [grouping.ts](modern/src/search/grouping.ts) builds the result hierarchy;
+   the app filters and renders it. Coverage uses the original retrieved counts,
+   not the filtered/grouped counts.
+7. Each attempt records a bounded diagnostic trace. On failure, the session
+   exposes its snapshot to [DiagnosticReport.tsx](modern/src/search/components/DiagnosticReport.tsx);
+   export stays local and excludes the query unless explicitly enabled.
+
+Instance definitions live in `instances/`, source definitions and validation in
+`config/`, and themes in `modern/themes/`. Unit tests in `tests/unit/` exercise
+the modules directly; `tests/browser/` tests built applications with synthetic
+responses from `tests/fixtures/`, including real worker loading.
+
 ## Search and proxy compatibility
 
-- [modern/src/search/xsearch.ts](modern/src/search/xsearch.ts) implements Xsearch
+- [modern/src/search/adapters/xsearch.ts](modern/src/search/adapters/xsearch.ts) implements Xsearch
   requests and normalizes results without React dependencies.
-- [modern/src/search/vega.ts](modern/src/search/vega.ts) implements direct CORS
+- [modern/src/search/adapters/vega.ts](modern/src/search/adapters/vega.ts) implements direct CORS
   POST requests, tenant-specific result links, and normalized Vega format groups.
-- [modern/src/search/koha.ts](modern/src/search/koha.ts) coordinates cookie and
+- [modern/src/search/adapters/koha/koha.ts](modern/src/search/adapters/koha/koha.ts) coordinates cookie and
   Anubis verification through the proxy.
-- [modern/src/search/koha-parser.ts](modern/src/search/koha-parser.ts) and
-  [modern/src/search/koha.worker.ts](modern/src/search/koha.worker.ts) parse HTML
+- [modern/src/search/adapters/koha/koha-parser.ts](modern/src/search/adapters/koha/koha-parser.ts) and
+  [modern/src/search/adapters/koha/koha.worker.ts](modern/src/search/adapters/koha/koha.worker.ts) parse HTML
   and compute bounded proofs in a module worker.
-- [modern/src/search/adapters.ts](modern/src/search/adapters.ts) dispatches on the
+- [modern/src/search/search-source.ts](modern/src/search/search-source.ts) dispatches on the
   validated source adapter, independently of the UI and search coordinator.
 - [modern/src/search/session.ts](modern/src/search/session.ts) coordinates up to
   four concurrent requests, cancels obsolete searches, ignores stale responses,

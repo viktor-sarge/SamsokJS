@@ -1,9 +1,9 @@
 import { load } from 'cheerio/slim';
 import type { CheerioAPI } from 'cheerio/slim';
 import { z } from 'zod';
-import { httpUrlSchema } from '../../../config/schema';
-import type { Source } from '../../../config/schema';
-import type { SearchResult } from './types';
+import { httpUrlSchema } from '../../../../../config/schema';
+import type { Source } from '../../../../../config/schema';
+import type { SearchResult } from '../../types';
 
 export type KohaSource = Extract<Source, { adapter: 'koha' }>;
 export const challengeSchema = z.object({

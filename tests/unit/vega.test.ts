@@ -2,9 +2,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sourceSchema } from '../../config/schema';
 import registry from '../../config/sources.json';
 import fixture from '../fixtures/vega.json';
-import { parseVega, searchVega } from '../../modern/src/search/vega';
-import type { VegaSource } from '../../modern/src/search/vega';
-import { searchSource } from '../../modern/src/search/adapters';
+import { parseVega, searchVega } from '../../modern/src/search/adapters/vega';
+import type { VegaSource } from '../../modern/src/search/adapters/vega';
+import { searchSource } from '../../modern/src/search/search-source';
 
 const parsed = sourceSchema.parse(registry.goteborg);
 if (parsed.adapter !== 'vega') throw new Error('Expected Vega fixture source');

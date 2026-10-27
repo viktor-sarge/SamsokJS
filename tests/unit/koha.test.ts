@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { sourceSchema } from '../../config/schema';
 import registry from '../../config/sources.json';
-import { inspectKoha, solveAnubis } from '../../modern/src/search/koha-parser';
-import { waitForChallenge } from '../../modern/src/search/koha';
+import { inspectKoha, solveAnubis } from '../../modern/src/search/adapters/koha/koha-parser';
+import { waitForChallenge } from '../../modern/src/search/adapters/koha/koha';
 
 const config = sourceSchema.parse(registry.falkenberg);
 if (config.adapter !== 'koha') throw new Error('Expected Koha fixture');

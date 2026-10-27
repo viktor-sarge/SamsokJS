@@ -3,9 +3,9 @@ import { resolveInstance } from '../../config/schema';
 import depot from '../../instances/depot.json';
 import registry from '../../config/sources.json';
 import fixture from '../fixtures/xsearch.json';
-import { parseXsearch } from '../../modern/src/search/xsearch';
+import { parseXsearch } from '../../modern/src/search/adapters/xsearch';
 import { queryUrl } from '../../modern/src/search/urls';
-import { readQuery, searchHash } from '../../modern/src/location';
+import { readQuery, searchHash } from '../../modern/src/app/location';
 
 const source = resolveInstance(depot, registry).sources[0];
 if (source.adapter !== 'libris-xsearch') throw new Error('Expected Xsearch fixture source');

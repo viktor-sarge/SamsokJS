@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import type { Source } from '../../../config/schema';
-import type { SearchResult } from './types';
-import { queryUrl } from './urls';
-import type { DiagnosticTrace } from './diagnostics';
+import type { Source } from '../../../../config/schema';
+import type { SearchResult } from '../types';
+import { queryUrl } from '../urls';
+import type { DiagnosticTrace } from '../diagnostics';
 
 export type VegaSource = Extract<Source, { adapter: 'vega' }>;
 

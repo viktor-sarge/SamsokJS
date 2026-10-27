@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { inspectArena, solveArenaCookie } from '../../modern/src/search/arena-parser';
-import { arenaQueryUrl } from '../../modern/src/search/arena';
+import { inspectArena, solveArenaCookie } from '../../modern/src/search/adapters/arena/arena-parser';
+import { arenaQueryUrl } from '../../modern/src/search/adapters/arena/arena';
 import { resolveInstance } from '../../config/schema';
 import halland from '../../instances/halland.json';
 import registry from '../../config/sources.json';

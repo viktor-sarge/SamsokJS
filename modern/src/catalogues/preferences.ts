@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Instance } from '../../config/schema';
+import type { Instance } from '../../../config/schema';
 
 const selectionSchema = z.array(z.string());
 const key = (instance: Instance) => `samsok:${instance.id}:selected-sources:v1`;

@@ -1,5 +1,5 @@
-import type { SourceState } from './search/session';
-import type { SearchResult } from './search/types';
+import type { SourceState } from '../session';
+import type { SearchResult } from '../types';
 
 function coverage(result: SearchResult): 'complete' | 'partial' | 'unknown' {
   if (result.totalHits === null) return 'unknown';

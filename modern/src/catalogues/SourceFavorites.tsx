@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import type { Instance } from '../../config/schema';
+import type { Instance } from '../../../config/schema';
 import { favoriteNameKey, loadFavorites, saveFavorites } from './preferences';
 import type { SourceFavorite } from './preferences';
 

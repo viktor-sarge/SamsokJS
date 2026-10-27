@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import type { Instance, Source } from '../../../config/schema';
-import type { SearchResult } from './types';
-import { requestContent } from './transport';
-import { queryUrl } from './urls';
-import type { DiagnosticTrace } from './diagnostics';
+import type { Instance, Source } from '../../../../config/schema';
+import type { SearchResult } from '../types';
+import { requestContent } from '../transport';
+import { queryUrl } from '../urls';
+import type { DiagnosticTrace } from '../diagnostics';
 
 type MinaSource = Extract<Source, { adapter: 'mina-bibliotek' }>;
 const authorsSchema = z.array(z.object({ value: z.string() }));

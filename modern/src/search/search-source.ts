@@ -1,11 +1,11 @@
 import type { Instance, Source } from '../../../config/schema';
 import type { SearchResult } from './types';
-import { searchXsearch } from './xsearch';
-import { searchVega } from './vega';
-import { searchKoha } from './koha';
-import { searchArena } from './arena';
-import { searchStockholm } from './stockholm';
-import { searchMinaBibliotek } from './mina-bibliotek';
+import { searchXsearch } from './adapters/xsearch';
+import { searchVega } from './adapters/vega';
+import { searchKoha } from './adapters/koha/koha';
+import { searchArena } from './adapters/arena/arena';
+import { searchStockholm } from './adapters/stockholm';
+import { searchMinaBibliotek } from './adapters/mina-bibliotek';
 import type { DiagnosticTrace } from './diagnostics';
 
 export function searchSource(

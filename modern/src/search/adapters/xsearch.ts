@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { httpUrlSchema } from '../../../config/schema';
-import type { Instance, Source } from '../../../config/schema';
-import type { SearchResult } from './types';
-import { requestContent } from './transport';
-import { queryUrl } from './urls';
-import type { DiagnosticTrace } from './diagnostics';
+import { httpUrlSchema } from '../../../../config/schema';
+import type { Instance, Source } from '../../../../config/schema';
+import type { SearchResult } from '../types';
+import { requestContent } from '../transport';
+import { queryUrl } from '../urls';
+import type { DiagnosticTrace } from '../diagnostics';
 
 const optionalText = z.union([z.string(), z.array(z.string())]).nullish()
   .transform((value) => Array.isArray(value) ? value.join('; ') : value ?? undefined);

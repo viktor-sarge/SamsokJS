@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import type { Instance, Source } from '../../../config/schema';
-import type { SearchResult } from './types';
-import { requestPage } from './transport';
-import { queryUrl } from './urls';
-import type { DiagnosticTrace } from './diagnostics';
+import type { Instance, Source } from '../../../../config/schema';
+import type { SearchResult } from '../types';
+import { requestPage } from '../transport';
+import { queryUrl } from '../urls';
+import type { DiagnosticTrace } from '../diagnostics';
 
 type StockholmSource = Extract<Source, { adapter: 'stockholm' }>;
 

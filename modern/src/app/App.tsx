@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent, MouseEvent } from 'react';
 import instance from 'virtual:samsok-instance';
-import { SearchSession } from './search/session';
-import type { SourceState } from './search/session';
-import type { SearchHit } from './search/types';
-import { queryUrl } from './search/urls';
-import { loadSelection, saveSelection } from './preferences';
+import { SearchSession } from '../search/session';
+import type { SourceState } from '../search/session';
+import type { SearchHit } from '../search/types';
+import { queryUrl } from '../search/urls';
+import { loadSelection, saveSelection } from '../catalogues/preferences';
 import { readQuery, searchHash } from './location';
-import { groupByAuthor, groupHits } from './search/grouping';
-import { DiagnosticReport } from './DiagnosticReport';
-import { SearchCoverage, SourceCoverage } from './SearchCoverage';
-import { BackToTop } from './BackToTop';
-import { SourceFavorites } from './SourceFavorites';
+import { groupByAuthor, groupHits } from '../search/grouping';
+import { DiagnosticReport } from '../search/components/DiagnosticReport';
+import { SearchCoverage, SourceCoverage } from '../search/components/SearchCoverage';
+import { BackToTop } from '../components/BackToTop';
+import { SourceFavorites } from '../catalogues/SourceFavorites';
 
 function librisUrl(hit: SearchHit): string {
   const url = new URL('https://libris.kb.se/hitlist');

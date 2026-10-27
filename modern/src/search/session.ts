@@ -1,5 +1,5 @@
 import type { Instance, Source } from '../../../config/schema';
-import { searchSource } from './adapters';
+import { searchSource } from './search-source';
 import type { SearchResult } from './types';
 import { DiagnosticTrace } from './diagnostics';
 import type { FailureDiagnostics } from './diagnostics';
