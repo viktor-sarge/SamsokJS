@@ -14,7 +14,7 @@
     {
       "id": "halland",
       "label": "Halland",
-      "sources": ["halmstad-university", "falkenberg", "hylte"]
+      "sources": ["falkenberg", "halmstad", "halmstad-university", "hylte", "kungsbacka", "laholm", "varberg"]
     },
     {
       "id": "lanecentral",
@@ -24,13 +24,23 @@
     {
       "id": "andra-regioner",
       "label": "Andra regioner",
-      "sources": ["goteborg", "malmo"]
+      "sources": ["falkoping", "goteborg", "jonkoping", "kalmar", "karlskrona", "knallebiblioteken", "malmo", "skane-no", "umea-mina-bibliotek", "vastra-skaraborg", "vaxjo"]
+    },
+    {
+      "id": "vastra-gotaland",
+      "label": "Västra Götaland",
+      "sources": ["alingsas", "dalsland", "bibliotek-i-vast", "mellansjo", "vastra-skaraborg", "fyrstad", "falkoping", "goteborg", "harryda", "knallebiblioteken", "lerum", "molndal", "norra-bohuslan", "partille"]
+    },
+    {
+      "id": "ovriga",
+      "label": "Övriga",
+      "sources": ["umea-depot", "stockholm", "malmo", "mina-bibliotek"]
     }
   ],
   "defaultSelectedSources": ["halmstad-university", "umea-depot"],
   "theme": "halland",
   "content": {
     "intro": "En sökning. Flera bibliotek. Hitta nästa bok i våra anslutna kataloger.",
-    "about": "Detta är en förhandsversion av nya Samsök. Här kan du söka i Halmstad Högskolebibliotek och Depåbiblioteket i Umeå via Libris, i Falkenberg och Hylte via Koha samt i Göteborg och Malmö via Vega. Välj kataloger för att lägga till fler i sökningen. Övriga kataloger finns kvar i den tidigare versionen."
+    "about": "Detta är en förhandsversion av nya Samsök med katalogerna och grupperna från den tidigare versionen. Välj kataloger för att lägga till fler i sökningen. En katalog som visas i flera grupper söks bara en gång. Katalogernas tillgänglighet beror på respektive bibliotek och den externa proxyn."
   }
 }

@@ -8,18 +8,24 @@ an application backend.
 ## Migration status
 
 The migration provides React, TypeScript, Vite, validated instance
-configuration, two example skins, and Libris Xsearch, Vega, and Koha adapters. It includes
+configuration, two example skins, and Libris Xsearch, Vega, Koha, Arena,
+Stockholm GraphQL, and Mina bibliotek SSE adapters. It includes
 search progress, per-source errors and retries, partial totals, title sorting,
 local filtering, catalogue/Libris links, saved source selection, and shareable
 search URLs.
 
-The new Halland instance offers **Halmstad Högskolebibliotek** and
-**Depåbiblioteket i Umeå** via Libris, **Falkenberg** and **Hylte** via Koha,
-plus **Göteborg** and **Malmö** via Vega.
+The new Halland instance includes all **37 original catalogue entries** across
+**Halland**, **Lånecentralen**, **Andra regioner**, **Västra Götaland**, and
+**Övriga**, in their original order. These resolve to **31 named source
+selections**. Sources repeated in different groups share one selection and are
+searched once. The original **Umeå - Mina bibliotek** and **Mina bibliotek** names
+remain separate selections pointing to the same catalogue, as in the legacy app.
 The two Libris sources remain selected by default; visitors can enable other sources in
 the catalogue panel. Existing saved selections are preserved.
 The depot example includes only Depåbiblioteket i Umeå.
-These are preview instances, not replacements for the complete existing service.
+Catalogue/group coverage is restored, but these remain preview instances:
+legacy service/contact/accessibility content, preference migration, and other
+UI/behaviour parity still need review before replacing the existing service.
 
 The original [Ember entry point](index.html), catalogue definitions, parsers,
 styles, and assets are unchanged. Continue deploying the original repository
@@ -186,10 +192,95 @@ waiting, worker computation, and requests. Cancellation terminates the worker
 and pending waits. Verification URLs are restricted to the catalogue origin.
 Proof-of-work requires WebCrypto in a secure context (HTTPS or localhost).
 
+### Arena catalogues
+
+The Halland Arena definitions in [config/sources.json](config/sources.json)
+use the catalogue's search-result portlet URL with an `@QUERY@` placeholder:
+
+```json
+{
+  "name": "Example Arena library",
+  "adapter": "arena",
+  "searchUrl": "https://catalogue.example.org/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr",
+  "catalogueUrl": "https://catalogue.example.org/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+  "encoding": "utf-8",
+  "queryEncoding": "percent"
+}
+```
+
+`queryEncoding` is required: `percent` encodes spaces as `%20`; `plus` encodes
+them as `+`, as used by Halmstad and Bibliotek Dalsland. Literal plus signs remain `%2B` in both
+modes. Preserve any additional portlet parameters needed by the installation.
+
+Arena HTML is fetched through the same trusted proxy and parsed in a module
+worker. The adapter supports listing metadata, Swedish feedback/paging totals,
+explicit empty-result pages (including `arena-zero-list` panels), detail pages, and literal single-result redirects
+including `\xHH`-escaped URLs. Missing records, malformed links, and unrecognized
+pages produce source errors, not successful empty searches.
+
+The currently deployed arithmetic `leastFactor` cookie check is handled by
+recognizing a restricted numeric grammar and calculating its result locally.
+Unlike the legacy preprocessor, the adapter never evaluates upstream JavaScript.
+Unsupported challenge formats fail explicitly. The final factorization input is
+limited to 4,000,000,000,000 (trial divisors up to 2,000,000); HTML is limited to
+2,000,000 characters, and the workflow allows at most six proxy requests within
+the instance's total `proxy.timeoutMs` deadline. Cancellation terminates the worker.
+Redirects and record links must stay on the catalogue origin. Opaque proxy cookies
+are carried across redirects; calculated challenge cookies are sent only for the
+current search and never persisted in browser storage.
+
+Zero-hit panels can defer alternative suggestions to an upstream script.
+Those suggestions are not fetched or executed; the original query has no hits.
+
+### Stockholm GraphQL
+
+```json
+{
+  "name": "Stockholms stadsbibliotek",
+  "adapter": "stockholm",
+  "apiUrl": "https://biblioteket.stockholm.se/graphql/",
+  "catalogueUrl": "https://biblioteket.stockholm.se/sok?text=@QUERY@",
+  "pageSize": 40
+}
+```
+
+The existing proxy must support `method=POST`, `contentType=application/json`,
+JSON `postData`, and JSON `headers` parameters. The adapter sends a
+`searchWithFilter` GraphQL request with the query in variables, never interpolated
+into GraphQL syntax. It supplies the catalogue Origin/Referer through the proxy.
+No initial catalogue HTML fetch or embedded application script is needed.
+
+`pageSize` (1–40) controls `rows` **per format group**, not a global hit cap.
+All returned format groups are flattened, including responses with empty/null
+media lists. Titles and record keys are required, optional metadata is normalized,
+and record links use `/titel/<encoded-key>`. GraphQL errors, even alongside partial
+data, inconsistent totals, invalid JSON, and incomplete records produce source errors.
+
+### Mina bibliotek SSE
+
+```json
+{
+  "name": "Mina bibliotek",
+  "adapter": "mina-bibliotek",
+  "searchUrl": "https://minabibliotek.se/federated-search/customers/umea/search?sourceId=catalogue&source=catalogue&size=40&facetSize=0&start=0&fuzzy=true&sort=score+desc&q=@QUERY@",
+  "catalogueUrl": "https://minabibliotek.se/search#/?q=@QUERY@&fuzzy=true&source=catalogue",
+  "encoding": "utf-8"
+}
+```
+
+The proxy returns the completed server-sent-event stream as text, not a live
+browser EventSource connection. The adapter requires exactly one `search` event,
+supports LF/CRLF and multiline `data:` fields, and validates its JSON.
+An explicit zero total may omit `hits`; missing search events, malformed data,
+positive totals without records, and responses over 2,000,000 characters are
+errors. Authors use `creator.author` or `creator.creator`, publication year uses
+the first value, and record links use an encoded ID under `/search#/entity/catalogue/`.
+No cookies, API credentials, or extra browser storage are required.
+
 ### Cheerio dependency and workers
 
-Cheerio is pinned to version 1.2.0 and imported through `cheerio/slim` in a module
-worker. This uses htmlparser2 without parse5 or Node's HTTP client in the browser
+Cheerio is pinned to version 1.2.0 and imported through `cheerio/slim` in module
+workers for Koha and Arena. This uses htmlparser2 without parse5 or Node's HTTP client in the browser
 bundle. The npm package still installs its wider dependency tree for development;
 the slim import does not eliminate those installed dependencies.
 Use the lockfile with `npm ci`, review dependency updates, and run `npm audit`
@@ -197,7 +288,7 @@ against the registry you trust. An audit reports known advisories, not a
 guarantee of safety. The package currently emits a transitive
 `whatwg-encoding` deprecation warning during installation.
 
-The worker asset is fetched when a Koha search needs it, not when the app opens.
+Each worker asset is fetched when its adapter needs it, not when the app opens.
 At this milestone the worker is about 216 KB uncompressed, 74 KB with gzip, or
 65 KB with Brotli (actual transfer size depends on CDN compression).
 Parsing never inserts catalogue HTML into a browser document, executes its
@@ -255,7 +346,7 @@ The examples use the existing public
 [SamsokProxy](https://github.com/regionbibliotekhalland/SamsokProxy) endpoint.
 Its availability and third-party catalogue behavior are outside this app's
 control. Configure an alternative compatible proxy for your deployment.
-The Xsearch and Koha adapters request UTF-8 content and expect JSONP wrapping an object
+All proxied adapters request UTF-8 content and expect JSONP wrapping an object
 with `content` and optional `status.http_code`.
 
 JSONP executes JavaScript from the configured proxy: use only a trusted endpoint.
@@ -274,8 +365,7 @@ Vega HTTP, network/CORS, malformed-response, and timeout failures appear per
 source and can be retried without repeating successful source requests.
 
 The transport is intentionally separate so a future CORS JSON proxy can replace
-JSONP. Other planned migrations include Arena, Stockholm, and
-Mina bibliotek, preserving their redirects, cookies, encodings, and API behavior.
+JSONP. All protocols used by the configured legacy catalogues now have adapters.
 No remote challenge-script execution has been ported. The JSON adapters
 do not need workers; expensive parsers should use module workers, not the
 legacy eval-based worker.
@@ -307,6 +397,14 @@ Koha tests exercise production module workers under a subpath, metadata extracti
 cookie forwarding, redirect URLs, both proof-of-work algorithms, timed challenges,
 retry/computation limits, and cancellation. Catalogue scripts and embedded images
 in test HTML must never execute or load.
+Arena tests cover arithmetic challenge branches, URL encoding, paging totals,
+single-result redirects, cookie continuity, request limits, cancellation, and
+the original Halland group order.
+Stockholm/Mina bibliotek tests cover proxy POST variables and headers, format
+groups, SSE framing, empty-result variants, partial errors, links, cancellation,
+and retry isolation. Configuration tests compare every original group and name
+against the legacy definitions; browser tests verify shared-group controls stay
+in sync and do not duplicate requests.
 Fixtures in [tests/fixtures](tests/fixtures) are synthetic representative data.
 Unit/browser tests do not depend on live catalogue uptime. Browser binaries are
 local development dependencies and are not deployed.

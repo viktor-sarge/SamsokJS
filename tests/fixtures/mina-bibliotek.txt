@@ -1,0 +1,7 @@
+id:example
+event:search
+data:{"totalHits":8,"hits":[{"entity":{"id":"example-1","name":"Alfabetet","creator":{"author":[{"value":"Anna Exempel"},{"value":"Bertil Exempel"}]},"mediaClass":"book","publicationYear":["2021","2022"]}},{"entity":{"id":"example-2","name":"Över bergen","creator":{"creator":[{"value":"Cecilia Exempel"}]}}}]}
+
+event:complete
+data:{}
+

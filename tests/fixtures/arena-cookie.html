@@ -1,0 +1,12 @@
+<html><script>
+function leastFactor(n) { return n; }
+function go() {
+var p=77; var s=2; var n;
+if ((s >> 1) & 1) /* ignored p-=999; */ p+=3*2;else p-=4*5;
+if ((s >> 0) & 1) p+=3*2;else p-=2*3;
+p+=0;
+n=leastFactor(p);
+{ document.cookie="TEST="+n+"*"+p/n+":"+s+":123:1;SameSite=Strict; Secure";
+document.location.reload(true); }
+}
+</script><body onload="go()">Loading...</body></html>

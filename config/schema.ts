@@ -36,6 +36,22 @@ export const sourceSchema = z.discriminatedUnion('adapter', [z.strictObject({
   adapter: z.literal('koha'),
   searchUrl: templateSchema,
   encoding: z.literal('utf-8'),
+}), z.strictObject({
+  ...sourceFields,
+  adapter: z.literal('arena'),
+  searchUrl: templateSchema,
+  encoding: z.literal('utf-8'),
+  queryEncoding: z.enum(['percent', 'plus']),
+}), z.strictObject({
+  ...sourceFields,
+  adapter: z.literal('stockholm'),
+  apiUrl: httpUrlSchema,
+  pageSize: z.number().int().min(1).max(40),
+}), z.strictObject({
+  ...sourceFields,
+  adapter: z.literal('mina-bibliotek'),
+  searchUrl: templateSchema,
+  encoding: z.literal('utf-8'),
 })]);
 
 export const instanceSchema = z.strictObject({

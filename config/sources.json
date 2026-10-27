@@ -1,4 +1,197 @@
 {
+  "falkoping": {
+    "name": "Falköping",
+    "adapter": "arena",
+    "searchUrl": "https://www.falkopingsbibliotek.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://www.falkopingsbibliotek.se/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "jonkoping": {
+    "name": "Jönköping",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.jonkoping.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending",
+    "catalogueUrl": "https://bibliotek.jonkoping.se/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "kalmar": {
+    "name": "Kalmar",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.kalmar.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending",
+    "catalogueUrl": "https://bibliotek.kalmar.se/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "karlskrona": {
+    "name": "Karlskrona",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.karlskrona.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://bibliotek.karlskrona.se/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "knallebiblioteken": {
+    "name": "Knallebiblioteken",
+    "adapter": "arena",
+    "searchUrl": "https://knallebiblioteken.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://knallebiblioteken.se/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "skane-no": {
+    "name": "SkåneNO",
+    "adapter": "arena",
+    "searchUrl": "https://snokabibliotek.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://snokabibliotek.se/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "vastra-skaraborg": {
+    "name": "Bibliotek Västra Skaraborg",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.vskaraborg.se/web/pub/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://bibliotek.vskaraborg.se/web/pub/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "vaxjo": {
+    "name": "Växjö",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.vaxjo.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending",
+    "catalogueUrl": "https://bibliotek.vaxjo.se/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "alingsas": {
+    "name": "Alingsås",
+    "adapter": "koha",
+    "searchUrl": "https://kohaopac.alingsas.se/cgi-bin/koha/opac-search.pl?idx=&q=@QUERY@&weight_search=1",
+    "catalogueUrl": "https://kohaopac.alingsas.se/cgi-bin/koha/opac-search.pl?idx=&q=@QUERY@&weight_search=1",
+    "encoding": "utf-8"
+  },
+  "dalsland": {
+    "name": "Bibliotek Dalsland",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotekdalsland.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://bibliotekdalsland.se/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "plus"
+  },
+  "bibliotek-i-vast": {
+    "name": "Bibliotek i Väst",
+    "adapter": "arena",
+    "searchUrl": "https://biv.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://biv.se/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "mellansjo": {
+    "name": "Bibliotek Mellansjö",
+    "adapter": "koha",
+    "searchUrl": "https://bibliotekmellansjo.se/cgi-bin/koha/opac-search.pl?q=@QUERY@&branch_group_limit=",
+    "catalogueUrl": "https://bibliotekmellansjo.se/cgi-bin/koha/opac-search.pl?q=@QUERY@&branch_group_limit=",
+    "encoding": "utf-8"
+  },
+  "fyrstad": {
+    "name": "Biblioteken i Fyrstad",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotekenifyrstad.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://bibliotekenifyrstad.se/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "harryda": {
+    "name": "Härryda",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.harryda.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://bibliotek.harryda.se/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "lerum": {
+    "name": "Lerum",
+    "adapter": "koha",
+    "searchUrl": "https://kolerum-opac.prod.imcode.com/cgi-bin/koha/opac-search.pl?idx=&weight_search=1&q=@QUERY@",
+    "catalogueUrl": "https://kolerum-opac.prod.imcode.com/cgi-bin/koha/opac-search.pl?idx=&weight_search=1&q=@QUERY@",
+    "encoding": "utf-8"
+  },
+  "molndal": {
+    "name": "Mölndal",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.molndal.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://bibliotek.molndal.se/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "norra-bohuslan": {
+    "name": "Norra Bohuslän",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.ranrike.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://bibliotek.ranrike.se/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "partille": {
+    "name": "Partille",
+    "adapter": "koha",
+    "searchUrl": "https://bibliotekskatalog.partille.se/cgi-bin/koha/opac-search.pl?idx=&weight_search=1&q=@QUERY@",
+    "catalogueUrl": "https://bibliotekskatalog.partille.se/cgi-bin/koha/opac-search.pl?idx=&weight_search=1&q=@QUERY@",
+    "encoding": "utf-8"
+  },
+  "stockholm": {
+    "name": "Stockholms stadsbibliotek",
+    "adapter": "stockholm",
+    "apiUrl": "https://biblioteket.stockholm.se/graphql/",
+    "catalogueUrl": "https://biblioteket.stockholm.se/sok?text=@QUERY@",
+    "pageSize": 40
+  },
+  "umea-mina-bibliotek": {
+    "name": "Umeå - Mina bibliotek",
+    "adapter": "mina-bibliotek",
+    "searchUrl": "https://minabibliotek.se/federated-search/customers/umea/search?sourceId=catalogue&source=catalogue&size=40&facetSize=0&start=0&fuzzy=true&sort=score+desc&q=@QUERY@",
+    "catalogueUrl": "https://minabibliotek.se/search#/?q=@QUERY@&fuzzy=true&source=catalogue",
+    "encoding": "utf-8"
+  },
+  "mina-bibliotek": {
+    "name": "Mina bibliotek",
+    "adapter": "mina-bibliotek",
+    "searchUrl": "https://minabibliotek.se/federated-search/customers/umea/search?sourceId=catalogue&source=catalogue&size=40&facetSize=0&start=0&fuzzy=true&sort=score+desc&q=@QUERY@",
+    "catalogueUrl": "https://minabibliotek.se/search#/?q=@QUERY@&fuzzy=true&source=catalogue",
+    "encoding": "utf-8"
+  },
+  "halmstad": {
+    "name": "Halmstad",
+    "adapter": "arena",
+    "searchUrl": "https://nova.halmstad.se/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending",
+    "catalogueUrl": "https://nova.halmstad.se/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "plus"
+  },
+  "kungsbacka": {
+    "name": "Kungsbacka",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.kungsbacka.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_query=@QUERY@&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending",
+    "catalogueUrl": "https://bibliotek.kungsbacka.se/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "laholm": {
+    "name": "Laholm",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.laholm.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://bibliotek.laholm.se/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
+  "varberg": {
+    "name": "Varberg",
+    "adapter": "arena",
+    "searchUrl": "https://bibliotek.varberg.se/web/arena/search?p_p_id=searchResult_WAR_arenaportlet&p_p_lifecycle=1&p_p_state=normal&p_r_p_arena_urn%3Aarena_facet_queries=&p_r_p_arena_urn%3Aarena_search_type=solr&p_r_p_arena_urn%3Aarena_sort_advice=field%3DRelevance%26direction%3DDescending&p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "catalogueUrl": "https://bibliotek.varberg.se/web/arena/search?p_r_p_arena_urn%3Aarena_search_query=@QUERY@",
+    "encoding": "utf-8",
+    "queryEncoding": "percent"
+  },
   "falkenberg": {
     "name": "Falkenberg",
     "adapter": "koha",

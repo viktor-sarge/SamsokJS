@@ -1,0 +1,16 @@
+{
+  "data": {
+    "searchWithFilter": {
+      "totalHits": 12,
+      "groupedMedia": [
+        {
+          "mediaList": [
+            {"key": "example-1", "title": "Alfabetet", "author": "Anna Exempel ", "mediaTypeDisplay": "Bok", "publishedDate": "2021-03-04"},
+            {"key": "example-2", "title": "Över bergen", "author": null, "mediaTypeDisplay": "E-bok", "publishedDate": null}
+          ]
+        },
+        {"mediaList": null}
+      ]
+    }
+  }
+}

@@ -2,9 +2,12 @@ import { expect, test } from '@playwright/test';
 import type { Page, Route } from '@playwright/test';
 import fixture from '../fixtures/xsearch.json' with { type: 'json' };
 import vegaFixture from '../fixtures/vega.json' with { type: 'json' };
+import stockholmFixture from '../fixtures/stockholm.json' with { type: 'json' };
 import { readFileSync } from 'node:fs';
 
 const kohaFixture = readFileSync(new URL('../fixtures/koha-results.html', import.meta.url), 'utf8');
+const arenaFixture = readFileSync(new URL('../fixtures/arena-results.html', import.meta.url), 'utf8');
+const minaFixture = readFileSync(new URL('../fixtures/mina-bibliotek.txt', import.meta.url), 'utf8');
 
 const vegaApi = 'https://eu.iiivega.com/api/search-result/search/format-groups';
 
@@ -19,8 +22,12 @@ async function reply(route: Route, envelope: unknown) {
 async function mockSearch(page: Page) {
   await page.route('https://samsokproxy.appspot.com/crossdomain?**', (route) => {
     const target = new URL(route.request().url()).searchParams.get('url')!;
+    const content = target.includes('/koha/') ? kohaFixture
+      : target.includes('arena_') || target.includes('arena%') ? arenaFixture
+      : target.includes('/graphql/') ? JSON.stringify(stockholmFixture)
+      : target.includes('/federated-search/') ? minaFixture : JSON.stringify(fixture);
     return reply(route, {
-      content: target.includes('/koha/') ? kohaFixture : JSON.stringify(fixture),
+      content,
       status: { http_code: 200 },
     });
   });
@@ -51,7 +58,7 @@ test('searches, sorts, filters, preserves navigation URLs and catalogue preferen
   await expect(page.locator('.result-card')).toHaveCount(2);
   await expect(page.getByLabel('Vad letar du efter?')).toHaveValue('räv & bok');
   await page.getByRole('checkbox', { name: 'Markera alla' }).check();
-  await expect(page.locator('.result-card')).toHaveCount(12);
+  await expect(page.locator('.result-card')).toHaveCount(44);
   await page.getByRole('checkbox', { name: 'Markera alla' }).uncheck();
   await expect(page.getByRole('button', { name: 'Sök', exact: true })).toBeDisabled();
   await expect(page.getByText('Välj minst en katalog för att söka.')).toBeVisible();
@@ -140,7 +147,7 @@ test('reports unavailable storage while keeping selection functional', async ({ 
   await page.getByRole('checkbox', { name: 'Markera alla' }).check();
   await page.getByRole('checkbox', { name: 'Markera alla' }).uncheck();
   await expect(page.getByRole('alert')).toContainText('kunde inte sparas');
-  await expect(page.getByText('0 av 6 kataloger valda')).toBeVisible();
+  await expect(page.getByText('0 av 31 kataloger valda')).toBeVisible();
 });
 
 test('times out stalled requests and safely discards late responses', async ({ page }) => {
@@ -187,7 +194,7 @@ test('searches Vega and Libris together with correct tenant POSTs and card links
   await page.getByRole('checkbox', { name: 'Markera alla' }).check();
   await page.getByLabel('Vad letar du efter?').fill('räv & bok +');
   await page.getByRole('button', { name: 'Sök', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('Sökningen är klar. 12 hämtade träffar.');
+  await expect(page.getByRole('status')).toContainText('Sökningen är klar. 44 hämtade träffar.');
   expect(requests).toHaveLength(2);
   expect(requests).toEqual(expect.arrayContaining([
     expect.objectContaining({ customer: 'gsb.eu.iiivega.com', host: 'bibliotek.goteborg.se' }),
@@ -226,9 +233,9 @@ test('retries only the failed Vega tenant without blocking other catalogues', as
   await page.getByLabel('Vad letar du efter?').fill('book');
   await page.getByRole('button', { name: 'Sök', exact: true }).click();
   await expect(page.getByText('Vega returnerade HTTP 503.', { exact: false })).toBeVisible();
-  await expect(page.locator('.result-card')).toHaveCount(10);
+  await expect(page.locator('.result-card')).toHaveCount(42);
   await page.getByRole('button', { name: 'Försök igen: Göteborg' }).click();
-  await expect(page.locator('.result-card')).toHaveCount(12);
+  await expect(page.locator('.result-card')).toHaveCount(44);
   expect(attempts).toEqual({ 'gsb.eu.iiivega.com': 2, 'malmo.eu.iiivega.com': 1 });
 });
 
@@ -244,8 +251,8 @@ test('cancels pending Vega requests when the query changes', async ({ page }) =>
   await page.goto('./');
   await page.getByRole('checkbox', { name: 'Markera alla' }).check();
   await page.getByRole('checkbox', { name: 'Markera alla' }).uncheck();
-  await page.getByRole('checkbox', { name: 'Göteborg' }).check();
-  await page.getByRole('checkbox', { name: 'Malmö' }).check();
+  await page.getByRole('group', { name: 'Andra regioner' }).getByRole('checkbox', { name: 'Göteborg' }).check();
+  await page.getByRole('group', { name: 'Andra regioner' }).getByRole('checkbox', { name: 'Malmö' }).check();
   await page.getByLabel('Vad letar du efter?').fill('old');
   await page.getByRole('button', { name: 'Sök', exact: true }).click();
   await expect.poll(() => delayed.length).toBe(2);
@@ -262,7 +269,7 @@ test('reports Vega network errors explicitly and allows retry', async ({ page })
   await page.goto('./');
   await page.getByRole('checkbox', { name: 'Markera alla' }).check();
   await page.getByRole('checkbox', { name: 'Markera alla' }).uncheck();
-  await page.getByRole('checkbox', { name: 'Göteborg' }).check();
+  await page.getByRole('group', { name: 'Andra regioner' }).getByRole('checkbox', { name: 'Göteborg' }).check();
   await page.getByLabel('Vad letar du efter?').fill('book');
   await page.getByRole('button', { name: 'Sök', exact: true }).click();
   await expect(page.getByText('Kunde inte kontakta Vega.', { exact: false })).toBeVisible();

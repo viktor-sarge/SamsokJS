@@ -3,11 +3,30 @@ import { resolveInstance } from '../../config/schema';
 import halland from '../../instances/halland.json';
 import depot from '../../instances/depot.json';
 import registry from '../../config/sources.json';
+import { readFileSync } from 'node:fs';
 
 describe('instance configuration', () => {
+  it('preserves every original group, display name and catalogue order', () => {
+    const legacy = readFileSync(new URL('../../js/samsok/providers.js', import.meta.url), 'utf8');
+    const groups = legacy.split('App.ProviderGroup.create({').slice(1).map((block) => ({
+      label: /groupName: '([^']+)'/.exec(block)![1],
+      names: [...block.matchAll(/\bname: '([^']+)'/g)].map((match) => match[1]),
+    }));
+    expect(halland.sourceGroups.map((group) => ({
+      label: group.label,
+      names: group.sources.map((id) => resolveInstance(halland, registry).sources.find((source) => source.id === id)!.name),
+    }))).toEqual(groups);
+    expect(groups.flatMap((group) => group.names)).toHaveLength(37);
+    expect(resolveInstance(halland, registry).sources).toHaveLength(31);
+  });
   it('resolves exactly the sources included by each instance', () => {
     expect(resolveInstance(halland, registry).sources.map((source) => source.id))
-      .toEqual(['halmstad-university', 'falkenberg', 'hylte', 'umea-depot', 'goteborg', 'malmo']);
+      .toEqual([
+        'falkenberg', 'halmstad', 'halmstad-university', 'hylte', 'kungsbacka', 'laholm', 'varberg', 'umea-depot',
+        'falkoping', 'goteborg', 'jonkoping', 'kalmar', 'karlskrona', 'knallebiblioteken', 'malmo', 'skane-no',
+        'umea-mina-bibliotek', 'vastra-skaraborg', 'vaxjo', 'alingsas', 'dalsland', 'bibliotek-i-vast',
+        'mellansjo', 'fyrstad', 'harryda', 'lerum', 'molndal', 'norra-bohuslan', 'partille', 'stockholm', 'mina-bibliotek',
+      ]);
     expect(resolveInstance(depot, registry).sources.map((source) => source.id)).toEqual(['umea-depot']);
   });
 
@@ -74,5 +93,28 @@ describe('instance configuration', () => {
         ...registry, falkenberg: { ...registry.falkenberg, ...change },
       })).toThrow();
     }
+  });
+
+  it('validates Arena query encoding and required URL templates', () => {
+    expect(resolveInstance(halland, registry).sources.find((source) => source.id === 'halmstad'))
+      .toMatchObject({ adapter: 'arena', queryEncoding: 'plus' });
+    for (const change of [
+      { queryEncoding: 'unknown' }, { queryEncoding: undefined },
+      { searchUrl: 'https://example.org/' }, { encoding: 'unknown' },
+    ]) {
+      expect(() => resolveInstance(halland, {
+        ...registry, halmstad: { ...registry.halmstad, ...change },
+      })).toThrow();
+    }
+  });
+
+  it('validates Stockholm and Mina bibliotek configuration', () => {
+    for (const change of [{ apiUrl: 'javascript:alert(1)' }, { pageSize: 41 }, { pageSize: 0 }, { apiUrl: undefined }]) {
+      expect(() => resolveInstance(halland, { ...registry, stockholm: { ...registry.stockholm, ...change } })).toThrow();
+    }
+    expect(() => resolveInstance(halland, {
+      ...registry, 'mina-bibliotek': { ...registry['mina-bibliotek'], searchUrl: 'https://example.org/' },
+    })).toThrow();
+    expect(halland.defaultSelectedSources).toEqual(['halmstad-university', 'umea-depot']);
   });
 });

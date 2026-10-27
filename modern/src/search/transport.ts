@@ -19,6 +19,12 @@ const envelopeSchema = z.object({
 
 export type ProxyPage = z.infer<typeof envelopeSchema>;
 
+interface ProxyOptions {
+  cookies?: string;
+  allowHttpErrors?: boolean;
+  post?: { data: unknown; headers: Record<string, string> };
+}
+
 let requestId = 0;
 
 export function requestPage(
@@ -26,7 +32,7 @@ export function requestPage(
   encoding: string,
   proxy: Instance['proxy'],
   signal: AbortSignal,
-  options: { cookies?: string; allowHttpErrors?: boolean } = {},
+  options: ProxyOptions = {},
 ): Promise<ProxyPage> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) {
@@ -40,6 +46,12 @@ export function requestPage(
     url.searchParams.set('url', target);
     url.searchParams.set('encoding', encoding);
     if (options.cookies) url.searchParams.set('cookies', options.cookies);
+    if (options.post) {
+      url.searchParams.set('method', 'POST');
+      url.searchParams.set('contentType', 'application/json');
+      url.searchParams.set('postData', JSON.stringify(options.post.data));
+      url.searchParams.set('headers', JSON.stringify(options.post.headers));
+    }
     url.searchParams.set('callback', `__samsokJsonp.${id}`);
     script.src = url.href;
     script.async = true;
