@@ -14,6 +14,11 @@ search progress, per-source errors and retries, partial totals, author-first sor
 local filtering, catalogue/Libris links, saved source selection, and shareable
 search URLs.
 
+A compact “Till toppen” button appears in the bottom-right corner after scrolling
+past one viewport height. It returns to the top and focuses the search field
+without changing the search URL or catalogue selection. Scrolling is animated
+unless the visitor prefers reduced motion.
+
 Search coverage is shown separately from search completion. Each successful
 catalogue has a compact inline count: `15 träffar` when fully retrieved,
 `Visar 10% (10 träffar av totalt 100)` with a subtle yellow background when

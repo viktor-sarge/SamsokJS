@@ -10,6 +10,7 @@ import { readQuery, searchHash } from './location';
 import { groupByAuthor, groupHits } from './search/grouping';
 import { DiagnosticReport } from './DiagnosticReport';
 import { SearchCoverage, SourceCoverage } from './SearchCoverage';
+import { BackToTop } from './BackToTop';
 
 function librisUrl(hit: SearchHit): string {
   const url = new URL('https://libris.kb.se/hitlist');
@@ -236,6 +237,7 @@ export default function App() {
           </aside>
         </div>
       </main>
+      <BackToTop />
       <footer id="about" className="container site-footer" tabIndex={-1}>
         <h2>Om {instance.branding.title}</h2>
         <p>{instance.content.about}</p>

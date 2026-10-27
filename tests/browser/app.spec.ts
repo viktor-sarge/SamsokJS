@@ -35,6 +35,43 @@ async function mockSearch(page: Page) {
     route.fulfill({ json: vegaFixture }));
 }
 
+for (const reducedMotion of ['reduce', 'no-preference'] as const) {
+  test(`back-to-top appears after one screen and restores search focus (${reducedMotion})`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion });
+    await page.setViewportSize({ width: 390, height: 600 });
+    await mockSearch(page);
+    await page.goto('./#/search?query=book');
+    await expect(page.getByRole('status')).toContainText('Sökningen är klar');
+    const url = page.url();
+    const button = page.getByRole('button', { name: 'Till toppen', exact: true });
+    await expect(button).toHaveCount(0);
+    await page.evaluate(() => window.scrollTo(0, innerHeight - 1));
+    await expect.poll(() => page.evaluate(() => scrollY)).toBe(599);
+    await expect(button).toHaveCount(0);
+    await page.evaluate(() => window.scrollTo(0, innerHeight + 1));
+    await expect(button).toBeVisible();
+    await expect(button).toHaveCSS('position', 'fixed');
+    const first = await button.boundingBox();
+    expect(first!.height).toBeGreaterThanOrEqual(44);
+    await page.evaluate(() => window.scrollBy(0, 100));
+    await expect.poll(() => page.evaluate(() => scrollY)).toBe(701);
+    expect(await button.boundingBox()).toEqual(first);
+    await page.setViewportSize({ width: 390, height: 800 });
+    await expect(button).toHaveCount(0);
+    await page.setViewportSize({ width: 390, height: 600 });
+    await expect(button).toBeVisible();
+    await button.focus();
+    await page.keyboard.press('Enter');
+    await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+    await expect(page.getByLabel('Vad letar du efter?')).toBeFocused();
+    await expect(page.getByLabel('Vad letar du efter?')).toHaveValue('book');
+    await expect(button).toHaveCount(0);
+    await expect(page).toHaveURL(url);
+    await expect(page.getByRole('checkbox', { name: 'Halmstad Högskolebibliotek', exact: true })).toBeChecked();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
 test('searches, sorts, filters, preserves navigation URLs and catalogue preferences', async ({ page }) => {
   const errors: Error[] = [];
   page.on('pageerror', (error) => errors.push(error));
