@@ -11,6 +11,7 @@ import { groupByAuthor, groupHits } from './search/grouping';
 import { DiagnosticReport } from './DiagnosticReport';
 import { SearchCoverage, SourceCoverage } from './SearchCoverage';
 import { BackToTop } from './BackToTop';
+import { SourceFavorites } from './SourceFavorites';
 
 function librisUrl(hit: SearchHit): string {
   const url = new URL('https://libris.kb.se/hitlist');
@@ -215,6 +216,7 @@ export default function App() {
           <aside id="catalogues" className="catalogue-panel" aria-labelledby="catalogues-heading" tabIndex={-1}>
             <h2 id="catalogues-heading">Dina kataloger</h2>
             <p className="muted">Sök i ett eller flera bibliotek.</p>
+            <SourceFavorites instance={instance} selected={selection.selected} onChoose={choose} />
             <label className="catalogue-option all-catalogues">
               <input type="checkbox" checked={sources.length === instance.sources.length}
                 onChange={(event) => choose(event.target.checked ? instance.sources.map((source) => source.id) : [])} />

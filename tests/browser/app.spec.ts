@@ -183,10 +183,11 @@ test('reports unavailable storage while keeping selection functional', async ({ 
     Storage.prototype.setItem = () => { throw new DOMException('Blocked', 'SecurityError'); };
   });
   await page.goto('./');
-  await expect(page.getByRole('alert')).toContainText('Standardvalen används');
+  await expect(page.getByRole('alert').filter({ hasText: 'Standardvalen används' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Mina favoriter' }).getByRole('alert')).toContainText('kunde inte läsas');
   await page.getByRole('checkbox', { name: 'Markera alla' }).check();
   await page.getByRole('checkbox', { name: 'Markera alla' }).uncheck();
-  await expect(page.getByRole('alert')).toContainText('kunde inte sparas');
+  await expect(page.getByRole('alert').filter({ hasText: 'Katalogvalet gäller nu' })).toContainText('kunde inte sparas');
   await expect(page.getByText('0 av 31 kataloger valda')).toBeVisible();
 });
 

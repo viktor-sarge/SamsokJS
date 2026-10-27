@@ -23,7 +23,7 @@ button {
 }
 button:hover:not(:disabled) { background: var(--color-primary-hover); }
 button:disabled { opacity: 0.55; cursor: not-allowed; }
-input[type="search"] {
+input[type="search"], .favorite-form input {
   width: 100%;
   min-width: 0;
   min-height: 48px;
@@ -59,6 +59,20 @@ nav { display: flex; gap: 1.5rem; flex-wrap: wrap; }
 .catalogue-option { display: flex; gap: 0.65rem; align-items: baseline; padding-block: 0.5rem; font-size: 0.95rem; font-weight: 400; cursor: pointer; }
 .catalogue-option input { flex-shrink: 0; width: 1.1rem; height: 1.1rem; }
 .all-catalogues { border-bottom: 1px solid var(--color-border); padding-block: 1rem; }
+.source-favorites { border-bottom: 1px solid var(--color-border); padding-block: 0.75rem; }
+.source-favorites h3 { font-size: 1rem; margin: 0; }
+.favorite-list { list-style: none; padding: 0; margin: 0.25rem 0; }
+.favorite-list li { display: flex; align-items: start; gap: 0.25rem; }
+.favorite-choice, .favorite-delete, .favorite-save { background: transparent; color: var(--color-primary); border: 0; padding: 0.4rem 0.5rem; font-size: 0.9rem; }
+.favorite-choice { flex: 1; min-width: 0; text-align: left; overflow-wrap: anywhere; font-weight: 400; }
+.favorite-choice[aria-pressed="true"] { background: var(--color-tint); font-weight: 700; }
+.favorite-delete { flex-shrink: 0; width: 44px; font-size: 1.2rem; }
+.favorite-choice:hover:not(:disabled), .favorite-delete:hover:not(:disabled), .favorite-save:hover:not(:disabled) { background: var(--color-tint); }
+.favorite-save { text-decoration: underline; padding-left: 0; font-weight: 400; }
+.favorite-form { margin-block: 0.5rem; font-size: 0.9rem; }
+.favorite-form input { margin-top: 0.25rem; }
+.favorite-feedback:empty { display: none; }
+.favorite-feedback { font-size: 0.85rem; color: var(--color-muted); }
 .search-progress { margin-block: 1.5rem 1rem; font-size: 0.9rem; }
 progress { width: 100%; accent-color: var(--color-primary); height: 0.6rem; display: block; margin-top: 0.5rem; }
 .source-status { padding-left: 1.2rem; font-size: 0.9rem; }

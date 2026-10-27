@@ -138,6 +138,20 @@ and use stable IDs, not display names. Legacy name-based preferences are not
 imported; the first visit uses the configured defaults. Saved IDs removed from
 an instance are ignored. Newly included sources can be selected by the visitor.
 
+The catalogue panel's **Mina favoriter** section saves named source selections
+in local storage, separately for each instance and browser origin. Use
+**Spara aktuellt val** to name the current selection (including an empty selection).
+Applying a favorite replaces the entire selection, unchecking sources not saved
+in it, and updates any ongoing search through the normal selection workflow.
+Matching selections are highlighted; clicking one again does not toggle it off.
+Names must be unique regardless of case, extra whitespace, or Unicode composition,
+and are limited to 80 characters. Each favorite has a delete control that asks
+for confirmation before removing it; cancelling leaves it unchanged. Removed
+source IDs are ignored when loading; newly added sources are not automatically
+included. Favorites store source IDs and names, never search queries or results.
+Storage and validation failures are shown explicitly; failed saves or deletions
+do not appear to have succeeded.
+
 To add a catalogue using Xsearch, add a source with:
 
 ```json
