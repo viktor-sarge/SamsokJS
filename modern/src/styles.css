@@ -62,7 +62,11 @@ nav { display: flex; gap: 1.5rem; flex-wrap: wrap; }
 .search-progress { margin-block: 1.5rem 1rem; font-size: 0.9rem; }
 progress { width: 100%; accent-color: var(--color-primary); height: 0.6rem; display: block; margin-top: 0.5rem; }
 .source-status { padding-left: 1.2rem; font-size: 0.9rem; }
-.source-status li { margin-block: 0.75rem; }
+.source-status li { margin-block: 0.4rem; }
+.coverage-summary { padding: 1rem; margin-block: 1rem; background: var(--color-tint); border: 2px solid var(--color-primary); border-radius: var(--radius-panel); }
+.coverage-summary-complete { background: var(--color-surface); border-color: var(--color-border); }
+.coverage-summary ul { padding-left: 1.2rem; margin-block: 0.5rem; }
+.source-coverage-partial { background: #fff4cc; color: #453600; }
 .source-error { color: var(--color-error); }
 .diagnostic-report { color: var(--color-text); margin-top: 0.75rem; }
 .diagnostic-report summary { cursor: pointer; color: var(--color-primary); font-weight: 600; padding-block: 0.5rem; }

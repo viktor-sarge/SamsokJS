@@ -46,7 +46,7 @@ test('searches, sorts, filters, preserves navigation URLs and catalogue preferen
   await expect(page.getByRole('status')).toContainText('Sökningen är klar. 4 hämtade träffar.');
   await expect(page.locator('.author-group').first().getByRole('heading', { level: 3 })).toHaveText('Anna Exempel');
   await expect(page.locator('.author-group').first()).toContainText('Vinterboken');
-  await expect(page.locator('.source-status')).toContainText('2 hämtade av 3 träffar');
+  await expect(page.locator('.source-status')).toContainText('Visar 66,6% (2 träffar av totalt 3)');
   await page.getByLabel('Filtrera hämtade träffar').fill('Anna');
   await expect(page.locator('.result-card')).toHaveCount(1);
   const sharedUrl = page.url();
@@ -209,7 +209,7 @@ test('searches Vega and Libris together with correct tenant POSTs and card links
       searchType: 'everything', pageNum: 0, pageSize: 40, resourceType: 'FormatGroup',
     });
   }
-  await expect(page.locator('.source-status')).toContainText('2 hämtade av 7 träffar');
+  await expect(page.locator('.source-status')).toContainText('Visar 28,5% (2 träffar av totalt 7)');
   await page.getByLabel('Filtrera hämtade träffar').fill('Göteborg');
   await expect(page.locator('.result-card')).toHaveCount(2);
   await expect(page.locator('.result-card').first().locator('.library-links a').filter({ hasText: 'Göteborg' })).toHaveAttribute('href',

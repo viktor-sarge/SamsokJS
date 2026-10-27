@@ -39,7 +39,7 @@ test('solves a cookie challenge in a module worker and never executes remote scr
   });
   await page.goto('./#/search?query=r%C3%A4v%20%26%20bok%20%2B');
   await expect(page.locator('.result-card')).toHaveCount(1);
-  await expect(page.locator('.source-status')).toContainText('1 hämtade av 1234 träffar');
+  await expect(page.locator('.source-status')).toContainText('Visar <0,1% (1 träff av totalt 1234)');
   await expect(page.locator('.result-card .library-links a')).toHaveAttribute('href',
     'https://nova.halmstad.se/web/arena/results?p_r_p_arena_urn%3Aarena_member_id=123');
   expect(attempts).toBe(2);
@@ -116,7 +116,8 @@ test('reports zero exact matches after a cookie challenge when Arena returns spe
   });
   await page.goto('./#/search?query=nyaga');
   await expect(page.getByText('Inga träffar hittades.', { exact: true })).toBeVisible();
-  await expect(page.locator('.source-status')).toContainText('Halmstad 0 hämtade av 0 träffar.');
+  await expect(page.locator('.source-status')).toContainText('Halmstad: 0 träffar');
+  await expect(page.locator('.source-status .source-coverage')).toHaveText('0 träffar');
   await expect(page.locator('.source-error')).toHaveCount(0);
   await expect(page.locator('.result-card')).toHaveCount(0);
   await expect(page.locator('.source-status a')).toHaveAttribute('href',

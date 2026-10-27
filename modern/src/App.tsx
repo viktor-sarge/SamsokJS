@@ -9,6 +9,7 @@ import { loadSelection, saveSelection } from './preferences';
 import { readQuery, searchHash } from './location';
 import { groupByAuthor, groupHits } from './search/grouping';
 import { DiagnosticReport } from './DiagnosticReport';
+import { SearchCoverage, SourceCoverage } from './SearchCoverage';
 
 function librisUrl(hit: SearchHit): string {
   const url = new URL('https://libris.kb.se/hitlist');
@@ -132,6 +133,7 @@ export default function App() {
                   {' '}{groups.length} grupperade träffar.
                   {failed && ' En eller flera kataloger kunde inte sökas.'}
                 </p>
+                <SearchCoverage states={states} />
                 <ul className="source-status" aria-label="Status per katalog">
                   {states.map((state) => (
                     <li key={state.source.id}>
@@ -149,11 +151,7 @@ export default function App() {
                         </div>
                       )}
                       {state.status === 'success' && (
-                        <span> {state.result.hits.length} hämtade
-                          {state.result.totalHits === null ? ' (totalt antal okänt)' : ` av ${state.result.totalHits} träffar`}.
-                          {state.result.totalHits !== null && state.result.hits.length < state.result.totalHits &&
-                            ' Öppna katalogen för alla träffar.'}
-                        </span>
+                        <SourceCoverage result={state.result} locale={instance.locale} />
                       )}
                     </li>
                   ))}

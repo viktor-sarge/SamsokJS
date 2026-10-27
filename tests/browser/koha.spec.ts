@@ -39,7 +39,7 @@ test('parses Koha in a production module worker without executing scripts or loa
   await page.route(proxyPattern, (route) => reply(route, results));
   await page.goto('./#/search?query=book');
   await expect(page.getByRole('status')).toContainText('Sökningen är klar. 2 hämtade träffar.');
-  await expect(page.locator('.source-status')).toContainText('2 hämtade av 1234 träffar');
+  await expect(page.locator('.source-status')).toContainText('Visar 0,1% (2 träffar av totalt 1234)');
   await expect(page.locator('.author-group').first()).toContainText('Vinter & vår');
   await expect(page.locator('.result-card .library-links a').first()).toHaveAttribute('href',
     `${base}/cgi-bin/koha/opac-detail.pl?biblionumber=12`);
@@ -74,7 +74,7 @@ test('uses proxy redirect metadata for a single result', async ({ page }) => {
   await expect(page.locator('.result-card')).toHaveCount(1);
   await expect(page.locator('.result-card .library-links a')).toHaveAttribute('href',
     `${base}/cgi-bin/koha/opac-detail.pl?biblionumber=12`);
-  await expect(page.locator('.source-status')).toContainText('1 hämtade av 1 träffar');
+  await expect(page.locator('.source-status')).toContainText('1 träff');
 });
 
 for (const algorithm of ['fast', 'slow']) {

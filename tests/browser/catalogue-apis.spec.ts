@@ -48,8 +48,8 @@ test('sends Stockholm GraphQL POST through the proxy and reads Mina bibliotek se
   });
   await page.goto('./#/search?query=r%C3%A4v%20%26%20bok%20%2B');
   await expect(page.getByRole('status')).toContainText('Sökningen är klar. 4 hämtade träffar.');
-  await expect(page.locator('.source-status')).toContainText('2 hämtade av 12 träffar');
-  await expect(page.locator('.source-status')).toContainText('2 hämtade av 8 träffar');
+  await expect(page.locator('.source-status')).toContainText('Visar 16,6% (2 träffar av totalt 12)');
+  await expect(page.locator('.source-status')).toContainText('Visar 25% (2 träffar av totalt 8)');
   await expect(page.locator('.result-card .library-links a[href="https://biblioteket.stockholm.se/titel/example-1"]')).toBeVisible();
   await expect(page.locator('.result-card .library-links a[href="https://minabibliotek.se/search#/entity/catalogue/example-1"]')).toBeVisible();
   expect(requests.sort()).toEqual(['biblioteket.stockholm.se', 'minabibliotek.se']);

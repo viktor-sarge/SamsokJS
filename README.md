@@ -14,6 +14,19 @@ search progress, per-source errors and retries, partial totals, author-first sor
 local filtering, catalogue/Libris links, saved source selection, and shareable
 search URLs.
 
+Search coverage is shown separately from search completion. Each successful
+catalogue has a compact inline count: `15 träffar` when fully retrieved,
+`Visar 10% (10 träffar av totalt 100)` with a subtle yellow background when
+partially retrieved, or `15 träffar (totalt antal okänt)` when no total is
+available. Rows wrap naturally on narrow screens. Partial percentages
+are truncated to one decimal place so they never round up to 100%; fractions
+below 0.1% are labelled as less than 0.1%. Zero matches with a known zero total
+count as fully retrieved. The overall coverage summary also lists pending and
+failed catalogues and only reports full coverage when every selected catalogue
+has returned all its reported matches. Counts use retrieved records before
+grouping and filtering; no combined percentage is calculated across catalogues.
+Catalogue links remain available for the full results or to check unknown totals.
+
 Results are nested by **author → title → format → publication year**, with
 separate links to each library's record at the year level. Authors, titles, and
 formats are sorted alphabetically using Swedish ordering, with years in ascending
