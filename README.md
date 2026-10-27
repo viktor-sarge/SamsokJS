@@ -10,21 +10,27 @@ an application backend.
 The migration provides React, TypeScript, Vite, validated instance
 configuration, two example skins, and Libris Xsearch, Vega, Koha, Arena,
 Stockholm GraphQL, and Mina bibliotek SSE adapters. It includes
-search progress, per-source errors and retries, partial totals, title sorting,
+search progress, per-source errors and retries, partial totals, author-first sorting,
 local filtering, catalogue/Libris links, saved source selection, and shareable
 search URLs.
 
-Results with matching title, author, publication year, and format share one card
-with separate links to each library's record. Matching ignores capitalization,
+Results are nested by **author → title → format → publication year**, with
+separate links to each library's record at the year level. Authors, titles, and
+formats are sorted alphabetically using Swedish ordering, with years in ascending
+order within each format. Title variations have their own entries under the author;
+different formats have their own groups under the title; different years have
+their own library links under the format. Matching ignores capitalization,
 extra whitespace, and Unicode composition, but not punctuation, word order, or
 format translations. All four fields must be present; incomplete metadata stays
-on separate cards. Different record URLs from the same library are retained,
+in isolated author/title/format/year entries. Missing author, year, and format
+are explicitly labelled. Different record URLs from the same library are retained,
 while identical source/URL links are shown only once.
 
 Grouping applies only to retrieved records, not the catalogues' complete holdings.
 Per-source totals and the retrieved-record count remain unchanged; the filter
-also shows the number of grouped cards. Filtering by a library name keeps the
-whole matching card, including links to its other libraries.
+also shows the number of grouped year entries. Filtering keeps matching year
+entries with their author/title/format context. Filtering by a library name keeps
+all links on each matching year entry, including its other libraries.
 
 The new Halland instance includes all **37 original catalogue entries** across
 **Halland**, **Lånecentralen**, **Andra regioner**, **Västra Götaland**, and

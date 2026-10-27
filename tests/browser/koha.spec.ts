@@ -40,9 +40,9 @@ test('parses Koha in a production module worker without executing scripts or loa
   await page.goto('./#/search?query=book');
   await expect(page.getByRole('status')).toContainText('Sökningen är klar. 2 hämtade träffar.');
   await expect(page.locator('.source-status')).toContainText('2 hämtade av 1234 träffar');
-  await expect(page.locator('.result-card').first()).toContainText('Alfabetet');
+  await expect(page.locator('.author-group').first()).toContainText('Vinter & vår');
   await expect(page.locator('.result-card .library-links a').first()).toHaveAttribute('href',
-    `${base}/cgi-bin/koha/opac-detail.pl?biblionumber=13`);
+    `${base}/cgi-bin/koha/opac-detail.pl?biblionumber=12`);
   expect(resources.some((url) => /\/halland\/assets\/koha\.worker-.*\.js$/.test(url))).toBe(true);
   expect(resources.some((url) => url.includes('should-not-load'))).toBe(false);
   expect(errors).toEqual([]);

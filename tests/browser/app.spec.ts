@@ -44,7 +44,8 @@ test('searches, sorts, filters, preserves navigation URLs and catalogue preferen
   await page.getByLabel('Vad letar du efter?').fill('räv & bok');
   await page.getByRole('button', { name: 'Sök', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('Sökningen är klar. 4 hämtade träffar.');
-  await expect(page.locator('.result-card').first()).toContainText('Alfabetet');
+  await expect(page.locator('.author-group').first().getByRole('heading', { level: 3 })).toHaveText('Anna Exempel');
+  await expect(page.locator('.author-group').first()).toContainText('Vinterboken');
   await expect(page.locator('.source-status')).toContainText('2 hämtade av 3 träffar');
   await page.getByLabel('Filtrera hämtade träffar').fill('Anna');
   await expect(page.locator('.result-card')).toHaveCount(1);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { groupHits } from '../../modern/src/search/grouping';
+import { groupByAuthor, groupHits } from '../../modern/src/search/grouping';
 import type { SearchHit } from '../../modern/src/search/types';
 
 const hit: SearchHit = {
@@ -44,5 +44,36 @@ describe('result grouping', () => {
     const b = { ...hit, title: 'a', author: 'b|c' };
     expect(groupHits([a, b]).map((group) => group.hit)).toEqual([a, b]);
     expect(groupHits([])).toEqual([]);
+  });
+
+  it('nests author, title, format and year in sorted order with links at the year level', () => {
+    const records = [
+      { ...hit, author: 'Bo Exempel', title: 'Alfabetet' },
+      { ...hit, title: 'Vinterboken!', year: '2018' },
+      { ...hit, year: '2021', type: 'E-bok' },
+      { ...hit, year: '2021' },
+      { ...hit },
+      { ...hit, author: ' ANNA  EXEMPEL ', title: 'VINTERBOKEN', type: 'BOK', sourceId: 'second' },
+      { ...hit, title: 'Annan titel' },
+    ];
+    const authors = groupByAuthor(groupHits(records));
+    expect(authors.map((author) => author.author)).toEqual(['Anna Exempel', 'Bo Exempel']);
+    expect(authors[0].titles.map((title) => title.title)).toEqual(['Annan titel', 'Vinterboken', 'Vinterboken!']);
+    const title = authors[0].titles[1];
+    expect(title.formats.map((format) => format.format)).toEqual(['Bok', 'E-bok']);
+    expect(title.formats[0].years.map((year) => year.hit.year)).toEqual(['2020', '2021']);
+    expect(title.formats[0].years[0].links.map((link) => link.sourceId)).toEqual(['first', 'second']);
+    expect(title.formats[0].years[1].links).toHaveLength(1);
+    expect(title.formats[1].years.map((year) => year.hit.year)).toEqual(['2021']);
+    expect(groupByAuthor([])).toEqual([]);
+  });
+
+  it('keeps incomplete records isolated at every level, including when their author is known', () => {
+    const records = [hit, { ...hit, year: undefined }, { ...hit, year: undefined, sourceId: 'second' },
+      { ...hit, author: undefined }, { ...hit, author: 'incomplete:1' }];
+    const authors = groupByAuthor(groupHits(records));
+    expect(authors).toHaveLength(5);
+    expect(authors.flatMap((author) => author.titles.flatMap((title) => title.formats.flatMap((format) => format.years))))
+      .toHaveLength(5);
   });
 });

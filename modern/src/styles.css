@@ -34,7 +34,7 @@ input[type="search"] {
   color: var(--color-text);
 }
 :focus-visible { outline: 3px solid var(--color-primary); outline-offset: 4px; }
-h1, h2, h3 { font-family: var(--font-heading); line-height: 1.2; }
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); line-height: 1.2; }
 h1 { font-size: clamp(2.3rem, 5vw, 4rem); max-width: 18ch; margin: 0.5rem 0 1.5rem; letter-spacing: -0.035em; }
 h2 { font-size: 1.5rem; margin-top: 0; overflow-wrap: anywhere; }
 h3 { margin: 0.4rem 0; font-size: 1.25rem; overflow-wrap: anywhere; }
@@ -69,7 +69,15 @@ progress { width: 100%; accent-color: var(--color-primary); height: 0.6rem; disp
 .result-filter { margin-block: 2rem 1.5rem; }
 .result-filter input { margin-top: 0.5rem; }
 .result-list { padding: 0; list-style: none; display: grid; gap: 1rem; }
-.result-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-panel); padding: 1.5rem; display: flex; justify-content: space-between; gap: 1rem; }
+.author-group { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-panel); padding: 1.5rem; }
+.author-group > h3 { color: var(--color-primary); margin: 0 0 1.25rem; }
+.title-groups, .year-groups, .format-groups { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+.title-group + .title-group { border-top: 1px solid var(--color-border); padding-top: 1.25rem; }
+.title-group h4 { font-size: 1.2rem; margin: 0 0 0.75rem; overflow-wrap: anywhere; }
+.format-group { border-left: 2px solid var(--color-border); padding-left: 1rem; }
+.format-group h5 { font-size: 1rem; margin: 0 0 0.5rem; overflow-wrap: anywhere; }
+.result-card { display: flex; justify-content: space-between; gap: 1rem; }
+.result-card h6 { font-size: 0.95rem; margin: 0; overflow-wrap: anywhere; }
 .result-card > div { min-width: 0; }
 .library-links { list-style: none; padding: 0; margin: 0.75rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
 .library-links a { display: inline-block; padding-block: 0.35rem; overflow-wrap: anywhere; }

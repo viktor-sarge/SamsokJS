@@ -7,7 +7,7 @@ import type { SearchHit } from './search/types';
 import { queryUrl } from './search/urls';
 import { loadSelection, saveSelection } from './preferences';
 import { readQuery, searchHash } from './location';
-import { groupHits } from './search/grouping';
+import { groupByAuthor, groupHits } from './search/grouping';
 
 function librisUrl(hit: SearchHit): string {
   const url = new URL('https://libris.kb.se/hitlist');
@@ -65,8 +65,8 @@ export default function App() {
   const filtered = groups.filter(({ hit, links }) => [
     hit.title, hit.author, hit.year, hit.type,
     ...links.map((link) => instance.sources.find((source) => source.id === link.sourceId)?.name),
-  ].some((text) => text?.toLocaleLowerCase(instance.locale).includes(term)))
-    .sort((a, b) => a.hit.title.localeCompare(b.hit.title, instance.locale));
+  ].some((text) => text?.toLocaleLowerCase(instance.locale).includes(term)));
+  const authors = groupByAuthor(filtered);
   const completed = states.filter((state) => state.status !== 'loading').length;
   const loading = states.some((state) => state.status === 'loading');
   const failed = states.some((state) => state.status === 'error');
@@ -165,26 +165,45 @@ export default function App() {
                 )}
                 {hits.length > 0 && !filtered.length && <p>Inga träffar matchar filtret.</p>}
                 <ul className="result-list">
-                  {filtered.map(({ key, hit, links }) => (
-                    <li className="result-card" key={key}>
-                      <div>
-                        <h3>{hit.title}</h3>
-                        {hit.author && <p>{hit.author}</p>}
-                        <p className="muted">{[hit.year, hit.type].filter(Boolean).join(' · ')}</p>
-                        <ul className="library-links" aria-label={`Bibliotek för ${hit.title}`}>
-                          {links.map((link) => (
-                            <li key={JSON.stringify([link.sourceId, link.url])}>
-                              <a href={link.url} target="_blank" rel="noopener noreferrer">
-                                {instance.sources.find((source) => source.id === link.sourceId)?.name}
-                                <span className="sr-only">: {hit.title}</span>
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <a className="libris-link" href={librisUrl(hit)} target="_blank" rel="noopener noreferrer">
-                        Sök i Libris<span className="sr-only">: {hit.title}</span>
-                      </a>
+                  {authors.map((author) => (
+                    <li className="author-group" key={author.key}>
+                      <h3>{author.author || 'Författare saknas'}</h3>
+                      <ul className="title-groups">
+                        {author.titles.map((title) => (
+                          <li className="title-group" key={title.key}>
+                            <h4>{title.title}</h4>
+                            <ul className="format-groups">
+                              {title.formats.map((format) => (
+                                <li className="format-group" key={format.key}>
+                                  <h5>{format.format || 'Format saknas'}</h5>
+                                  <ul className="year-groups">
+                                    {format.years.map(({ key, hit, links }) => (
+                                      <li className="result-card year-group" key={key}>
+                                        <div>
+                                          <h6>{hit.year?.trim() || 'Utgivningsår saknas'}</h6>
+                                          <ul className="library-links" aria-label={`Bibliotek för ${hit.title}, ${hit.year || 'utgivningsår saknas'}, ${hit.type || 'format saknas'}`}>
+                                            {links.map((link) => (
+                                              <li key={JSON.stringify([link.sourceId, link.url])}>
+                                                <a href={link.url} target="_blank" rel="noopener noreferrer">
+                                                  {instance.sources.find((source) => source.id === link.sourceId)?.name}
+                                                  <span className="sr-only">: {hit.title}, {hit.year || 'utgivningsår saknas'}, {hit.type || 'format saknas'}</span>
+                                                </a>
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                        <a className="libris-link" href={librisUrl(hit)} target="_blank" rel="noopener noreferrer">
+                                          Sök i Libris<span className="sr-only">: {hit.title}, {hit.year || 'utgivningsår saknas'}, {hit.type || 'format saknas'}</span>
+                                        </a>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </li>
+                              ))}
+                            </ul>
+                          </li>
+                        ))}
+                      </ul>
                     </li>
                   ))}
                 </ul>
