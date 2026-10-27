@@ -40,7 +40,7 @@ test('solves a cookie challenge in a module worker and never executes remote scr
   await page.goto('./#/search?query=r%C3%A4v%20%26%20bok%20%2B');
   await expect(page.locator('.result-card')).toHaveCount(1);
   await expect(page.locator('.source-status')).toContainText('1 hämtade av 1234 träffar');
-  await expect(page.locator('.result-card h3 a')).toHaveAttribute('href',
+  await expect(page.locator('.result-card .library-links a')).toHaveAttribute('href',
     'https://nova.halmstad.se/web/arena/results?p_r_p_arena_urn%3Aarena_member_id=123');
   expect(attempts).toBe(2);
   expect(requests.some((url) => /\/halland\/assets\/arena\.worker-.*\.js$/.test(url))).toBe(true);
@@ -64,7 +64,7 @@ test('follows a single-hit redirect and preserves opaque proxy cookies', async (
   });
   await page.goto('./#/search?query=book');
   await expect(page.locator('.result-card')).toHaveCount(1);
-  await expect(page.locator('.result-card h3 a')).toHaveAttribute('href',
+  await expect(page.locator('.result-card .library-links a')).toHaveAttribute('href',
     'https://nova.halmstad.se/web/arena/results?id=123');
   expect(attempts).toBe(2);
 });

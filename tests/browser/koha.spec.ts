@@ -41,7 +41,7 @@ test('parses Koha in a production module worker without executing scripts or loa
   await expect(page.getByRole('status')).toContainText('Sökningen är klar. 2 hämtade träffar.');
   await expect(page.locator('.source-status')).toContainText('2 hämtade av 1234 träffar');
   await expect(page.locator('.result-card').first()).toContainText('Alfabetet');
-  await expect(page.locator('.result-card h3 a').first()).toHaveAttribute('href',
+  await expect(page.locator('.result-card .library-links a').first()).toHaveAttribute('href',
     `${base}/cgi-bin/koha/opac-detail.pl?biblionumber=13`);
   expect(resources.some((url) => /\/halland\/assets\/koha\.worker-.*\.js$/.test(url))).toBe(true);
   expect(resources.some((url) => url.includes('should-not-load'))).toBe(false);
@@ -72,7 +72,7 @@ test('uses proxy redirect metadata for a single result', async ({ page }) => {
   }));
   await page.goto('./#/search?query=book');
   await expect(page.locator('.result-card')).toHaveCount(1);
-  await expect(page.locator('.result-card h3 a')).toHaveAttribute('href',
+  await expect(page.locator('.result-card .library-links a')).toHaveAttribute('href',
     `${base}/cgi-bin/koha/opac-detail.pl?biblionumber=12`);
   await expect(page.locator('.source-status')).toContainText('1 hämtade av 1 träffar');
 });

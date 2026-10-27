@@ -7,6 +7,7 @@ import type { SearchHit } from './search/types';
 import { queryUrl } from './search/urls';
 import { loadSelection, saveSelection } from './preferences';
 import { readQuery, searchHash } from './location';
+import { groupHits } from './search/grouping';
 
 function librisUrl(hit: SearchHit): string {
   const url = new URL('https://libris.kb.se/hitlist');
@@ -59,12 +60,13 @@ export default function App() {
   }, [session, query, selectedKey, requestKey]);
 
   const hits = states.flatMap((state) => state.status === 'success' ? state.result.hits : []);
+  const groups = groupHits(hits);
   const term = filter.trim().toLocaleLowerCase(instance.locale);
-  const filtered = hits.filter((hit) => [
+  const filtered = groups.filter(({ hit, links }) => [
     hit.title, hit.author, hit.year, hit.type,
-    instance.sources.find((source) => source.id === hit.sourceId)?.name,
+    ...links.map((link) => instance.sources.find((source) => source.id === link.sourceId)?.name),
   ].some((text) => text?.toLocaleLowerCase(instance.locale).includes(term)))
-    .sort((a, b) => a.title.localeCompare(b.title, instance.locale));
+    .sort((a, b) => a.hit.title.localeCompare(b.hit.title, instance.locale));
   const completed = states.filter((state) => state.status !== 'loading').length;
   const loading = states.some((state) => state.status === 'loading');
   const failed = states.some((state) => state.status === 'error');
@@ -126,6 +128,7 @@ export default function App() {
                 </div>
                 <p role="status" aria-live="polite">
                   {loading ? 'Söker' : 'Sökningen är klar'}. {hits.length} hämtade träffar.
+                  {' '}{groups.length} grupperade träffar.
                   {failed && ' En eller flera kataloger kunde inte sökas.'}
                 </p>
                 <ul className="source-status" aria-label="Status per katalog">
@@ -155,20 +158,29 @@ export default function App() {
                 <div className="result-filter">
                   <label htmlFor="filter">Filtrera hämtade träffar</label>
                   <input id="filter" type="search" value={filter} onChange={(event) => setFilter(event.target.value)} />
-                  <p className="muted">Visar {filtered.length} av {hits.length} hämtade träffar</p>
+                  <p className="muted">Visar {filtered.length} av {groups.length} grupperade träffar ({hits.length} hämtade träffar)</p>
                 </div>
                 {!loading && !hits.length && (
                   <p>{failed ? 'Inga träffar kunde hämtas. Prova kataloglänkarna eller försök igen.' : 'Inga träffar hittades.'}</p>
                 )}
                 {hits.length > 0 && !filtered.length && <p>Inga träffar matchar filtret.</p>}
                 <ul className="result-list">
-                  {filtered.map((hit, index) => (
-                    <li className="result-card" key={`${hit.sourceId}:${hit.url}:${index}`}>
+                  {filtered.map(({ key, hit, links }) => (
+                    <li className="result-card" key={key}>
                       <div>
-                        <p className="eyebrow">{instance.sources.find((source) => source.id === hit.sourceId)?.name}</p>
-                        <h3><a href={hit.url} target="_blank" rel="noopener noreferrer">{hit.title}</a></h3>
+                        <h3>{hit.title}</h3>
                         {hit.author && <p>{hit.author}</p>}
                         <p className="muted">{[hit.year, hit.type].filter(Boolean).join(' · ')}</p>
+                        <ul className="library-links" aria-label={`Bibliotek för ${hit.title}`}>
+                          {links.map((link) => (
+                            <li key={JSON.stringify([link.sourceId, link.url])}>
+                              <a href={link.url} target="_blank" rel="noopener noreferrer">
+                                {instance.sources.find((source) => source.id === link.sourceId)?.name}
+                                <span className="sr-only">: {hit.title}</span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                       <a className="libris-link" href={librisUrl(hit)} target="_blank" rel="noopener noreferrer">
                         Sök i Libris<span className="sr-only">: {hit.title}</span>

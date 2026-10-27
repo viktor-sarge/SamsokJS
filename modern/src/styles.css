@@ -70,6 +70,9 @@ progress { width: 100%; accent-color: var(--color-primary); height: 0.6rem; disp
 .result-filter input { margin-top: 0.5rem; }
 .result-list { padding: 0; list-style: none; display: grid; gap: 1rem; }
 .result-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-panel); padding: 1.5rem; display: flex; justify-content: space-between; gap: 1rem; }
+.result-card > div { min-width: 0; }
+.library-links { list-style: none; padding: 0; margin: 0.75rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
+.library-links a { display: inline-block; padding-block: 0.35rem; overflow-wrap: anywhere; }
 .libris-link { flex-shrink: 0; font-size: 0.85rem; align-self: end; }
 .notice { padding: 1rem; background: var(--color-tint); border-left: 4px solid var(--color-primary); }
 .site-footer { padding-block: 2.5rem; border-top: 1px solid var(--color-border); }

@@ -14,6 +14,18 @@ search progress, per-source errors and retries, partial totals, title sorting,
 local filtering, catalogue/Libris links, saved source selection, and shareable
 search URLs.
 
+Results with matching title, author, publication year, and format share one card
+with separate links to each library's record. Matching ignores capitalization,
+extra whitespace, and Unicode composition, but not punctuation, word order, or
+format translations. All four fields must be present; incomplete metadata stays
+on separate cards. Different record URLs from the same library are retained,
+while identical source/URL links are shown only once.
+
+Grouping applies only to retrieved records, not the catalogues' complete holdings.
+Per-source totals and the retrieved-record count remain unchanged; the filter
+also shows the number of grouped cards. Filtering by a library name keeps the
+whole matching card, including links to its other libraries.
+
 The new Halland instance includes all **37 original catalogue entries** across
 **Halland**, **Lånecentralen**, **Andra regioner**, **Västra Götaland**, and
 **Övriga**, in their original order. These resolve to **31 named source

@@ -47,7 +47,7 @@ test('searches, sorts, filters, preserves navigation URLs and catalogue preferen
   await expect(page.locator('.result-card').first()).toContainText('Alfabetet');
   await expect(page.locator('.source-status')).toContainText('2 hämtade av 3 träffar');
   await page.getByLabel('Filtrera hämtade träffar').fill('Anna');
-  await expect(page.locator('.result-card')).toHaveCount(2);
+  await expect(page.locator('.result-card')).toHaveCount(1);
   const sharedUrl = page.url();
   await page.getByRole('link', { name: 'Välj kataloger' }).click();
   await expect(page).toHaveURL(sharedUrl);
@@ -58,7 +58,8 @@ test('searches, sorts, filters, preserves navigation URLs and catalogue preferen
   await expect(page.locator('.result-card')).toHaveCount(2);
   await expect(page.getByLabel('Vad letar du efter?')).toHaveValue('räv & bok');
   await page.getByRole('checkbox', { name: 'Markera alla' }).check();
-  await expect(page.locator('.result-card')).toHaveCount(44);
+  await expect(page.getByRole('status')).toContainText('Sökningen är klar. 44 hämtade träffar.');
+  await expect(page.locator('.result-card')).toHaveCount(12);
   await page.getByRole('checkbox', { name: 'Markera alla' }).uncheck();
   await expect(page.getByRole('button', { name: 'Sök', exact: true })).toBeDisabled();
   await expect(page.getByText('Välj minst en katalog för att söka.')).toBeVisible();
@@ -86,7 +87,8 @@ test('shows a per-source failure and retries only that source', async ({ page })
   await expect(page.getByText('Katalogen returnerade HTTP 503.', { exact: false })).toBeVisible();
   await expect(page.locator('.result-card')).toHaveCount(2);
   await page.getByRole('button', { name: 'Försök igen: Halmstad Högskolebibliotek' }).click();
-  await expect(page.locator('.result-card')).toHaveCount(4);
+  await expect(page.locator('.result-card')).toHaveCount(2);
+  await expect(page.locator('.result-card').first().locator('.library-links a')).toHaveCount(2);
   expect(halmstadRequests).toBe(2);
   expect(depotRequests).toBe(1);
 });
@@ -209,10 +211,10 @@ test('searches Vega and Libris together with correct tenant POSTs and card links
   await expect(page.locator('.source-status')).toContainText('2 hämtade av 7 träffar');
   await page.getByLabel('Filtrera hämtade träffar').fill('Göteborg');
   await expect(page.locator('.result-card')).toHaveCount(2);
-  await expect(page.locator('.result-card h3 a').first()).toHaveAttribute('href',
+  await expect(page.locator('.result-card').first().locator('.library-links a').filter({ hasText: 'Göteborg' })).toHaveAttribute('href',
     'https://bibliotek.goteborg.se/search/card?id=example-alphabet&entityType=FormatGroup');
   await page.getByLabel('Filtrera hämtade träffar').fill('Malmö');
-  await expect(page.locator('.result-card h3 a').first()).toHaveAttribute('href',
+  await expect(page.locator('.result-card').first().locator('.library-links a').filter({ hasText: 'Malmö' })).toHaveAttribute('href',
     'https://malin.malmo.se/search/card?id=example-alphabet&entityType=FormatGroup');
 });
 
@@ -233,9 +235,10 @@ test('retries only the failed Vega tenant without blocking other catalogues', as
   await page.getByLabel('Vad letar du efter?').fill('book');
   await page.getByRole('button', { name: 'Sök', exact: true }).click();
   await expect(page.getByText('Vega returnerade HTTP 503.', { exact: false })).toBeVisible();
-  await expect(page.locator('.result-card')).toHaveCount(42);
+  await expect(page.getByRole('status')).toContainText('42 hämtade träffar.');
+  await expect(page.locator('.result-card')).toHaveCount(11);
   await page.getByRole('button', { name: 'Försök igen: Göteborg' }).click();
-  await expect(page.locator('.result-card')).toHaveCount(44);
+  await expect(page.locator('.result-card')).toHaveCount(12);
   expect(attempts).toEqual({ 'gsb.eu.iiivega.com': 2, 'malmo.eu.iiivega.com': 1 });
 });
 
