@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [reactport]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+      - name: Build React version (both instances)
+        run: |
+          npm run build -- --instance halland
+          npm run build -- --instance depot
+
+      # Layout:
+      #   /                 legacy Ember app
+      #   /modern/          React app, Halland instance
+      #   /modern/depot/    React app, Depot instance
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp -r index.html css js img fonts font-awesome-4.1.0 _site/
+          cp -r dist/halland _site/modern
+          cp -r dist/depot _site/modern/depot
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

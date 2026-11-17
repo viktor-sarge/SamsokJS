@@ -1,6 +1,6 @@
 # SamsokJS
 
-Browser-only federated library catalogue search. The new React application is
+Browser-only federated library catalogue search. A new React version is
 being developed alongside the original Ember application. Both use the existing
 external proxy where cross-origin catalogue requests require it. Neither needs
 an application backend.
