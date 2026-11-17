@@ -548,6 +548,19 @@ current failed source state. Retrying replaces the old failure; save a report
 first if needed. Cancelled/obsolete searches are not reported as failures.
 HTTP and proxy/network errors are distinguished from parser/worker errors, but
 browser CORS/network failures cannot reliably reveal the upstream HTTP status.
+The proxy can return valid JSONP with an outer HTTP 200 while reporting a failed
+catalogue fetch in `status.http_code` and `content: null`. These responses retain
+the reported status in diagnostics instead of being labelled as malformed.
+HTTP 429 means the request was rate-limited by the catalogue or an intermediary;
+wait before retrying or use the catalogue link. Samsök does not automatically retry
+these responses. Status 0 means the proxy reported a connection failure, not a
+catalogue HTTP response. Upstream reason strings are not copied into reports.
+Arena/Koha challenge pages with nonempty error-status bodies still reach their
+bounded challenge handling; empty error bodies are rejected before worker parsing.
+Successful-status responses with missing/empty content remain explicit errors,
+never zero matches. Widespread 429s require investigation of catalogue/proxy
+egress limits and proxy logs; correcting the frontend message does not remove
+those limits.
 The build timestamp identifies the deployed build even while the package version
 has not changed. Developers should request the JSON report and reproduce using
 the reported adapter/configuration, not ask librarians to share cookies or raw pages.

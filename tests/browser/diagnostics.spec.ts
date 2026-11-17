@@ -220,3 +220,41 @@ for (const outcome of ['network-error', 'invalid-envelope', 'invalid-jsonp'] as 
     ]);
   });
 }
+
+for (const scenario of [
+  { source: 'laholm', name: 'Laholm', status: 429, content: null, outcome: 'http-error', message: 'HTTP 429' },
+  { source: 'falkenberg', name: 'Falkenberg', status: 503, content: '', outcome: 'http-error', message: 'HTTP 503' },
+  { source: 'halmstad-university', name: 'Halmstad Högskolebibliotek', status: 404, content: null, outcome: 'http-error', message: 'HTTP 404' },
+  { source: 'laholm', name: 'Laholm', status: 0, content: null, outcome: 'network-error', message: 'Proxyn kunde inte ansluta' },
+  { source: 'laholm', name: 'Laholm', status: 200, content: null, outcome: 'invalid-envelope', message: 'ogiltigt eller tomt svar' },
+]) {
+  test(`preserves proxy status ${scenario.status} with empty content for ${scenario.source}`, async ({ page }) => {
+    await select(page, scenario.source);
+    let requests = 0;
+    await page.route(proxyPattern, async (route) => {
+      requests++;
+      const callback = new URL(route.request().url()).searchParams.get('callback');
+      await route.fulfill({
+        contentType: 'application/javascript',
+        body: `${callback}(${JSON.stringify({
+          content: scenario.content,
+          status: { http_code: scenario.status, reason: 'secret-upstream-reason', url: 'https://example.org/private-query' },
+        })});`,
+      });
+    });
+    await page.goto('./#/search?query=private');
+    await expect(page.locator('.source-error > p')).toContainText(scenario.message);
+    const text = await (await openReport(page, scenario.name)).inputValue();
+    expect(JSON.parse(text).failure.events).toEqual([
+      expect.objectContaining({
+        stage: 'proxy-request', outcome: scenario.outcome, httpStatus: scenario.status, responseChars: 0,
+      }),
+    ]);
+    expect(text).not.toContain('secret-upstream-reason');
+    expect(text).not.toContain('private-query');
+    expect(requests).toBe(1);
+    expect(page.workers()).toHaveLength(0);
+    await expect(page.locator('.source-status > li > a')).toBeVisible();
+    if (scenario.status === 429) await expect(page.locator('.source-error > p')).toContainText('Vänta en stund');
+  });
+}

@@ -9,13 +9,17 @@ declare global {
   }
 }
 
-const envelopeSchema = z.object({
-  content: z.string().min(1, 'Proxyn returnerade ett tomt svar.'),
+const responseSchema = z.object({
+  content: z.string().nullable(),
   status: z.object({
     http_code: z.number().int().optional(),
     resolved_url: httpUrlSchema.optional(),
   }).optional(),
   cookies: z.string().optional(),
+});
+
+const envelopeSchema = responseSchema.extend({
+  content: z.string().min(1, 'Proxyn returnerade ett tomt svar.'),
 });
 
 export type ProxyPage = z.infer<typeof envelopeSchema>;
@@ -88,19 +92,32 @@ export function requestPage(
     );
     callbacks[id] = (data) => {
       cleanup();
-      const parsed = envelopeSchema.safeParse(data);
-      if (!parsed.success) {
+      const response = responseSchema.safeParse(data);
+      if (!response.success) {
         finish?.('invalid-envelope');
         reject(new Error('Proxyn returnerade ett ogiltigt eller tomt svar.'));
         return;
       }
-      const status = parsed.data.status?.http_code;
-      finish?.(status !== undefined && (status < 200 || status >= 300) ? 'http-error' : 'ok',
-        { httpStatus: status, responseChars: parsed.data.content.length });
-      if (!options.allowHttpErrors && status !== undefined && (status < 200 || status >= 300)) {
-        reject(new Error(`Katalogen returnerade HTTP ${status}. Försök igen eller öppna katalogen.`));
+      const status = response.data.status?.http_code;
+      const details = { httpStatus: status, responseChars: response.data.content?.length ?? 0 };
+      const httpError = status !== undefined && (status < 200 || status >= 300);
+      if (httpError && (!options.allowHttpErrors || !response.data.content || status === 0)) {
+        finish?.(status === 0 ? 'network-error' : 'http-error', details);
+        const message = status === 0
+          ? 'Proxyn kunde inte ansluta till katalogen. Försök igen eller öppna katalogen direkt.'
+          : status === 429
+            ? 'Sökningen begränsades (HTTP 429: för många förfrågningar). Vänta en stund eller öppna katalogen direkt.'
+            : `Katalogen returnerade HTTP ${status}. Försök igen eller öppna katalogen.`;
+        reject(new Error(message));
         return;
       }
+      const parsed = envelopeSchema.safeParse(response.data);
+      if (!parsed.success) {
+        finish?.('invalid-envelope', details);
+        reject(new Error('Proxyn returnerade ett ogiltigt eller tomt svar.'));
+        return;
+      }
+      finish?.(httpError ? 'http-error' : 'ok', details);
       resolve(parsed.data);
     };
     script.onerror = () => {
